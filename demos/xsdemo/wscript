@@ -10,7 +10,6 @@ def configure(ctx):
 
 def build(bld):
 	print('compile xsdemo')
-	#bld.program(target='xsdemo', source=bld.path.ant_glob('**/src/*.cpp'), includes=bld.env.INC_PATH, use='xscore palwin32 KERNEL32 USER32 GDI32 GDIPLUS')
-	bld.program(target='xsdemo', source=bld.path.ant_glob('**/src/*.cpp'), includes=bld.env.INC_PATH, use='xscore palwin32 GDIPLUS GDI32 WS2_32 OLE32 USER32 KERNEL32', subsystem='windows')
+	bld.program(target='xsdemo', source=bld.path.ant_glob('**/src/*.cpp'), includes=bld.env.INC_PATH, use='xscore palwin32', lib='GDIPLUS GDI32 WS2_32 OLE32 USER32 KERNEL32', subsystem='windows')
 
 
