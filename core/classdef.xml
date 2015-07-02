@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE classdef SYSTEM "doc/classdef.dtd">
+
+<classdef>
+	<comment>
+		XSKit API让开发者可以使用多种语言（包括C++、JavaScript）来开发跨平台的应用程序。
+	</comment>
+
+	<class name="Object" xtag="object">
+		<comment>Object是所有对象的基础原型，其他类型的对象均由Object继承而来。</comment>
+
+		<property name="prototype" type="string">
+			<comment>对象的原型</comment>
+		</property>
+
+		<property name="id" type="string">
+			<comment>静态定义的对象ID，作为对象被引用时的标识，在作用域内唯一。当对象无需被引用时，可以不指定对象的ID。
+			</comment>
+		</property>
+		
+		<property name="elements" type="array">
+			<comment>子Object列表</comment>
+		</property>
+
+		<method name="getElementById">
+			<comment>获得指定id的子对象。</comment>
+			<param name="name" type="string">
+				<comment>指定对象的Id</comment>
+			</param>
+			<return type="Object">
+				<comment>指定的对象。查找对象失败则返回空值。</comment>
+			</return>
+		</method>
+	</class>
+
+	<class name="Manifest" xtag="manifest" inherit="Object">
+		<comment>应用程序包的属性清单。
+		</comment>
+		
+		<property name="id" type="string">
+			<comment>表达应用程序唯一标识的ANSI字符串，例如：org.xskit.FirstApp</comment>
+		</property>
+		
+		<property name="uuid" type="string">
+			<comment>应用程序唯一标识的UUID字符串</comment>
+		</property>
+		
+		<property name="name" type="text">
+			<comment>表达应用程序名称的文本串</comment>
+		</property>
+		
+		<property name="mode" type="enum" enum="gui:0; console:1; service:2;">
+			<comment>指定应用程序的运行模式。默认为gui模式。</comment>
+		</property>
+		
+		<property name="orient" type="enum" enum="default:0; landscape:1; portrait:2;">
+			<comment>指定应用程序初始的屏幕朝向。仅当mode=gui时，该属性才有效。default表示无需特别指定，</comment>
+		</property>
+		
+		<property name="preload" type="string">
+		  <comment>指定启动前必须载入的动态库，取值为不包含扩展名的动态库文件名。若脚本存放于lib目录下的子目录中，需要包含相对于lib目录的相对路径。</comment>
+		</property>
+
+		<property name="startup" type="string">
+		  <comment>指定启动时运行的JavaScript脚本，取值为不包含扩展名的脚本文件名称。若脚本存放于scripts目录下的子目录中，需要包含相对于scripts目录的相对路径。</comment>
+		</property>
+	</class>
+		
+	<class name="CoreApplication" xtag="coreapplication" inherit="Object">
+		<comment>应用程序对象原型。在应用程序的运行生命周期内，由框架创建一个名为app的全局对象，原型即为CoreApplication或它的继承类。
+		</comment>
+
+		<method name="trace" static="true">
+			<comment>在调试控制台上输出调试信息。</comment>
+			<param name="text" type="text">
+				<comment>调试信息</comment>
+			</param>
+		</method>
+		
+		<method name="exit">
+			<comment>退出应用程序。</comment>
+		</method>
+		
+		<method name="setTimeout">
+			<comment>设置延时执行指定的函数。</comment>
+			<param name="functionName" type="string">
+				<comment>延时结束时，将要执行的函数的名称</comment>
+			</param>
+			<param name="millisecond" type="int">
+				<comment>延时的长度，以毫秒数计算。</comment>
+			</param>
+			<return type="int">
+				<comment>已设置的Timer ID，可用作clearTimeout的参数</comment>
+			</return>
+		</method>
+		
+		<method name="clearTimeout">
+			<comment>清除已设置的延时函数。</comment>
+			<param name="timerId" type="int">
+				<comment>setTimeout返回的ID</comment>
+			</param>
+		</method>
+
+		<method name="launchApp" static="true">
+			<comment>运行指定的App</comment>
+			<param name="appId" type="string">
+				<comment>App的唯一ID</comment>
+			</param>
+			<return type="boolean">
+				<comment>成功返回True，否则返回False</comment>
+			</return>
+		</method>
+		
+		<method name="invoke">
+			<comment>调用远程对象的默认方法。异步调用</comment>
+			<param name="uri" type="string">
+				<comment>远程对象的URI</comment>
+			</param>
+			<param name="callback" type="string">
+				<comment>调用结束后将被调用的回调函数</comment>
+			</param>
+			<return type="Remote">
+				<comment>远程调用接口对象</comment>
+			</return>
+		</method>
+	</class>
+
+	<class name="Remote" xtag="remote" inherit="Object">
+		<comment>远程调用接口对象。用户可以通过该对象访问远程对象提供的接口，所有的访问均以异步方式运行，运行结束后调用指定的回调函数。
+		</comment>
+
+		<property name="uri" type="string">
+			<comment>远程对象的URI。与数据源的URI形式一致</comment>
+		</property>
+	</class>
+
+</classdef>

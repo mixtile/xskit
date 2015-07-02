@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT classdef (comment+, class*)>
+
+<!ELEMENT comment (#PCDATA)>
+<!ATTLIST comment
+lang CDATA #IMPLIED
+>
+<!ELEMENT class (comment+, property*, method*, event*)>
+<!ATTLIST class
+name CDATA #REQUIRED
+xtag CDATA #REQUIRED
+inherit CDATA #IMPLIED
+>
+
+<!ELEMENT property (comment+)>
+<!ATTLIST property
+name CDATA #REQUIRED
+type CDATA #REQUIRED
+enum CDATA #IMPLIED
+>
+
+<!ELEMENT method (comment+, param*, return?)>
+<!ATTLIST method
+name CDATA #REQUIRED
+static CDATA #IMPLIED
+>
+
+<!ELEMENT event (comment+)>
+<!ATTLIST event
+name CDATA #REQUIRED
+>
+
+<!ELEMENT param (comment+)>
+<!ATTLIST param
+name CDATA #REQUIRED
+type CDATA #REQUIRED
+>
+
+<!ELEMENT return (comment+)>
+<!ATTLIST return
+type CDATA #REQUIRED
+>

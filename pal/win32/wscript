@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+#encoding: utf-8
+
+def configure(ctx):
+	print('configure pal win32')
+	ctx.load('compiler_cxx')
+	#ctx.check_libs_msvc('gdiplus gdi32 ws2_32 ole32 user32 kernel32')
+
+def build(bld):
+	print('compile pal win32')
+	bld.stlib(target='palwin32', source=bld.path.ant_glob('**/src/*.cpp **/src/*.c'), includes=bld.env.INC_PATH + ' include', defines=['UNICODE', '_UNICODE', 'WIN32'])

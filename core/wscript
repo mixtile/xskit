@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+#encoding: utf-8
+
+import os
+
+def configure(ctx):
+	print('configure core')
+	ctx.load('compiler_cxx')
+
+def build(bld):
+	print('compile core')
+	bld.env.CLASSPATH = os.path.join(bld.env.TOP_DIR, 'tools', 'xslt', '*')
+	bld.env.XSL_PATH = os.path.join(bld.env.TOP_DIR, 'tools', 'xslt', 'classid.xsl')
+	bld(rule='java -classpath "${CLASSPATH}" org.apache.xalan.xslt.Process -out ${TGT} -in ${SRC} -xsl ${XSL_PATH} -param use.extensions 1', source=bld.path.make_node('classdef.xml'), target=bld.path.make_node('include/xs/coreclassid.h'))
+	bld.stlib(target='xscore', source=bld.path.ant_glob('**/src/*.cpp **/gen/*.cpp'), includes=bld.env.INC_PATH + ' include')

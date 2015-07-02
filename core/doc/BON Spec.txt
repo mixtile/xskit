@@ -1,0 +1,106 @@
+
+<bon>		::= ("BON\x00" | "bon\x00") <object> | <array>
+
+<object> 	::= [<prototype>] [<index>] (<key> <value>)*
+<array>		::= [<index>] <value>*
+
+<key>		::= <hash> | <string>
+<value>		::= <header> [<data>]
+
+<header>	::= <type> | <type> <size>
+<type>		::= <type> <combo-size> | <type> <combo-value> | TYPE-VALUE
+						; indicate data type, see full type value list below
+<combosize> ::= uint5	; 5 bits uint
+<combovalue>::= <null> | <bool> | <combouint> | <combomint>	; 1 to 7 bits int
+<size>		::= uint8 | uint16 | uint32
+
+<data>		::= <number> | <float> | <string> | <text> | <binary> | <object> | <array>
+
+<number>	::= int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64
+
+<float>		::= float32 | double64
+
+<string>	::= <length> <char>* "\x00"
+
+<binary>	::= <length> uint8*
+
+<prototype>	::= <string> | <hash>
+
+<index>		::= [<hash-salt>] <index-type> <index-item> <index-item>*
+<index-item>::= <hash> <offset>
+<hash>		::= int32
+<offset>	::= uint8 | uint16 | uint32 	; <offset> is the property's
+						; begin offset based on first <key-value>'s
+						; begining.
+						; (TODO: change to base on <index> begin)
+						
+; TYPE VALUE LIST						
+NULL			::= 0xA0
+UNDEFINE		::= 0xA1
+
+BOOL			::= 0xA2	; 0xA2 - 0xA3
+BOOL_MASK		::= 0x01
+FALSE			::= 0x00
+TRUE			::= 0x01
+
+STRING			::= 0xA4	; 0xA4 - 0xA7
+STRING_MASK		::= 0x03	
+STRING_ANSI		::= 0x00	; ANSI string
+TEXT_NCS		::= 0x01	; Native CharSet
+TEXT_UCS2		::= 0x02 	; UCS-2
+TEXT_UTF8		::= 0x03	; UTF-8
+
+INT				::= 0xA8 	; 0xA8 - 0xAB
+INT_MASK		::= 0x03
+INT8			::= 0x00	; 8-bits
+INT16			::= 0x01	; 16-bits
+INT32			::= 0x02 	; 32-bits
+INT64			::= 0x03 	; 64-bits
+
+UINT			::= 0xAC 	; 0xAC - 0xAF
+UINT_MASK		::= 0x03
+UINT8			::= 0x00	; 8-bits
+UINT16			::= 0x01	; 16-bits
+UINT32			::= 0x02 	; 32-bits
+UINT64			::= 0x03 	; 64-bits
+
+FLOAT			::= 0xB0	; 32bits float
+DOUBLE			::= 0xB1	; 64bits float
+
+; RESERVE 0xB2 0xB3
+
+BINARY			::= 0xB4	; 0xB4 - 0xB5
+BINARY_MASK		::= 0x01
+BINARY16		::= 0x00	; < 65536 bytes
+BINARY32		::= 0x01	; < UINT32 max
+
+ARRAY			::= 0xB6	; 0xB6 - 0xB7
+ARRAY_MASK		::= 0x01
+ARRAY16			::= 0x00	; < 65536
+ARRAY32			::= 0x01	; < UINT32 max
+
+OBJECT			::= 0xB8	; 0xB8 - 0xB9
+OBJECT_MASK		::= 0x01
+OBJECT16		::= 0x00	; < 65536
+OBJECT32		::= 0x01	; < UINT32 max
+
+PROTOTYPE		::= 0xBA	; 0xBA - 0xBB
+PROTOTYPE_MASK	::= 0x01
+PROTOTYPE_HASH	::= 0x00	; 32bits Index
+PROTOTYPE_STRING::= 0x01	; name
+
+INDEX			::= 0xBC	; 0xBC - 0xBF
+INDEX_MASK		::= 0x03	;
+INDEX8			::= 0x00	; < 256 bytes
+INDEX16			::= 0x01	; < 65536
+INDEX32			::= 0x02	; < UINT32 max
+INDEX_SALT		::= 0x03	; 4bytes salt
+
+UINT_COMBO		::= 0x7F	; 0x00 - 0x7F
+MINT_COMBO		::= 0xE0	; 0xE0(-32) - 0xFF
+
+ARRAY_COMBO		::= 0xC0	; 0xC0 - 0xDF
+ARRCB_MASK		::= 0x1F
+
+OBJECT_COMBO	::= 0x80	; 0x80 - 0x9F
+OBJCB_MASK		::= 0x1F
