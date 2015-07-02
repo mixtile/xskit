@@ -452,6 +452,7 @@ class MsDevProject(MsDev):
 				if name == 'VCLinkerTool':
 					self.update_link_deps(tool)
 					self.update_link_paths(tool)
+					self.update_subsystem(tool)
 		files = root.find('Files')
 		self.update_includes(files)
 		self.update_sources(files)
@@ -500,7 +501,7 @@ class MsDevProject(MsDev):
 			if dep not in deps:
 				deps.append(dep)
 		if len(deps):
-			tool.set('AdditionalDependencies', ';'.join(deps))
+			tool.set('AdditionalDependencies', ' '.join(deps))
 
 	def update_link_paths(self, tool):
 		deps = tool.get('AdditionalLibraryDirectories', '')
@@ -514,6 +515,17 @@ class MsDevProject(MsDev):
 				deps.append(dep)
 		if len(deps):
 			tool.set('AdditionalLibraryDirectories', ';'.join(deps))
+
+	def update_subsystem(self, tool):
+		subsystem = getattr(self.gen, 'subsystem', 'console')
+		val = '1' # console
+		if subsystem:
+			if subsystem == 'console':
+				val = '1'
+			elif subsystem == 'windows':
+				val = '2'
+
+		tool.set('SubSystem', val)
 
 	def get_metadata(self):
 		'''Returns a tuple containing project information (name, file name and 
