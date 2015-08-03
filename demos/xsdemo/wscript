@@ -7,9 +7,11 @@ def options(opt):
 def configure(ctx):
 	print('configure xsdemo')
 	ctx.load('compiler_cxx')
+	ctx.check_cfg(package='gtk+-2.0', args=['--cflags', '--libs'] , uselib_store='GCC', mandatory=True)                                                                                                                           
+	print (ctx.env.LIB_GCC);
 
 def build(bld):
 	print('compile xsdemo')
-	bld.program(target='xsdemo', source=bld.path.ant_glob('**/src/*.cpp'), includes=bld.env.INC_PATH, use='xscore palwin32', lib='GDIPLUS GDI32 WS2_32 OLE32 USER32 KERNEL32', subsystem='windows')
+	bld.program(target='xsdemo', source=bld.path.ant_glob('**/src/*.cpp'), includes=bld.env.INC_PATH + ' ../../javascript/duktape/include /usr/include /usr/include/gtk-2.0 /usr/include/atk-1.0 /usr/include/cairo /usr/include/gdk-pixbuf-2.0 /usr/include/pango-1.0 /usr/include/gio-unix-2.0 /usr/include/glib-2.0 /usr/lib/x86_64-linux-gnu/glib-2.0/include /usr/include/pixman-1 /usr/include/freetype2 /usr/include/libpng12 /usr/lib/x86_64-linux-gnu/gtk-2.0/include /usr/include/x86_64-linux-gnu /usr/lib/gcc/x86_64-linux-gnu/4.6.3/include', use='xsgraphics xscore pallinux xsjavascript xsduktape',uselib='GCC')
 
 

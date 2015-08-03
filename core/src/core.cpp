@@ -70,6 +70,12 @@ int xsSysEventHandler(xsSysEvent *event)
 		}
 		break;
 	case XS_EVT_START:
+		{
+			xsCommonEvent evt;
+			evt.sys = event;
+			evt.type = event->type;
+			xsInvokeApplication(theApp, &evt);
+		}
 		break;
 	case XS_EVT_SUSPEND:
 		break;

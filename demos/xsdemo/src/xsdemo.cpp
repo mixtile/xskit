@@ -1,6 +1,6 @@
 
 #include "xsdemo.h"
-#include "DemoApp.h"
+#include "demoapp.h"
 
 #include <xs/entry.h>
 #include <xs/core.h>

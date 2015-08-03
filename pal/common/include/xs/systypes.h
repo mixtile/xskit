@@ -53,6 +53,7 @@ typedef struct _xsAbstractFileDescriptor
 	size_t offset;	// data beginning offset in file/resource
 	size_t length;	// data length in bytes
 	void *object;	// system awared data object
+	void *srcparam	;//data width height and load flag
 } xsAFD;
 
 typedef enum _xsAbstractFileDescriptorSourceType
