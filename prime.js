@@ -20,6 +20,7 @@ function primeTest() {
 	ctx.moveTo(20,20);
 	ctx.lineTo(50,50);
 	ctx.lineTo(20,50);
+	ctx.lineTo(80,30);
 //	ctx.rect(50,50,50,50);
 //	xsColor black = {255,0,0,0};
 //	ctx.strokeColor = black;
@@ -73,7 +74,7 @@ function init()
 //获取画布上下文
 ctx=canvas.getContext('2d');
 //增加按键事件
-//document.addEventListener('keydown',moveShape,false);
+document.addEventListener('keydown',moveShape,false);
 
 //初始化画布区域数组
 for(var i=0;i<40;i++)
@@ -89,7 +90,7 @@ for(var i=0;i<40;i++)
 startRun=true;
 DrawLine();
 topTrue=true;
-//tid=setInterval("DrawTetris();",200);
+tid=setInterval("DrawTetris();",300);
 
 DrawTetris();
 }
@@ -220,7 +221,7 @@ if(getDirection(event)=='up'){
 
 if(getDirection(event)=='down'){
 	clearInterval(tid);
-	//tid=setInterval("DrawTetris();",50);
+	tid=setInterval("DrawTetris();",100);
 }
 }
 //定时执行的方法
@@ -245,7 +246,6 @@ var topTrue=false;
 //检查当前形状是否到了画布底部
 function CheckBottom()
 {
-
 if(topTrue==true){
 	startRun=true;
 	topTrue=false;
@@ -258,8 +258,6 @@ if(topTrue==true){
 
 if(rectY+shapeHeight-1>=40 || rectY==0)
 {
-	//clearInterval(tid);
-	//ctx.clearRect(0,0,200,300);
 
 	if(rectY==0)
 	{
@@ -307,7 +305,7 @@ randmShape=Math.floor(Math.random()*7+1)
 startRun=true;
 topTrue=true;
 clearInterval(tid);
-//tid=setInterval("DrawTetris();",200);
+tid=setInterval("DrawTetris();",300);
 }
 //计分
 var vpoint=0;
@@ -386,7 +384,7 @@ for(var i=0;i<40;i++){
 function DrawRect(x,y){
 ctx.fillStyle="#FF0000";
 ctx.strokeStyle="#000000";
-ctx.lineWidth=1;
+ctx.lineWidth=1.0;
 ctx.fillRect(x,y,10,10);
 ctx.strokeRect(x,y,10,10);
 }
