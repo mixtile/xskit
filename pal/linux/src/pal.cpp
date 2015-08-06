@@ -321,10 +321,16 @@ size_t xsGetFileSize(xsFile handle)
 
 /*为了编译通过，复制win32下的pal.c的部分函数*/
 xsU32 xsStartTimer(xsU32 elapseInMs, xsCallbackFunc cb, void *userdata)
-{}
+{
+	guint timer = g_timeout_add(elapseInMs, (GSourceFunc)cb, (gpointer)userdata);
+
+	return timer;
+}
 
 void xsStopTimer(xsU32 id)
-{}
+{
+	g_source_remove(id);
+}
 
 void xsQuit(void)
 {}

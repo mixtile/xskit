@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #include <xs/pal.h>
 
@@ -26,6 +27,27 @@ static gboolean on_expose(GtkWidget *widget, GdkEventExpose *event,
 static gboolean on_key_press(GtkWidget *widget, GdkEventKey *event,
 		gpointer data)
 {
+	printf("%d  %d %d %d\n", event ->keyval, event ->type, event ->hardware_keycode,event ->state);
+
+	xsSysEvent evt = {0};
+	evt.type = XS_EVT_KEY_DOWN;
+	switch(event ->keyval)
+	{
+	case GDK_KEY_Left:
+		evt.data.key.keyCode = XS_PAD_KEY_LEFT_ARROW;
+		break;
+	case GDK_KEY_Up:
+		evt.data.key.keyCode = XS_PAD_KEY_UP_ARROW;
+		break;
+	case GDK_KEY_Right:
+		evt.data.key.keyCode = XS_PAD_KEY_RIGHT_ARROW;
+		break;
+	case GDK_KEY_Down:
+		evt.data.key.keyCode = XS_PAD_KEY_DOWN_ARROW;
+		break;
+
+	}
+	xsSysEventHandler(&evt);
 	return TRUE;
 }
 
