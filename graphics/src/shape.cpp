@@ -15,7 +15,7 @@ void xsLine::paint(xsGraphics *gc)
 	int loop;
 	float offset = -width / 2;
 
-	if (x2 - x1 > y2 - y1)
+	if (x2 - x1 > y2 - y1 || y1 == y2)
 	{
 		for (loop = 0; loop < width; loop++)
 		{
@@ -47,7 +47,7 @@ void xsRectangle::stroke(xsGraphics *gc)
 {
 	int i = 0;
 
-	for(i = 0; i < lineWidth; i++);
+	for(i = 0; i < lineWidth; i++)
 	{
 		xsDrawRectangle(gc, x - i, y - i, width + 2*i, height + 2*i, strokeColor);
 	}
@@ -77,7 +77,7 @@ void xsArc::stroke(xsGraphics *gc)
 
 	if(XS_FALSE == anticlockwise)
 	{
-		for(i = 0; i < lineWidth; i++);
+		for(i = 0; i < lineWidth; i++)
 		{
 			xsDrawArc(gc, x, y, radius + i, startAngle, endAngle, strokeColor);
 			xsDrawArc(gc, x, y, radius + i, endAngle , 360.0, strokeColor);
@@ -86,7 +86,7 @@ void xsArc::stroke(xsGraphics *gc)
 	}
 	else
 	{
-		for(i = 0; i < lineWidth; i++);
+		for(i = 0; i < lineWidth; i++)
 		{
 			xsDrawArc(gc, x, y, radius + i, endAngle , 360.0, strokeColor);
 			xsDrawArc(gc, x, y, radius + i, 0, startAngle, strokeColor);
@@ -117,14 +117,14 @@ void xsBezierCurve::stroke(xsGraphics *gc)
 
 	if(XS_FALSE == isCubic)
 	{
-		for(i = 0; i < lineWidth; i++);
+		for(i = 0; i < lineWidth; i++)
 		{
 			xsDrawQuadraticBezierCurve(gc, x1, y1, x2, y2, x3, y3, strokeColor);
 		}
 	}
 	else
 	{
-		for(i = 0; i < lineWidth; i++);
+		for(i = 0; i < lineWidth; i++)
 		{
 			xsDrawCubicBezierCurve(gc, x1, y1, x2, y2, x3, y3, strokeColor);
 		}

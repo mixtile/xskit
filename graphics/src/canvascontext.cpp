@@ -431,29 +431,29 @@ void xsCanvasContext::fillRect(float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsFillRectangle(gc, x, y, width, height, fillColor);
-	xsFlushScreen(x - 1, y - 1, x + width + 1, y + height + 1);
+	xsFlushScreen(x - 1, y - 1, x + width + 2, y + height + 2);
 }
 
 void xsCanvasContext::strokeRect(float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
-	int i = 0;
+	int i;
 	lineWidth = lineWidth > 1.0 ? lineWidth : 1.0;
 //另一种实现线宽为lineWidth矩形方法
 //	xsFillRectangle(gc, x - lineWidth + 1, y - lineWidth + 1, width + 2 * (lineWidth - 1), height + 2 * (lineWidth - 1), strokeColor);
 //	xsFillRectangle(gc, x, y, width, height, XS_COLOR_WHITE);
-	for(i = 0; i < lineWidth; i++);
+	for(i = 0; i < lineWidth; i++)
 	{
 		xsDrawRectangle(gc, x - i, y - i, width + 2*i, height + 2*i, strokeColor);
 	}
-	xsFlushScreen(x - lineWidth - 1, y - lineWidth - 1, x + width + lineWidth + 1, y + height + lineWidth + 1);
+	xsFlushScreen(x - lineWidth - 1, y - lineWidth - 1, x + width + 2*lineWidth + 2, y + height + 2*lineWidth + 2);
 }
 
 void xsCanvasContext::clearRect(float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
-	xsFillRectangle(gc, x, y, width, height, XS_COLOR_WHITE);
-	xsFlushScreen(x, y, x + width, y + height);
+	xsFillRectangle(gc, x - 1, y - 1, width + 2, height + 2, XS_COLOR_WHITE);
+	xsFlushScreen(x - 1, y - 1, x + width + 2, y + height + 2);
 }
 void xsCanvasContext::arc(float x, float y, float radius, float startAngle, float endAngle, xsBool anticlockwise)
 {
