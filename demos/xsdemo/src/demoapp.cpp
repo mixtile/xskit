@@ -16,12 +16,13 @@ DemoApp::~DemoApp(void)
 
 int DemoApp::start()
 {
-	xsColor color = {255,255,255,0};
+	xsColor color = {255,255,255,255};
 	xsGetScreenDimension(&width, &height);
 	xsFillRectangle(xsGetSystemGc(), 0, 0, width, height, color);//, xsArgbToColor(0xFFFFFFFF));
-	xsColor color1 = {255,255,0,0};
-	xsColor color2 = {255,0,255,0};
-	xsDrawBorderText(xsGetSystemGc(), "d d d d d d", 150, 150, 3, color1, color2, false);
+	printf("width = %d, height = %d\n", width, height);
+//	xsColor color1 = {255,255,0,0};
+//	xsColor color2 = {255,0,255,0};
+//	xsDrawBorderText(xsGetSystemGc(), "d d d d d d", 150, 150, 3, color1, color2, false);
 
 	//xsGcTranslate(xsGetSystemGc(), 50, 50);
 	xsFlushScreen(0, 0, width - 1, height - 1);
@@ -81,6 +82,8 @@ int DemoApp::processEvent(xsEvent *e)
 		case XS_EVT_KEY_DOWN:
 			if (e->sys->data.key.keyCode == XS_PAD_KEY_CSK)
 				xsStopTimer(timer);
+			if(e ->sys ->data.key.keyCode == XS_PAD_KEY_LEFT_ARROW  || e ->sys ->data.key.keyCode == XS_PAD_KEY_UP_ARROW || e ->sys ->data.key.keyCode == XS_PAD_KEY_RIGHT_ARROW || e ->sys ->data.key.keyCode == XS_PAD_KEY_DOWN_ARROW)
+				xsArrowKeysHandler(e);
 			break;
 
 		case XS_EVT_KEY_UP:
