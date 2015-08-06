@@ -10,6 +10,7 @@
 
 #include "duktape.h"
 
-extern int duktape_test(void);
+extern void duktape_test(void);
+extern void xsArrowKeysHandler(xsEvent *e);
 
 #endif /* CANVASINTERFACE_H_ */

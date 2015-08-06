@@ -10,7 +10,18 @@
 #include <string.h>
 #include "duktape.h"
 #include "xs/canvas.h"
+#include "xs/pal.h"
 #include <iostream>
+
+typedef struct _xsJSEvent
+{
+	xsU16 keyCode;
+	xsU32 which;
+}xsJSEvent;
+
+duk_context *g_ctx = NULL;
+char keyProcessingFunc[128] = {0};
+xsJSEvent event = {};
 
 /*将大写字母转换成小写字母*/
 int tolower(int c)
@@ -51,6 +62,69 @@ int htoi(char s[])
     }
     return n;
 }
+
+
+
+static 	duk_ret_t native_addEventListener(duk_context *ctx)
+{
+	const char *keyType = duk_require_string(ctx,0);
+	void *listener = duk_require_heapptr(ctx,1);
+	xsBool useCapture = duk_require_boolean(ctx,2);
+
+	duk_push_heapptr(ctx, listener);
+	duk_get_prop_string(ctx, -1, "name");
+	const char* listenerName = duk_to_string(ctx, -1);
+	duk_pop(ctx);
+
+	if(strcmp(keyType, "keydown") == 0)
+	{
+		strcpy(keyProcessingFunc, listenerName);
+	}
+
+
+	return 1;
+}
+
+static xsS32 native_timer_func( void *data)
+{
+	if(!data)
+	{
+		return false;
+	}
+	const char *funcName = (const char *)data;
+    duk_push_global_object(g_ctx);
+    duk_get_prop_string(g_ctx, -1, funcName);
+    if (duk_pcall(g_ctx, 0) != 0) {
+        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
+    }
+    duk_pop(g_ctx);
+
+	return true;
+}
+
+static 	duk_ret_t native_setInterval(duk_context *ctx)
+{
+	const char *method = duk_require_string(ctx,0);
+	xsU32 millisec = (xsU32)duk_require_number(ctx,1);
+	char *jsMethod = (char *)xsCalloc(128);//函数名长度大于128会有问题
+	const char * endPos = strchr(method, '(');
+	strncpy(jsMethod, method, endPos - method);
+	xsU32 timerID = xsStartTimer(millisec, native_timer_func, (void *)jsMethod);
+	duk_push_number(ctx, timerID);
+	printf("setInterval!\n");
+
+	return 1;
+}
+
+static 	duk_ret_t native_clearInterval(duk_context *ctx)
+{
+	xsU32 timerID = (xsU32)duk_require_number(ctx,0);
+	xsStopTimer(timerID);
+	printf("clearInterval!\n");
+
+	return 1;
+}
+
 
 static duk_ret_t native_canvas_dtor(duk_context *ctx)
 {
@@ -509,41 +583,85 @@ static duk_ret_t native_canvas_ctor(duk_context *ctx)
     return 1;
 }
 
-void duktape_test(void) {
-    duk_context *ctx = NULL;
+static void destroyHeap()
+{
+	duk_destroy_heap(g_ctx);
+	exit(0);
+}
 
-    ctx = duk_create_heap_default();
-    if (!ctx) {
+void duktape_test(void) {
+	g_ctx = duk_create_heap_default();
+    if (!g_ctx) {
         printf("Failed to create a Duktape heap.\n");
         exit(1);
     }
 
-    duk_push_global_object(ctx);
-    duk_push_c_function(ctx, native_canvas_ctor, 0);
-    duk_put_prop_string(ctx, -2, "Canvas");
+    duk_push_global_object(g_ctx);
+    duk_push_c_function(g_ctx, native_canvas_ctor, 0);
+    duk_put_prop_string(g_ctx, -2, "Canvas");
+    duk_push_object(g_ctx);
+    duk_push_c_function(g_ctx, native_addEventListener, 3);
+    duk_put_prop_string(g_ctx, -2, "addEventListener");
+    duk_put_prop_string(g_ctx, -2, "document");
+    duk_push_object(g_ctx);
+    duk_push_number(g_ctx, event.keyCode);
+    duk_put_prop_string(g_ctx, -2, "keyCode");
+    duk_put_prop_string(g_ctx, -2, "event");
+    duk_push_c_function(g_ctx, native_setInterval, 2);
+    duk_put_prop_string(g_ctx, -2, "setInterval");
+    duk_push_c_function(g_ctx, native_clearInterval, 1);
+    duk_put_prop_string(g_ctx, -2, "clearInterval");
 
 
-    if (duk_peval_file(ctx, "/home/lewis/git/xs-new/prime.js") != 0) {
-        printf("Error: %s\n", duk_safe_to_string(ctx, -1));
-        goto finished;
+    if (duk_peval_file(g_ctx, "/home/lewis/git/xs-new/prime.js") != 0) {
+        printf("Error: %s\n", duk_safe_to_string(g_ctx, -1));
+        destroyHeap();
     }
-    duk_pop(ctx);  /* ignore result */
+    duk_pop(g_ctx);  /* ignore result */
 
-//    duk_get_prop_string(ctx, -1, "primeTest");
-//    if (duk_pcall(ctx, 0) != 0) {
-//        printf("Error1: %s\n", duk_safe_to_string(ctx, -1));
+//    duk_get_prop_string(g_ctx, -1, "primeTest");
+//    if (duk_pcall(g_ctx, 0) != 0) {
+//        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
 //    }
-//    duk_pop(ctx);  /* ignore result */
+//    duk_pop(g_ctx);  /* ignore result */
 
-    duk_get_prop_string(ctx, -1, "init");
-    if (duk_pcall(ctx, 0) != 0) {
-        printf("Error1: %s\n", duk_safe_to_string(ctx, -1));
+    duk_get_prop_string(g_ctx, -1, "init");
+    if (duk_pcall(g_ctx, 0) != 0) {
+        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
     }
-    duk_pop(ctx);  /* ignore result */
+    duk_pop(g_ctx);  /* ignore result */
 
- finished:
-    duk_destroy_heap(ctx);
-
-    //exit(0);
 }
 
+void xsArrowKeysHandler(xsEvent *e)
+{
+	switch(e ->sys ->data.key.keyCode)
+	{
+	case XS_PAD_KEY_LEFT_ARROW:
+		event.keyCode = 37;
+		break;
+	case XS_PAD_KEY_UP_ARROW:
+		event.keyCode = 38;
+		break;
+	case XS_PAD_KEY_RIGHT_ARROW:
+		event.keyCode = 39;
+		break;
+	case XS_PAD_KEY_DOWN_ARROW:
+		event.keyCode = 40;
+		break;
+	}
+	printf("000\n");
+
+    duk_push_global_object(g_ctx);
+    duk_get_prop_string(g_ctx, -1, keyProcessingFunc);
+    duk_get_prop_string(g_ctx, -2, "event");
+	duk_push_number(g_ctx, event.keyCode);
+	duk_put_prop_string(g_ctx, -2, "keyCode");
+    if (duk_pcall(g_ctx, 1) != 0) {
+        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
+    }
+    duk_pop(g_ctx);
+
+    printf("1111\n");
+
+}
