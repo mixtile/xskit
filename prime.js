@@ -61,38 +61,50 @@ var shap7=[[0,0,1,0,2,0,3,0],[0,0,0,1,0,2,0,3],[0,0,1,0,2,0,3,0],[0,0,0,1,0,2,0,
 var shaps=[shap1,shap2,shap3,shap4,shap5,shap6,shap7];
 
 //单位长度
-var unitLen=10;
+var unitLen;
+//canvas对象
+var canvas
 //画布上下文
 var ctx;
 //定时
 var tid;
+//游戏是否结束
+var isGameOver = false;
+//判断是否首次按下加速键
+var isFirstDowm = true;
+//方块最大层数；
+var maxHeight;
 //画布区域对应的数组
-var resultArray=new Array(40);
+var resultArray;
 function init()
 {
-    var canvas = new Canvas();
+    canvas = new Canvas();
+    unitLen = parseInt(canvas.width/10);
+    maxHeight = parseInt(canvas.height/unitLen);
+    resultArray=new Array(maxHeight);
 //获取画布上下文
 ctx=canvas.getContext('2d');
 //增加按键事件
 document.addEventListener('keydown',moveShape,false);
 
 //初始化画布区域数组
-for(var i=0;i<40;i++)
+for(var i=0;i<maxHeight;i++)
 {
 	var row=new Array();
-	for(var j=0;j<20;j++)
+	for(var j=0;j<10;j++)
 	{
 	    row[j]=0;
 	}
 	resultArray[i]=row;
 }
-//
+
 startRun=true;
-DrawLine();
+//DrawLine();
 topTrue=true;
+ctx.font = "20px sans-serif";
+ctx.fillText(vpoint.toString(),5,10,10);
 tid=setInterval("DrawTetris();",300);
 
-DrawTetris();
 }
 
 //每个形状在画布上相对于初始位置的坐标偏移量
@@ -122,7 +134,7 @@ var i=0;
 var tempY=0;
 shapeXY=new Array(4);
 for(i=0;i<4;i++){
-	DrawRect((t[i*2]+rectX) *unitLen,(t[i*2+1]+rectY)*unitLen);
+	DrawRect((t[i*2]+rectX)*unitLen,(t[i*2+1]+rectY)*unitLen);
 	var row=new Array(2);
 	row[0]=(t[i*2+1]+rectY);
 	row[1]=t[i*2]+rectX;
@@ -177,10 +189,17 @@ switch(keyCode){
 }
 //根据按键确定执行的操作
 function moveShape(event){
+if(isGameOver)
+{
+	if(getDirection(event)=='right')
+		restart();
+
+	return;
+}
 if(getDirection(event)=='right')
 {
 	for(var i=0;i<4;i++){
-	    if(t[2*i]+rectX+1>=20 || resultArray[2*i+rectX+1]==1 ){
+	    if(t[2*i]+rectX+1>=10 || resultArray[t[i*2+1]+rectY][t[i*2]+rectX+1] == 1){
 	        return;
 	    }
 	}
@@ -190,7 +209,7 @@ if(getDirection(event)=='left')
 {
 	for(var i=0;i<4;i++)
 	{
-	    if(t[2*i]+rectX-1<0 || resultArray[2*i+rectX-1]==1){
+	    if(t[2*i]+rectX-1<0 || resultArray[t[i*2+1]+rectY][t[i*2]+rectX-1] == 1){
 	        return;
 	    }
 	}
@@ -198,43 +217,60 @@ if(getDirection(event)=='left')
 
 }
 if(getDirection(event)=='up'){
-	var mleft=0;
-	for(var i=0;i<4;i++){
-	    if(t[i*2]+rectX>mleft){
-	        mleft=rectX;
-	    }
-	}
+	var oldRotate = rotate;
 	if(rotate==3){
 	    rotate=0;
 	}
 	else{
 	    rotate+=1;
 	}
+	print("rectX1:"+rectX);
 	t=shape[rotate];
+	var delta = 0;
 	for(var i=0;i<4;i++){
-
-	    //t[2*i]=t[2*i]+mleft;
-	    rectX=mleft;
+		if(t[i*2]+rectX+1>10){
+			rectX-=1;
+			delta++;
+		}
 	}
+		print("rectX2:"+rectX+" delta:" +delta);
+	for(var i=0;i<4;i++){
+		if(t[i*2+1]+rectY+1>maxHeight || resultArray[t[i*2+1]+rectY][t[i*2]+rectX] == 1){
+	       rotate = oldRotate;
+	       t=shape[rotate];
+	       rectX = rectX + delta;
+	       	print("rectX3:"+rectX);
+	       return;
+	    }
+	}
+	
+
 
 }
 
 if(getDirection(event)=='down'){
-	clearInterval(tid);
-	tid=setInterval("DrawTetris();",100);
+	if(isFirstDowm)
+	{
+		isFirstDowm = false
+		clearInterval(tid);
+		tid=setInterval("DrawTetris();",100);
+	}
 }
 }
 //定时执行的方法
 function DrawTetris(){
-if(CheckBottom()==true) return;
+if(CheckBottom()==true) {
+	isFirstDowm = true;
+	return;
+}
 if(startRun==false){
-	ctx.clearRect(shapeXY[0][1]*unitLen-1,shapeXY[0][0]*unitLen-1,unitLen+2,unitLen+2);
-	ctx.clearRect(shapeXY[1][1]*unitLen-1,shapeXY[1][0]*unitLen-1,unitLen+2,unitLen+2);
-	ctx.clearRect(shapeXY[2][1]*unitLen-1,shapeXY[2][0]*unitLen-1,unitLen+2,unitLen+2);
-	ctx.clearRect(shapeXY[3][1]*unitLen-1,shapeXY[3][0]*unitLen-1,unitLen+2,unitLen+2);
+	ctx.clearRect(shapeXY[0][1]*unitLen+1,shapeXY[0][0]*unitLen+1,unitLen-2,unitLen-2);
+	ctx.clearRect(shapeXY[1][1]*unitLen+1,shapeXY[1][0]*unitLen+1,unitLen-2,unitLen-2);
+	ctx.clearRect(shapeXY[2][1]*unitLen+1,shapeXY[2][0]*unitLen+1,unitLen-2,unitLen-2);
+	ctx.clearRect(shapeXY[3][1]*unitLen+1,shapeXY[3][0]*unitLen+1,unitLen-2,unitLen-2);
 }
 startRun=false;
-DrawLine();
+//DrawLine();
 var sp=randmShape;
 shape=shaps[sp-1];
 t=shape[rotate];
@@ -249,14 +285,14 @@ function CheckBottom()
 if(topTrue==true){
 	startRun=true;
 	topTrue=false;
-	rectX=9;
+	rectX=4;
 	rectY=0;
 	randmShape=Math.floor(Math.random()*7+1);
 
 	return true;
 }
 
-if(rectY+shapeHeight-1>=40 || rectY==0)
+if(rectY+shapeHeight-1>=maxHeight || rectY==0)
 {
 
 	if(rectY==0)
@@ -270,7 +306,7 @@ if(rectY+shapeHeight-1>=40 || rectY==0)
 else
 {
 	//形状中的四个方块有一个到了底部，就不能再向下移动
-	if(shapeXY[0][0]==39 || shapeXY[1][0]==39 || shapeXY[2][0]==39 || shapeXY[3][0]==39)
+	if(shapeXY[0][0]==maxHeight -1 || shapeXY[1][0]==maxHeight -1 || shapeXY[2][0]==maxHeight -1 || shapeXY[3][0]==maxHeight -1)
 	{
 	    CurrentShapeOnBottom();
 	    return true;
@@ -300,7 +336,7 @@ if(ClearRow()==false){
 	return;
 }
 rectY=0;
-rectX=9;
+rectX=4;
 randmShape=Math.floor(Math.random()*7+1)
 startRun=true;
 topTrue=true;
@@ -314,7 +350,7 @@ function ClearRow(){
 var row=new Array();
 var spaceRow=new Array();
 var spaceRows=new Array();
-for(var i=0;i<20;i++){
+for(var i=0;i<10;i++){
 	spaceRow[i]=0;
 }
 row[0]=shapeXY[0][0];
@@ -338,13 +374,13 @@ var isNeedRedraw=false;
 for(var i=0;i<row.length;i++){
 
 	var rowState=0;
-	for(var j=0;j<20;j++){
+	for(var j=0;j<10;j++){
 	    rowState+=resultArray[row[i]][j];
 	}
 
 
 
-	if(rowState==20){
+	if(rowState==10){
 	    resultArray.splice(row[i],1);
 	    resultArray.unshift(spaceRow);
 	    vpoint+=10;
@@ -354,15 +390,19 @@ for(var i=0;i<row.length;i++){
 }
 
 if(isNeedRedraw==true){
-	ctx.clearRect(0,0,200,400);
+	ctx.clearRect(0,0,canvas.width,canvas.height);
 	RedrawCanvas();
-
+	ctx.fillText(vpoint.toString(),5,10,10);
 }
 else
 {
-	if(shapeXY[0][0]==0 || shapeXY[1][0]==0 || shapeXY[2][0]==0 || shapeXY[3][0]==0){
+	if(rectY == 1){
 	    //document.getElementById("idState").innerText="Game Over";
+	    isGameOver = true;
 	    clearInterval(tid);
+	    ctx.font = "20px sans-serif";
+	    ctx.strokeStyle = "#000000";
+	    ctx.strokeText("GAME OVER",ctx.width/2-50,ctx.height/2,50);
 	    return false;
 	}
 }
@@ -372,36 +412,68 @@ return true;
 //清除满格行后，重新绘制画布
 function RedrawCanvas()
 {
-for(var i=0;i<40;i++){
-	for(var j=0;j<20;j++){
+for(var i=0;i<maxHeight;i++){
+	for(var j=0;j<10;j++){
 	    if(resultArray[i][j]==1){
 	        DrawRect(j*unitLen,i*unitLen);
 	    }
 	}
 }
 }
+
+//重新开始游戏
+function restart()
+{
+	isGameOver = false;
+	isFirstDowm = true;
+	for(var i=0;i<maxHeight;i++)
+	{
+		var row=new Array();
+		for(var j=0;j<10;j++)
+		{
+	   		row[j]=0;
+		}
+		resultArray[i]=row;
+	}
+	
+	startRun=true;
+	topTrue=true;
+	vpoint = 0;
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+	ctx.font = "20px sans-serif";
+	ctx.fillStyle="#000000";
+	ctx.fillText(vpoint.toString(),5,10,10);
+	tid=setInterval("DrawTetris();",300);
+
+}
+
+
 //绘制形状中的小方格
 function DrawRect(x,y){
 ctx.fillStyle="#FF0000";
 ctx.strokeStyle="#000000";
 ctx.lineWidth=1.0;
-ctx.fillRect(x,y,10,10);
-ctx.strokeRect(x,y,10,10);
+ctx.fillRect(x+1,y+1,unitLen-2,unitLen-2);
+//ctx.strokeRect(x,y,unitLen,unitLen);
 }
 
 
 function DrawLine()
 {
-/*
 var i=1;
 for(i=1;i<40;i++)
 {
 	ctx.beginPath();
-	ctx.strokeStyle="black";
+	ctx.strokeStyle="#000000";
 	ctx.lineWidth=1;
-	ctx.moveTo(0,i*10);
-	ctx.lineTo(200,i*10);
+	ctx.moveTo(0,i*unitLen);
+	ctx.lineTo(canvas.width,i*unitLen);
+	ctx.stroke();
+	ctx.beginPath();
+	ctx.strokeStyle="#000000";
+	ctx.lineWidth=1;
+	ctx.moveTo(i*unitLen,0);
+	ctx.lineTo(i*unitLen,canvas.height);
 	ctx.stroke();
 }
-*/
 }

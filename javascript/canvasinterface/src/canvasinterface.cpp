@@ -63,7 +63,41 @@ int htoi(char s[])
     return n;
 }
 
+void parseFontString(std::string &fontString, xsFontType &font)
+{
+    int spacePos = fontString.find(" ", 0);
+    std::string font1 = fontString.substr(0, spacePos).c_str();
+    int pxPos = font1.find("px", 0);
+    if(pxPos)
+    {
+    	const char *px = font1.substr(0, pxPos).c_str();
+    	int size = atoi(px);
+    	font.size = size;
+    }
+}
 
+static duk_ret_t native_canvas_dtor(duk_context *ctx)
+{
+    duk_get_prop_string(ctx, 0, "nativeCanvasDelete");
+
+    bool deleted = duk_to_boolean(ctx, -1);
+    duk_pop(ctx);
+
+    if (!deleted) {
+        duk_get_prop_string(ctx, 0, "nativeCanvasData");
+        delete static_cast<xsCanvas *>(duk_to_pointer(ctx, -1));
+        duk_pop(ctx);
+    	duk_get_prop_string(ctx, 0, "getContext");
+    	duk_get_prop_string(ctx, -1, "nativeContextData");
+        delete static_cast<xsCanvasContext *>(duk_to_pointer(ctx, -1));
+        duk_pop(ctx);
+        // Mark as deleted
+        duk_push_boolean(ctx, true);
+        duk_put_prop_string(ctx, 0, "nativeCanvasDelete");
+    }
+
+    return 0;
+}
 
 static 	duk_ret_t native_addEventListener(duk_context *ctx)
 {
@@ -111,7 +145,6 @@ static 	duk_ret_t native_setInterval(duk_context *ctx)
 	strncpy(jsMethod, method, endPos - method);
 	xsU32 timerID = xsStartTimer(millisec, native_timer_func, (void *)jsMethod);
 	duk_push_number(ctx, timerID);
-	printf("setInterval!\n");
 
 	return 1;
 }
@@ -120,30 +153,8 @@ static 	duk_ret_t native_clearInterval(duk_context *ctx)
 {
 	xsU32 timerID = (xsU32)duk_require_number(ctx,0);
 	xsStopTimer(timerID);
-	printf("clearInterval!\n");
 
 	return 1;
-}
-
-
-static duk_ret_t native_canvas_dtor(duk_context *ctx)
-{
-    duk_get_prop_string(ctx, 0, "nativeCanvasDelete");
-
-    bool deleted = duk_to_boolean(ctx, -1);
-    duk_pop(ctx);
-
-    if (!deleted) {
-        duk_get_prop_string(ctx, 0, "nativeCanvasData");
-        delete static_cast<xsCanvas *>(duk_to_pointer(ctx, -1));
-        duk_pop(ctx);
-
-        // Mark as deleted
-        duk_push_boolean(ctx, true);
-        duk_put_prop_string(ctx, 0, "nativeCanvasDelete");
-    }
-
-    return 0;
 }
 
 static duk_ret_t updrate_param(duk_context *ctx)
@@ -169,10 +180,11 @@ static duk_ret_t updrate_param(duk_context *ctx)
     context ->fillColor.red = htoi(const_cast<char *>(fillTmp.substr(1, 2).c_str()));
     context ->fillColor.green = htoi(const_cast<char *>(fillTmp.substr(3, 2).c_str()));
     context ->fillColor.blue = htoi(const_cast<char *>(fillTmp.substr(5, 2).c_str()));
-//    printf("fillColor = %s\n", fillStyle);
-//    printf("green = %s\n", const_cast<char *>(fillTmp.substr(3, 2).c_str()));
-//	printf("red = %d, green = %d, blue = %d\n", context ->fillColor.red, context ->fillColor.green, context ->fillColor.blue);
     duk_pop(ctx);
+    duk_get_prop_string(ctx, -1, "font");
+    const char *font = duk_to_string(ctx, -1);
+    std::string fontTmp = font;
+    parseFontString(fontTmp, context ->font);
 
     return 1;
 }
@@ -497,13 +509,17 @@ static duk_ret_t native_canvasContext_restore(duk_context *ctx)
     duk_push_this(ctx);
 	duk_push_number(ctx, context ->lineWidth);
 	duk_put_prop_string(ctx, -2, "lineWidth");
-	char colorNum[10] = {0};
+	char colorNum[8] = {0};
 	snprintf(colorNum, 8, "#%02x%02x%02x", context ->strokeColor.red, context ->strokeColor.green, context ->strokeColor.blue);
 	duk_push_string(ctx, colorNum);
 	duk_put_prop_string(ctx, -2, "strokeStyle");
 	snprintf(colorNum, 8, "#%02x%02x%02x", context ->fillColor.red, context ->fillColor.green, context ->fillColor.blue);
-	duk_push_string(ctx, "#000000");
+	duk_push_string(ctx, colorNum);
 	duk_put_prop_string(ctx, -2, "fillStyle");
+	char fontString[128] ={0};
+	snprintf(fontString, 128, "%dpx %s", context ->font.size, context ->font.style);
+	duk_push_string(ctx, fontString);
+	duk_put_prop_string(ctx, -2, "font");
 
     return 1;
 }
@@ -556,6 +572,8 @@ static duk_ret_t native_canvas_getContext(duk_context *ctx)
 	duk_put_prop_string(ctx, -2, "strokeStyle");
 	duk_push_string(ctx, "#000000");
 	duk_put_prop_string(ctx, -2, "fillStyle");
+	duk_push_string(ctx, "10px sans-serif");
+	duk_put_prop_string(ctx, -2, "font");
 
 // duk_push_c_function(ctx, native_canvasContext_strokeRect, 4);
 //	duk_put_prop_string(ctx, -2, "strokeRect");
@@ -568,10 +586,11 @@ static duk_ret_t native_canvas_ctor(duk_context *ctx)
 {
 	xsCanvas *canvas = static_cast<xsCanvas *>(xsCanvas::createInstance());
 	duk_push_this(ctx);
+    duk_push_int(ctx, canvas ->getWidth());
+    duk_put_prop_string(ctx, -2, "width");
+    duk_push_int(ctx, canvas ->getHeight());
+    duk_put_prop_string(ctx, -2, "height");
     duk_push_c_function(ctx, native_canvas_getContext, 1);
-//    duk_push_object(ctx);
-//    duk_put_function_list(ctx, -1, contextmethods);
-//    duk_put_prop_string(ctx, -2, "prototype");
 	duk_put_prop_string(ctx, -2, "getContext");
 	duk_push_pointer(ctx, canvas);
 	duk_put_prop_string(ctx, -2, "nativeCanvasData");
@@ -650,7 +669,6 @@ void xsArrowKeysHandler(xsEvent *e)
 		event.keyCode = 40;
 		break;
 	}
-	printf("000\n");
 
     duk_push_global_object(g_ctx);
     duk_get_prop_string(g_ctx, -1, keyProcessingFunc);
@@ -661,7 +679,5 @@ void xsArrowKeysHandler(xsEvent *e)
         printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
     }
     duk_pop(g_ctx);
-
-    printf("1111\n");
 
 }
