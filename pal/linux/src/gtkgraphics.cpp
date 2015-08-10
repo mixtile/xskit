@@ -304,7 +304,6 @@ void xsDrawText(xsGraphics *gc, const xsTChar *text, float x, float y)
 
 void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, float x, float y, float width, xsColor tc, xsColor bc, xsBool is_bordered)
 {
-	cairo_set_font_size(XS_CAIRO(gc),20);
 	cairo_move_to(XS_CAIRO(gc), x, y);
 	cairo_text_path (XS_CAIRO(gc), text);
 	xsSetColor(gc, tc);

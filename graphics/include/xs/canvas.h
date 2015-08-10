@@ -17,9 +17,13 @@ public:
 
 	void getPreferredSize(int proposedWidth, xsMetrics *m);
 	void paint(xsGraphics *gc);
+	int getWidth(void);
+	int getHeight(void);
 
 private:
 	xsCanvasContext *context;
+	int width;
+	int height;
 };
 
 #endif /* _XS_CANVAS_H_ */

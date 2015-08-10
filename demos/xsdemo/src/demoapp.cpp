@@ -19,7 +19,6 @@ int DemoApp::start()
 	xsColor color = {255,255,255,255};
 	xsGetScreenDimension(&width, &height);
 	xsFillRectangle(xsGetSystemGc(), 0, 0, width, height, color);//, xsArgbToColor(0xFFFFFFFF));
-	printf("width = %d, height = %d\n", width, height);
 //	xsColor color1 = {255,255,0,0};
 //	xsColor color2 = {255,0,255,0};
 //	xsDrawBorderText(xsGetSystemGc(), "d d d d d d", 150, 150, 3, color1, color2, false);

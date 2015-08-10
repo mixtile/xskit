@@ -8,12 +8,22 @@
 xsCanvas::xsCanvas()
 {
 	setFlag(0);
+	xsGetScreenDimension(&width, &height);
 }
 
 xsCanvas::~xsCanvas()
 {
 	if (context != NULL)
 		context->destroyInstance();
+}
+
+int xsCanvas::getWidth(void)
+{
+	return width;
+}
+int xsCanvas::getHeight(void)
+{
+	return height;
 }
 
 void xsCanvas::getPreferredSize(int proposedWidth, xsMetrics *m)

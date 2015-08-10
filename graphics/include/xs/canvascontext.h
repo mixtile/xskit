@@ -96,8 +96,6 @@ public:
 //	int miterLimit;
 
 protected:
-	xsCanvasContext();
-	virtual ~xsCanvasContext();
 
 	void clear();
 	void createGraphics();
@@ -111,6 +109,9 @@ protected:
 	void drawWithBaseline(const char* text,float x, float y, int maxWidth, int drawFlag);
 
 public:
+
+	xsCanvasContext();
+	virtual ~xsCanvasContext();
 
 	void moveTo(float x, float y);
 	void lineTo(float x, float y);

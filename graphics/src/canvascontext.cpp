@@ -431,7 +431,7 @@ void xsCanvasContext::fillRect(float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsFillRectangle(gc, x, y, width, height, fillColor);
-	xsFlushScreen(x - 1, y - 1, x + width + 2, y + height + 2);
+	xsFlushScreen(x, y, x + width, y + height);
 }
 
 void xsCanvasContext::strokeRect(float x, float y, float width, float height)
@@ -444,16 +444,16 @@ void xsCanvasContext::strokeRect(float x, float y, float width, float height)
 //	xsFillRectangle(gc, x, y, width, height, XS_COLOR_WHITE);
 	for(i = 0; i < lineWidth; i++)
 	{
-		xsDrawRectangle(gc, x - i, y - i, width + 2*i, height + 2*i, strokeColor);
+		xsDrawRectangle(gc, x, y, width, height, strokeColor);
 	}
-	xsFlushScreen(x - lineWidth - 1, y - lineWidth - 1, x + width + 2*lineWidth + 2, y + height + 2*lineWidth + 2);
+	xsFlushScreen(x - lineWidth, y - lineWidth, x + width + 2*lineWidth, y + height + 2*lineWidth);
 }
 
 void xsCanvasContext::clearRect(float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
-	xsFillRectangle(gc, x - 1, y - 1, width + 2, height + 2, XS_COLOR_WHITE);
-	xsFlushScreen(x - 1, y - 1, x + width + 2, y + height + 2);
+	xsFillRectangle(gc, x, y, width, height, XS_COLOR_WHITE);
+	xsFlushScreen(x, y, x + width, y + height);
 }
 void xsCanvasContext::arc(float x, float y, float radius, float startAngle, float endAngle, xsBool anticlockwise)
 {
@@ -640,6 +640,9 @@ void xsCanvasContext::drawWithBaseline(const char* text,float x, float y, int ma
 			break;
 		}
 	}
+	int screenWidth, screenHeight;
+	xsGetScreenDimension(&screenWidth, &screenHeight);
+	xsFlushScreen(0, 0, screenWidth, screenHeight);
 }
 
 void xsCanvasContext::fillText(const char* text,float x, float y, xsU32 maxWidth)
