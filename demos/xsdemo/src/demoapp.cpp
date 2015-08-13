@@ -81,7 +81,9 @@ int DemoApp::processEvent(xsEvent *e)
 		case XS_EVT_KEY_DOWN:
 			if (e->sys->data.key.keyCode == XS_PAD_KEY_CSK)
 				xsStopTimer(timer);
-			if(e ->sys ->data.key.keyCode == XS_PAD_KEY_LEFT_ARROW  || e ->sys ->data.key.keyCode == XS_PAD_KEY_UP_ARROW || e ->sys ->data.key.keyCode == XS_PAD_KEY_RIGHT_ARROW || e ->sys ->data.key.keyCode == XS_PAD_KEY_DOWN_ARROW)
+			if(e ->sys ->data.key.keyCode == XS_PAD_KEY_LEFT_ARROW  || e ->sys ->data.key.keyCode == XS_PAD_KEY_UP_ARROW
+					|| e ->sys ->data.key.keyCode == XS_PAD_KEY_RIGHT_ARROW || e ->sys ->data.key.keyCode == XS_PAD_KEY_DOWN_ARROW
+					|| e->sys ->data.key.keyCode == XS_PAD_KEY_ENTER)
 				xsArrowKeysHandler(e);
 			break;
 

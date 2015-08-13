@@ -668,6 +668,9 @@ void xsArrowKeysHandler(xsEvent *e)
 	case XS_PAD_KEY_DOWN_ARROW:
 		event.keyCode = 40;
 		break;
+	case XS_PAD_KEY_ENTER:
+		event.keyCode = 13;
+		break;
 	}
 
     duk_push_global_object(g_ctx);

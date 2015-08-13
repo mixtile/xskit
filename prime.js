@@ -70,8 +70,12 @@ var ctx;
 var tid;
 //游戏是否结束
 var isGameOver = false;
+//游戏是否暂停
+var isPaused = false;
 //判断是否首次按下加速键
 var isFirstDowm = true;
+//每行最大方块数
+var maxNum = 10;
 //方块最大层数；
 var maxHeight;
 //画布区域对应的数组
@@ -79,7 +83,7 @@ var resultArray;
 function init()
 {
     canvas = new Canvas();
-    unitLen = parseInt(canvas.width/10);
+    unitLen = parseInt(canvas.width/maxNum);
     maxHeight = parseInt(canvas.height/unitLen);
     resultArray=new Array(maxHeight);
 //获取画布上下文
@@ -91,7 +95,7 @@ document.addEventListener('keydown',moveShape,false);
 for(var i=0;i<maxHeight;i++)
 {
 	var row=new Array();
-	for(var j=0;j<10;j++)
+	for(var j=0;j<maxNum;j++)
 	{
 	    row[j]=0;
 	}
@@ -104,7 +108,7 @@ topTrue=true;
 ctx.font = "20px sans-serif";
 ctx.fillText(vpoint.toString(),5,10,10);
 tid=setInterval("DrawTetris();",300);
-
+DrawTetris();
 }
 
 //每个形状在画布上相对于初始位置的坐标偏移量
@@ -120,10 +124,12 @@ var shape;
 
 var startRun=true;
 
-
-var shapeHeight=0;//当前形状的高度，四个方块的Y坐标的最大差
+//var shapeHeight=0;//当前形状的高度，四个方块的Y坐标的最大差
 //用于产生随机形状
-var randmShape=1;
+var randmShape=Math.floor(Math.random()*7+1);
+//下一个形状
+var nextShape = 0;;
+var nextRotate = 0;
 
 //当前形状每个方块的坐标
 var shapeXY=new Array(4);
@@ -132,14 +138,13 @@ var shapeXY=new Array(4);
 function Draw(){
 var i=0;
 var tempY=0;
-shapeXY=new Array(4);
 for(i=0;i<4;i++){
 	DrawRect((t[i*2]+rectX)*unitLen,(t[i*2+1]+rectY)*unitLen);
 	var row=new Array(2);
 	row[0]=(t[i*2+1]+rectY);
 	row[1]=t[i*2]+rectX;
 	shapeXY[i]=row;
-	if(topTrue==true)
+/*	if(topTrue==true)
 	{
 	    if(tempY<(t[i*2+1]+rectY))
 	    {
@@ -147,11 +152,10 @@ for(i=0;i<4;i++){
 	        shapeHeight=tempY+1;
 	    }
 
-	}
-	else
-	{
-	    //tempY=rectY;
-	}
+	}*/
+	
+	var next = shaps[nextShape-1][nextRotate];
+	DrawLittleRect((next[i*2]+maxNum*2-4)*unitLen/2,(next[i*2+1])*unitLen/2);
 }
 rectY+=1;
 
@@ -181,6 +185,9 @@ switch(keyCode){
 	case 272:
 	    return 'right';
 	    break;
+	case 13:
+		return 'enter';
+		break;
 	case 339: //exit
 	case 240: //back
 	    return 'back';
@@ -196,10 +203,14 @@ if(isGameOver)
 
 	return;
 }
+if(getDirection(event) != 'enter' && isPaused == true)
+{
+	return;
+}
 if(getDirection(event)=='right')
 {
 	for(var i=0;i<4;i++){
-	    if(t[2*i]+rectX+1>=10 || resultArray[t[i*2+1]+rectY][t[i*2]+rectX+1] == 1){
+	    if(t[2*i]+rectX+1>=maxNum || ((t[i*2+1]+rectY<maxHeight) && (t[2*i]+rectX+1<maxNum) && (resultArray[t[i*2+1]+rectY][t[i*2]+rectX+1] == 1))){
 	        return;
 	    }
 	}
@@ -224,27 +235,24 @@ if(getDirection(event)=='up'){
 	else{
 	    rotate+=1;
 	}
-	print("rectX1:"+rectX);
+
 	t=shape[rotate];
 	var delta = 0;
 	for(var i=0;i<4;i++){
-		if(t[i*2]+rectX+1>10){
+		if(t[i*2]+rectX+1>maxNum){
 			rectX-=1;
 			delta++;
 		}
 	}
-		print("rectX2:"+rectX+" delta:" +delta);
+
 	for(var i=0;i<4;i++){
 		if(t[i*2+1]+rectY+1>maxHeight || resultArray[t[i*2+1]+rectY][t[i*2]+rectX] == 1){
 	       rotate = oldRotate;
 	       t=shape[rotate];
 	       rectX = rectX + delta;
-	       	print("rectX3:"+rectX);
 	       return;
 	    }
 	}
-	
-
 
 }
 
@@ -254,6 +262,20 @@ if(getDirection(event)=='down'){
 		isFirstDowm = false
 		clearInterval(tid);
 		tid=setInterval("DrawTetris();",100);
+	}
+}
+
+if(getDirection(event)=='enter'){
+	if(isPaused == false)
+	{
+		clearInterval(tid);
+		isPaused = true;
+	}
+	else
+	{
+		tid=setInterval("DrawTetris();",300);
+		isPaused = false;
+		isFirstDowm = true;
 	}
 }
 }
@@ -271,9 +293,6 @@ if(startRun==false){
 }
 startRun=false;
 //DrawLine();
-var sp=randmShape;
-shape=shaps[sp-1];
-t=shape[rotate];
 Draw();
 
 }
@@ -283,25 +302,26 @@ var topTrue=false;
 function CheckBottom()
 {
 if(topTrue==true){
+	shape=shaps[randmShape-1];
+	t=shape[rotate];
 	startRun=true;
 	topTrue=false;
-	rectX=4;
+	rectX=maxNum/2-1;
 	rectY=0;
-	randmShape=Math.floor(Math.random()*7+1);
-
+	nextShape=Math.floor(Math.random()*7+1);
+	nextRotate=Math.floor(Math.random()*4);
+	ctx.clearRect((maxNum*2-4)*unitLen/2,0,4*unitLen/2,4*unitLen/2);
+	for(var i=0; i<4; i++)
+	{
+		var next = shaps[nextShape-1][nextRotate];
+		DrawLittleRect((next[i*2]+maxNum*2-4)*unitLen/2,(next[i*2+1])*unitLen/2);
+	}
 	return true;
 }
 
-if(rectY+shapeHeight-1>=maxHeight || rectY==0)
+if(rectY==0)
 {
-
-	if(rectY==0)
-	{
-	    return false
-	}
-
-	CurrentShapeOnBottom();
-	return true;
+	return false
 }
 else
 {
@@ -335,9 +355,8 @@ resultArray[shapeXY[3][0]][shapeXY[3][1]]=1;
 if(ClearRow()==false){
 	return;
 }
-rectY=0;
-rectX=4;
-randmShape=Math.floor(Math.random()*7+1)
+randmShape = nextShape;
+rotate = nextRotate;
 startRun=true;
 topTrue=true;
 clearInterval(tid);
@@ -347,14 +366,14 @@ tid=setInterval("DrawTetris();",300);
 var vpoint=0;
 //清除满格行,并计分
 function ClearRow(){
-var row=new Array();
+/*var row=new Array();
 var spaceRow=new Array();
-var spaceRows=new Array();
-for(var i=0;i<10;i++){
+for(var i=0;i<maxNum;i++){
 	spaceRow[i]=0;
 }
 row[0]=shapeXY[0][0];
 for(var i=1;i<4;i++){
+	print("length = " + row.length);
 	for(var j=0;j<row.length;j++){
 	    if(row[j]!=shapeXY[i][0]){
 	        if(row[j]<shapeXY[i][0]){
@@ -374,18 +393,47 @@ var isNeedRedraw=false;
 for(var i=0;i<row.length;i++){
 
 	var rowState=0;
-	for(var j=0;j<10;j++){
+	for(var j=0;j<maxNum;j++){
 	    rowState+=resultArray[row[i]][j];
 	}
 
 
 
-	if(rowState==10){
+	if(rowState==maxNum){
 	    resultArray.splice(row[i],1);
 	    resultArray.unshift(spaceRow);
-	    vpoint+=10;
+	    vpoint+=maxNum;
 	    //document.getElementById("txtPoint").value=vpoint;
 	    isNeedRedraw=true;
+	}
+}
+*/
+var isNeedRedraw=false;
+var row = 0;
+
+for(var i=0; i<4; i++)
+{
+	if(shapeXY[i][0] == row)
+		continue;
+	row = shapeXY[i][0];
+	var sum=0;
+	for(var j=0; j<maxNum; j++)
+	{
+		sum = sum + resultArray[row][j];
+	}
+	
+	if(sum == maxNum)
+	{	
+		var spaceRow=new Array(maxNum);
+
+		for(var k=0;k<maxNum;k++){
+			spaceRow[k]=0;
+		}
+		
+		resultArray.splice(row,1);
+		resultArray.unshift(spaceRow);
+		vpoint+=maxNum;
+		isNeedRedraw=true;
 	}
 }
 
@@ -413,7 +461,7 @@ return true;
 function RedrawCanvas()
 {
 for(var i=0;i<maxHeight;i++){
-	for(var j=0;j<10;j++){
+	for(var j=0;j<maxNum;j++){
 	    if(resultArray[i][j]==1){
 	        DrawRect(j*unitLen,i*unitLen);
 	    }
@@ -428,12 +476,10 @@ function restart()
 	isFirstDowm = true;
 	for(var i=0;i<maxHeight;i++)
 	{
-		var row=new Array();
-		for(var j=0;j<10;j++)
+		for(var j=0;j<maxNum;j++)
 		{
-	   		row[j]=0;
+			resultArray[i][j]=0;
 		}
-		resultArray[i]=row;
 	}
 	
 	startRun=true;
@@ -454,6 +500,14 @@ ctx.fillStyle="#FF0000";
 ctx.strokeStyle="#000000";
 ctx.lineWidth=1.0;
 ctx.fillRect(x+1,y+1,unitLen-2,unitLen-2);
+//ctx.strokeRect(x,y,unitLen,unitLen);
+}
+
+function DrawLittleRect(x,y){
+ctx.fillStyle="#FF0000";
+ctx.strokeStyle="#000000";
+ctx.lineWidth=1.0;
+ctx.fillRect(x+1,y+1,unitLen/2-2,unitLen/2-2);
 //ctx.strokeRect(x,y,unitLen,unitLen);
 }
 

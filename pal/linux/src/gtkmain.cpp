@@ -3,8 +3,8 @@
 
 #include <xs/pal.h>
 
-int g_nScreenWidth = 320;
-int g_nScreenHeight = 480;
+int g_nScreenWidth = 400;
+int g_nScreenHeight = 800;
 
 
 static gboolean on_expose(GtkWidget *widget, GdkEventExpose *event,
@@ -27,8 +27,6 @@ static gboolean on_expose(GtkWidget *widget, GdkEventExpose *event,
 static gboolean on_key_press(GtkWidget *widget, GdkEventKey *event,
 		gpointer data)
 {
-	printf("%d  %d %d %d\n", event ->keyval, event ->type, event ->hardware_keycode,event ->state);
-
 	xsSysEvent evt = {0};
 	evt.type = XS_EVT_KEY_DOWN;
 	switch(event ->keyval)
@@ -44,6 +42,12 @@ static gboolean on_key_press(GtkWidget *widget, GdkEventKey *event,
 		break;
 	case GDK_KEY_Down:
 		evt.data.key.keyCode = XS_PAD_KEY_DOWN_ARROW;
+		break;
+	case GDK_KEY_Return:
+		evt.data.key.keyCode = XS_PAD_KEY_ENTER;
+		break;
+	default:
+		evt.data.key.keyCode = XS_PAD_KEY_UNDEFINED;
 		break;
 
 	}
