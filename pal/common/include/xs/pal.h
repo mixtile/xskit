@@ -1095,7 +1095,7 @@ XS_INTERFACE void xsFreeImageObject(xsImage *img);
  * Draw image in specified coordinates.
  * @param
  */
-XS_INTERFACE void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y);
+XS_INTERFACE void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y, float width, float height);
 
 /*@}*/
 

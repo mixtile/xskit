@@ -136,6 +136,36 @@ static xsS32 native_timer_func( void *data)
 	return true;
 }
 
+static xsS32 native_timeOut_func( void *data)
+{
+	if(!data)
+	{
+		return false;
+	}
+	const char *funcName = (const char *)data;
+    duk_push_global_object(g_ctx);
+    duk_get_prop_string(g_ctx, -1, funcName);
+    if (duk_pcall(g_ctx, 0) != 0) {
+        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
+    }
+    duk_pop(g_ctx);
+
+	return false;
+}
+
+static 	duk_ret_t native_setTimeout(duk_context *ctx)
+{
+	const char *method = duk_require_string(ctx,0);
+	xsU32 millisec = (xsU32)duk_require_number(ctx,1);
+	char *jsMethod = (char *)xsCalloc(128);//函数名长度大于128会有问题
+	const char * endPos = strchr(method, '(');
+	strncpy(jsMethod, method, endPos - method);
+	xsU32 timerID = xsStartTimer(millisec, native_timeOut_func, (void *)jsMethod);
+	duk_push_number(ctx, timerID);
+
+	return 1;
+}
+
 static 	duk_ret_t native_setInterval(duk_context *ctx)
 {
 	const char *method = duk_require_string(ctx,0);
@@ -175,6 +205,18 @@ static duk_ret_t updrate_param(duk_context *ctx)
     context ->strokeColor.blue = htoi(const_cast<char *>(strokeTmp.substr(5, 2).c_str()));
     duk_pop(ctx);
     duk_get_prop_string(ctx, -1, "fillStyle");
+    if(duk_is_string(ctx, -1))
+    {
+//    	printf("string\n");
+    }
+    else if(duk_is_object(ctx, -1))
+    {
+    	printf("object\n");
+    }
+    else if(duk_is_pointer(ctx, -1))
+    {
+    	printf("pointer\n");
+    }
     const char *fillStyle = duk_to_string(ctx, -1);
     std::string fillTmp = fillStyle;
     context ->fillColor.red = htoi(const_cast<char *>(fillTmp.substr(1, 2).c_str()));
@@ -602,11 +644,46 @@ static duk_ret_t native_canvas_ctor(duk_context *ctx)
     return 1;
 }
 
+static duk_ret_t native_rgb_creator(duk_context *ctx)
+{
+	xsU8 red = (xsU8)duk_require_uint(ctx,0);
+	xsU8 green = (xsU8)duk_require_uint(ctx,1);
+	xsU8 blue = (xsU8)duk_require_uint(ctx,2);
+
+	xsColor rgb = {255, red, green, blue};
+	duk_push_pointer(ctx, (void *)&rgb);
+
+	return 1;
+}
+
+static duk_ret_t native_rgba_creator(duk_context *ctx)
+{
+	xsU8 red = (xsU8)duk_require_number(ctx,0);
+	xsU8 green = (xsU8)duk_require_number(ctx,1);
+	xsU8 blue = (xsU8)duk_require_number(ctx,2);
+	xsU8 alpha =  (xsU8)(duk_require_number(ctx,3) * 255);
+
+	xsColor rgb = {alpha, red, green, blue};
+	duk_push_pointer(ctx, (void *)&rgb);
+
+	return 1;
+}
+
 static void destroyHeap()
 {
 	duk_destroy_heap(g_ctx);
 	exit(0);
 }
+
+const duk_function_list_entry globalmethods[] = {
+    { "Canvas",   native_canvas_ctor,  0  },
+    { "setTimeout", native_setTimeout, 2},
+    { "setInterval",   native_setInterval,  2  },
+    { "clearInterval",   native_clearInterval,  1  },
+    { "rgb",   native_rgb_creator,  3  },
+    { "rgba",   native_rgba_creator,  4  },
+    { NULL,  NULL,        0   }
+};
 
 void duktape_test(void) {
 	g_ctx = duk_create_heap_default();
@@ -616,8 +693,7 @@ void duktape_test(void) {
     }
 
     duk_push_global_object(g_ctx);
-    duk_push_c_function(g_ctx, native_canvas_ctor, 0);
-    duk_put_prop_string(g_ctx, -2, "Canvas");
+	duk_put_function_list(g_ctx, -1, globalmethods);
     duk_push_object(g_ctx);
     duk_push_c_function(g_ctx, native_addEventListener, 3);
     duk_put_prop_string(g_ctx, -2, "addEventListener");
@@ -626,11 +702,6 @@ void duktape_test(void) {
     duk_push_number(g_ctx, event.keyCode);
     duk_put_prop_string(g_ctx, -2, "keyCode");
     duk_put_prop_string(g_ctx, -2, "event");
-    duk_push_c_function(g_ctx, native_setInterval, 2);
-    duk_put_prop_string(g_ctx, -2, "setInterval");
-    duk_push_c_function(g_ctx, native_clearInterval, 1);
-    duk_put_prop_string(g_ctx, -2, "clearInterval");
-
 
     if (duk_peval_file(g_ctx, "/home/lewis/git/xs-new/prime.js") != 0) {
         printf("Error: %s\n", duk_safe_to_string(g_ctx, -1));

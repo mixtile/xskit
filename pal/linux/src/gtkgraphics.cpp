@@ -374,8 +374,11 @@ static void ImageLoaderSizeCallback(GdkPixbufLoader *loader, int width,
 	if (img == NULL)
 		return;
 
-	((xsImageParam *)img->srcparam)->width = width;
-	((xsImageParam *)img->srcparam)->height = height;
+	if((xsImageParam *)img->srcparam)
+	{
+		((xsImageParam *)img->srcparam)->width = width;
+		((xsImageParam *)img->srcparam)->height = height;
+	}
 }
 
 static void ImageLoaderLoadedCallback(GdkPixbufLoader *lo, gpointer *user_data)
@@ -383,8 +386,10 @@ static void ImageLoaderLoadedCallback(GdkPixbufLoader *lo, gpointer *user_data)
 	xsImage *img = (xsImage *) user_data;
 	if (img == NULL)
 		return;
-
-	((xsImageParam *)img->srcparam)->loaded = XS_TRUE;
+	if((xsImageParam *)img->srcparam)
+	{
+		((xsImageParam *)img->srcparam)->loaded = XS_TRUE;
+	}
 }
 
 static int ImageInstantFromFile(GdkPixbufLoader *loader, GError **err,
@@ -415,6 +420,11 @@ static int ImageInstant(xsImage *img)
 	GError *err = NULL;
 	gboolean loadret;
 	int ret = XS_EC_ERROR;
+
+	if(NULL == img)
+	{
+		return ret;
+	}
 
 	g_signal_connect(G_OBJECT(loader), "size-prepared",
 			G_CALLBACK(ImageLoaderSizeCallback), img);
@@ -455,7 +465,7 @@ static int ImageInstant(xsImage *img)
 	}
 
 	// keep pixbuf
-	img->object = gdk_pixbuf_loader_get_pixbuf(loader);
+	img->object = (void *)gdk_pixbuf_loader_get_pixbuf(loader);
 
 	g_object_unref(G_OBJECT(loader));
 	return ret;
@@ -463,6 +473,11 @@ static int ImageInstant(xsImage *img)
 
 int xsGetImageDimension(xsImage *img, int *width, int *height)
 {
+	if(NULL == img || (NULL != img && NULL == (xsImageParam *)img->srcparam))
+	{
+		return XS_EC_ERROR;
+	}
+
 	if (((xsImageParam *)img->srcparam)->loaded < 0)
 		return XS_EC_ERROR;
 
@@ -489,11 +504,22 @@ void xsFreeImage(xsImage *img)
 	xsFreeNative(img);
 }
 
-void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y)
+void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y, float width, float height)
 {
-	if (img == NULL || ((xsImageParam *)img->srcparam)->loaded != 1 || img->object == NULL)
+	if (img == NULL)
 		return;
 
+	if(img->object == NULL ||img ->srcparam == NULL)
+		return;
+
+	if(((xsImageParam *)img->srcparam)->loaded != 1)
+		return;
+
+	if(0 != width && 0 != height)
+	{
+		img->object = (void *)gdk_pixbuf_scale_simple((GdkPixbuf *)img->object, width, height, GDK_INTERP_BILINEAR);
+	}
+	printf("%p\n", (GdkPixbuf *)img->object);
 	gdk_cairo_set_source_pixbuf(XS_CAIRO(gc),
 			(GdkPixbuf *)img->object, x, y);
 }
