@@ -1,4 +1,16 @@
 waf-*
 .waf-*
+.lock-*
 build
 *.pyc
+*.xcodeproj
+.cproject
+.project
+.settings
+*.vcproj
+*.vcxproj
+*.vcxproj.*
+*.sln
+*.suo
+*/gen/*
+*classid.h
