@@ -959,13 +959,13 @@ XS_INTERFACE void xsFillRectangle(xsGraphics *gc, float x, float y, float width,
  * Draw a circle.
  * @param
  */
-XS_INTERFACE void xsDrawCircle(xsGraphics *gc, int x, int y, int r);
+XS_INTERFACE void xsDrawCircle(xsGraphics *gc, float x, float y, float r);
 
 /**
  * Draw a solid circle.
  * @param
  */
-XS_INTERFACE void xsFillCircle(xsGraphics *gc, int x, int y, int r);
+XS_INTERFACE void xsFillCircle(xsGraphics *gc, float x, float y, float r);
 
 /**
  * Set the font style and size.
@@ -979,13 +979,13 @@ XS_INTERFACE float xsGetFontHeight(xsGraphics *gc, xsFontType *font);
  * Draw text in specified coordinates.
  * @param count Specifies the number of characters you want to draw. \nIf count is -1, function will computes the character count automatically.
  */
-XS_INTERFACE void xsDrawText(xsGraphics *gc, const xsTChar *text, float x, float y);
+XS_INTERFACE void xsDrawText(xsGraphics *gc, const xsTChar *text, int count, float x, float y);
 
 /**
  * Measures the size of the string in the current font.
  * @param
  */
-XS_INTERFACE void xsMeasureText(xsGraphics *gc, const xsTChar *text, float *width, float *height);
+XS_INTERFACE void xsMeasureText(xsGraphics *gc, const xsTChar *text, int count, xsFontType *font, float *width, float *height);
 
 /**
  * Determine the image type.
@@ -997,7 +997,7 @@ XS_INTERFACE int xsGetImageType(xsImage *img);
  * Get image's dimension
  * @param
  */
-XS_INTERFACE int xsGetImageDimension(xsImage *img, int *width, int *height);
+XS_INTERFACE int xsGetImageDimension(xsImage *img, float *width, float *height);
 
 /**
  * Free system awared image object.
