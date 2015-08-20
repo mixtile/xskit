@@ -121,7 +121,7 @@ int DemoApp::onTimeout()
 	if (y < 0 || y + BOX_SIZE > height)
 		rateY = -rateY;
 
-	xsDrawImage(gc, img, x, y);
+	xsDrawImage(gc, img, x, y, 0, 0);
 	
 	xsFlushScreen(0, 0, width - 1, height - 1);
 

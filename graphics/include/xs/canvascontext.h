@@ -31,18 +31,15 @@ typedef enum _xsStyleKind
 	XS_COLOR = 0,
 	XS_PATTERN,
 	XS_GRADIENT,
-}styleKind;
+}xsStyleKind;
 
 typedef struct _xsDrawStyle
 {
-	styleKind kind;
-	union
-	{
-		xsColor styleColor;
-		xsGradientPattern *stylePattern;
-		xsGradientPattern *styleGradient;
-	};
-}drawStyle;
+	xsStyleKind kind;
+	xsColor *styleColor;
+	xsGradientPattern *stylePattern;
+	xsGradientPattern *styleGradient;
+}xsDrawStyle;
 
 typedef struct _xsCanvasAttribute
 {
@@ -134,8 +131,8 @@ public:
 	void transform(float xx, float yx, float xy, float yy, float x0, float y0);
 	bool isPointInPath(float x, float y);
 //	createLinearGradient();
+//	createRadialGradient();
 //	createPattern();
-//	createRadialGradient()
 //	setTransform();
 	void drawImage(xsImage* image, float x, float y);
 	void drawImage(xsImage* image,float x, float y, float width, float height);

@@ -555,7 +555,7 @@ bool xsCanvasContext::isPointInPath(float x, float y)
 void xsCanvasContext::drawImage(xsImage* image,float x, float y)
 {
 	xsGraphics *gc = xsGetSystemGc();
-	//xsDrawImage(gc, image, x, y, 0, 0);
+	xsDrawImage(gc, image, x, y, 0, 0);
 	xsRect clientRect;
 	if(xsGetClientRect(&clientRect))
 	{
@@ -566,7 +566,7 @@ void xsCanvasContext::drawImage(xsImage* image,float x, float y)
 void xsCanvasContext::drawImage(xsImage* image,float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
-	//xsDrawImage(gc, image, x, y, width, height);
+	xsDrawImage(gc, image, x, y, width, height);
 	xsFlushScreen(x, y, x + width, y + height);
 }
 
@@ -581,7 +581,7 @@ void xsCanvasContext::drawImage(xsImage* image,float sx, float sy, float swidth,
 	xsSetClipRect(gc, &clipRect);
 	int originW,  originH;
 	xsGetImageDimension(image, &originW, &originH);
-//	xsDrawImage(gc, image, x - sx, y - sy, originW * width/swidth, originH*height/sheight);
+	xsDrawImage(gc, image, x - sx, y - sy, originW * width/swidth, originH*height/sheight);
 	xsResetClipRect(gc);
 	xsFlushScreen(clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
 }

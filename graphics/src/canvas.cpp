@@ -85,8 +85,15 @@ void xs_canvas_demo(void)
 	ctx ->stroke();
 	ctx ->fill();
 	//ctx->arc(20,100,20,0,90,true);
-	//xsImage image = {XS_IMGTYPE_UNKNOWN, XS_AFD_FILENAME, L"c:\\icon_bt.bmp", 0, 0, 0};
-	//ctx->drawImage(image,100,100);
+	xsImageParam param = {100,100,0};
+	xsImage image = {0};
+	image.fileType = XS_IMGTYPE_PNG;
+	image.srcType = XS_AFD_FILENAME;
+	image.src.filename = "/home/lewis/git/xs-new/HelloWorld.png";
+	image.srcparam = (void *)&param;
+	int width,height;
+	xsGetImageDimension(&image, &width, &height);
+	ctx->drawImage(&image,100,100);
 	//ctx->drawImage(&image,20,20,20,20,20,20,20,20);
 	ctx->fillText("AAAAA",50,50);
 	ctx->strokeText("def",100,200);
