@@ -10,4 +10,4 @@ def configure(ctx):
 
 def build(bld):
 	print('compile xsdemo')
-	bld.program(target='xsdemo', source=bld.path.ant_glob('**/src/*.cpp'), includes=bld.env.INC_PATH, use='xscore ' + bld.env.PAL_LIB, lib=bld.env.LIBS, subsystem='windows')
+	bld.program(target='xsdemo', source=bld.path.ant_glob('**/src/*.cpp'), includes=bld.env.INC_PATH, use='xsgraphics xscore xsjavascript xsduktape ' + bld.env.PAL_LIB, lib=bld.env.LIBS, subsystem='windows')

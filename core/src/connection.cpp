@@ -18,7 +18,7 @@ xsConnection::xsConnection(const char *url)
 {
 	XS_TRACE("URL:%s", url);
 
-	id = xsConnCheckin(this);
+	//id = xsConnCheckin(this);
 	sock = -1;
 
 	xsUri *uri = xsUriParse(url);
@@ -51,7 +51,7 @@ xsConnection::xsConnection(const char *url)
 xsConnection::~xsConnection()
 {
 	if (sock >= 0)
-		xsSocketClose(sock);
+		//xsSocketClose(sock);
 
 	if (listener)
 	{
@@ -98,7 +98,7 @@ xsConnection::~xsConnection()
 		xsQueueDestroy(this->recvQ);
 	}
 
-	xsConnCheckout(this);
+	//xsConnCheckout(this);
 }
 
 void xsConnection::setProxy(xsProxy *proxy)
@@ -163,7 +163,7 @@ int xsConnection::doConnect()
 	XS_TRACE("[NET]DoConnect");
 	// Has address, connect
 	addr.port = xsHtons(port);
-	sock = xsSocketCreate();
+	//sock = xsSocketCreate();
 
 	if (sock < 0)
 	{
@@ -176,7 +176,7 @@ int xsConnection::doConnect()
 
 	XS_TRACE("connecting");
 	state = XS_CONN_CONNECTING;
-	ret = xsSocketConnect(sock, &addr);
+	//ret = xsSocketConnect(sock, &addr);
 	if (ret < 0)
 	{
 		if (ret == XS_EC_IN_PROGRESS)
@@ -195,7 +195,7 @@ int xsConnection::doConnect()
 int xsConnection::close()
 {
 	XS_TRACE("[NET]xsConnShutdown");
-	return xsSocketClose(sock);
+	//return xsSocketClose(sock);
 }
 
 int xsConnection::send(xsBuffer *buffer)
@@ -244,7 +244,7 @@ int xsConnection::doSend()
 		if (buf == NULL)
 			break;
 
-		sent = xsSocketSend(sock, buf->head, buf->len);
+		//sent = xsSocketSend(sock, buf->head, buf->len);
 		if (sent > 0)
 		{
 			xsBufferConsume(buf, sent);
@@ -298,7 +298,7 @@ int xsConnection::doRecv()
 			break;
 
 		size = xsBufferBlockSize(buf);
-		read = xsSocketRecv(sock, buf->tail, size);
+		//read = xsSocketRecv(sock, buf->tail, size);
 		if (read > 0)
 		{
 			xsBufferProduce(buf, read);

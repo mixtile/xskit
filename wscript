@@ -31,8 +31,10 @@ def configure(ctx):
 	if PLATFORM == 'win32':
 		ctx.load('msdev')
 	ctx.recurse(os.path.join('pal', ctx.options.targetos))
+	ctx.recurse('graphics')
 	ctx.recurse('core')
 	ctx.recurse('demos')
+	ctx.recurse('javascript')
 
 def build(bld):
 	print('start building at ' + datetime.datetime.now().isoformat())
@@ -46,10 +48,15 @@ def build(bld):
 	bld.env.INC_PATH = os.path.join(bld.path.abspath(), 'pal', 'common', 'include')
 	bld.env.INC_PATH = bld.env.INC_PATH + ' ' + os.path.join(bld.path.abspath(), 'pal', bld.options.targetos, 'include')
 	bld.env.INC_PATH += ' ' + os.path.join(bld.path.abspath(), 'core', 'include')
+	bld.env.INC_PATH += ' ' + os.path.join(bld.path.abspath(), 'graphics', 'include')
+	bld.env.INC_PATH += ' ' + os.path.join(bld.path.abspath(), 'javascript', 'duktape','include')
+	bld.env.INC_PATH += ' ' + os.path.join(bld.path.abspath(), 'javascript', 'canvasinterface','include')
 
 	bld.env.LIBS = '';
 	bld.env.PAL_LIB = 'pal' + bld.options.targetos;
 
 	bld.recurse(os.path.join('pal', bld.options.targetos))
+	bld.recurse('graphics')
 	bld.recurse('core')
 	bld.recurse('demos')
+	bld.recurse('javascript')

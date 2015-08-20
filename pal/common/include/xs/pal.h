@@ -781,6 +781,12 @@ enum _xsStrokeCap
     XS_STROKE_CAP_SQUARE
 };
 
+typedef struct _xsPoint
+{
+    float x;
+    float y;
+} xsPoint;
+
 typedef struct _xsRect
 {
 	float left;
@@ -803,6 +809,13 @@ typedef struct _xsGraphicsContext
 	void *fb;		// framebuffer device, direct operate a area of surface
 	int pixelDepth; // current framebuffer bits-per-pixel
 } xsGraphics;
+
+typedef struct _xsImageParam
+{
+	int width;
+	int height;
+	xsS8 loaded;	// 1:loaded, 0:not load, -1:load failed
+} xsImageParam;
 
 typedef xsAFD xsImage;
 
@@ -895,7 +908,25 @@ XS_INTERFACE void xsUnlockPixelBuffer(xsGraphics *gc);
  * Translate coordinate.
  *
  */
-XS_INTERFACE void xsGcTranslate(xsGraphics *gc, int xoffset, int yoffset);
+XS_INTERFACE void xsGcTranslate(xsGraphics *gc, float xoffset, float yoffset);
+
+/**
+ * Rotate coordinate.
+ *
+ */
+XS_INTERFACE void xsGcRotate(xsGraphics *gc, float angle);
+
+/**
+ * Scale coordinate.
+ *
+ */
+XS_INTERFACE void xsGcScale(xsGraphics *gc, float scalewidth, float scaleheight);
+
+/**
+ * Transform coordinate.
+ *
+ */
+XS_INTERFACE void xsGcTransform(xsGraphics *gc, float xx, float yx, float xy, float yy, float x0, float y0);
 
 /**
  * Get screen dimension in pixels.
@@ -956,16 +987,64 @@ XS_INTERFACE void xsDrawRectangle(xsGraphics *gc, float x, float y, float width,
 XS_INTERFACE void xsFillRectangle(xsGraphics *gc, float x, float y, float width, float height);
 
 /**
+ * Draw a polygon.
+ * @param
+ */
+XS_INTERFACE void xsDrawPolygon(xsGraphics *gc, xsPoint pt[], xsU32 count);
+
+/**
+ * Fill a polygon.
+ * @param
+ */
+XS_INTERFACE void xsFillPolygon(xsGraphics *gc, xsPoint pt[], xsU32 count);
+
+/**
  * Draw a circle.
  * @param
  */
-XS_INTERFACE void xsDrawCircle(xsGraphics *gc, float x, float y, float r);
+XS_INTERFACE void xsDrawCircle(xsGraphics *gc, int x, int y, int r);
 
 /**
  * Draw a solid circle.
  * @param
  */
-XS_INTERFACE void xsFillCircle(xsGraphics *gc, float x, float y, float r);
+XS_INTERFACE void xsFillCircle(xsGraphics *gc, int x, int y, int r);
+
+/**
+ * Draw a  arc.
+ * @param
+ */
+XS_INTERFACE void xsDrawArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle);
+
+/**
+ * Fill a solid arc.
+ * @param
+ */
+XS_INTERFACE void xsFillArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle);
+
+/**
+ * Draw a cubic bezier curve.
+ * @param
+ */
+void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
+
+/**
+ *Fill a cubic bezier curve.
+ * @param
+ */
+void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
+
+/**
+ * Draw a quadratic bezier curve.
+ * @param
+ */
+void xsDrawQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
+
+/**
+ *Fill a quadratic bezier curve.
+ * @param
+ */
+void xsFillQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
 
 /**
  * Set the font style and size.
@@ -980,6 +1059,12 @@ XS_INTERFACE float xsGetFontHeight(xsGraphics *gc, xsFontType *font);
  * @param count Specifies the number of characters you want to draw. \nIf count is -1, function will computes the character count automatically.
  */
 XS_INTERFACE void xsDrawText(xsGraphics *gc, const xsTChar *text, int count, float x, float y);
+
+/**
+ * Draw text with border in specified coordinates.
+ * @param 
+ */
+XS_INTERFACE void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count, float x, float y, float width, xsColor tc, xsColor bc, xsBool is_bordered);
 
 /**
  * Measures the size of the string in the current font.
@@ -1008,7 +1093,7 @@ XS_INTERFACE void xsFreeImageObject(xsImage *img);
  * Draw image in specified coordinates.
  * @param
  */
-XS_INTERFACE void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y);
+XS_INTERFACE void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y, float width, float height);
 
 /*@}*/
 
