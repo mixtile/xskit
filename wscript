@@ -18,8 +18,9 @@ def options(opt):
 	opt.add_option('--targetos', default=PLATFORM, action='store', type='string', help=u'specify target operation system. [default: ' + PLATFORM + u'] [available: ' + targetoses + u']')
 	# build for dynamic app or static
 	opt.add_option('--dynamic-app', default=False, action='store_true', help=u'specify use dynamic app or not. [default: False]')
-	
+
 	# load tools
+	opt.load('compiler_c')
 	opt.load('compiler_cxx')
 	if PLATFORM == 'darwin':
 		opt.load('xcode', tooldir=waftools.location)
@@ -36,11 +37,18 @@ def configure(ctx):
 def build(bld):
 	print('start building at ' + datetime.datetime.now().isoformat())
 	print('targetos: ' + bld.options.targetos)
+
+	# for MSVC tool
 	bld.solution_name = 'xs.sln'
+
 	bld.env.TOP_DIR = bld.path.abspath()
+
 	bld.env.INC_PATH = os.path.join(bld.path.abspath(), 'pal', 'common', 'include')
 	bld.env.INC_PATH = bld.env.INC_PATH + ' ' + os.path.join(bld.path.abspath(), 'pal', bld.options.targetos, 'include')
 	bld.env.INC_PATH += ' ' + os.path.join(bld.path.abspath(), 'core', 'include')
+
+	bld.env.LIBS = '';
+	bld.env.PAL_LIB = 'pal' + bld.options.targetos;
 
 	bld.recurse(os.path.join('pal', bld.options.targetos))
 	bld.recurse('core')

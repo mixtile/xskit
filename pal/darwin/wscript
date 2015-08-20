@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 #encoding: utf-8
 
-def options(opt):
-	opt.load('compiler_cxx')
-
 def configure(ctx):
-	ctx.env.TEST = 'Hello'
+	print('configure paldarwin')
+	ctx.load('compiler_c')
+	ctx.load('compiler_cxx')
 
 def build(bld):
-	pass
+	print('compile paldarwin')
+	#bld.env.LIBS += ''
+	bld.stlib(features='c cxx', cflags='-fobjc-arc', target='paldarwin', source=bld.path.ant_glob('**/*.cpp **/*.c **/*.m'), includes=bld.env.INC_PATH + ' include')
 
-def test(ctx):
-	#print(ctx.env.TEST)	
-	print('Linux')
+from waflib import TaskGen
+@TaskGen.extension('.m')
+def m_hook(self, node):
+	"""Alias .m files to be compiled the same as .c files, gcc will do the right thing."""
+	return self.create_compiled_task('c', node)
