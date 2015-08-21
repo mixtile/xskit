@@ -103,7 +103,7 @@ protected:
 	void addStatus(xsCanvasAttribute* status);
 	void paintStroke(xsGraphics *gc);
 	void paintFill(xsGraphics *gc);
-	void drawWithBaseline(const char* text,float x, float y, int maxWidth, int drawFlag);
+	void drawWithBaseline(const char* text, int count, float x, float y, int maxWidth, int drawFlag);
 
 public:
 
@@ -138,8 +138,8 @@ public:
 	void drawImage(xsImage* image,float x, float y, float width, float height);
 	void drawImage(xsImage* image,float sx, float sy, float swidth, float sheight, float x, float y, float width, float height);
 	void clip();
-	void fillText(const char* text,float x, float y, xsU32 maxWidth = 1024);
-	void strokeText(const char* text, float x, float y, xsU32 maxWidth = 1024);
+	void fillText(const char* text, int count, float x, float y, xsU32 maxWidth = 1024);
+	void strokeText(const char* text, int count, float x, float y, xsU32 maxWidth = 1024);
 	xsTextSize measureText(const char *text);//返回包含一个对象，该对象包含以像素计的指定字体尺寸。
 //	createImageData()
 //	getImageData()

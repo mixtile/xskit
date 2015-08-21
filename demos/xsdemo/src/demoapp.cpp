@@ -17,8 +17,9 @@ DemoApp::~DemoApp(void)
 int DemoApp::start()
 {
 	xsColor color = {255,255,255,255};
+	xsSetColor(xsGetSystemGc(), color);
 	xsGetScreenDimension(&width, &height);
-	xsFillRectangle(xsGetSystemGc(), 0, 0, width, height, color);//, xsArgbToColor(0xFFFFFFFF));
+	xsFillRectangle(xsGetSystemGc(), 0, 0, width, height);//, xsArgbToColor(0xFFFFFFFF));
 //	xsColor color1 = {255,255,0,0};
 //	xsColor color2 = {255,0,255,0};
 //	xsDrawBorderText(xsGetSystemGc(), "d d d d d d", 150, 150, 3, color1, color2, false);
@@ -110,7 +111,8 @@ int DemoApp::onTimeout()
 
 	// clear
 	xsColor color = {255, 255, 255, 255};
-	xsFillRectangle(gc, x, y, BOX_SIZE, BOX_SIZE, color);//, xsArgbToColor(0xFFFFFFFF));
+	xsSetColor(gc, color);
+	xsFillRectangle(gc, x, y, BOX_SIZE, BOX_SIZE);//, xsArgbToColor(0xFFFFFFFF));
 
 	// draw new box
 	x += rateX;

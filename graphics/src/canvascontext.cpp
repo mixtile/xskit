@@ -17,7 +17,6 @@ xsCanvasContext::xsCanvasContext()
 	textAlign = XS_TEXT_ALIGN_START;
 	textBaseline = XS_BASELINE_MIDDLE;
 
-	font.color = XS_COLOR_BLACK;
 	font.size = XS_FONT_SMALL;
 	font.style = XS_FONT_NORMAL;
 
@@ -216,7 +215,8 @@ void xsCanvasContext::paintFill(xsGraphics *gc)
 			i++;
 		}
 
-		xsFillPolygon(gc, polygen, n + 1, fillColor);
+		xsSetColor(gc, fillColor);
+		xsFillPolygon(gc, polygen, n + 1);
 		if(polygen != NULL)
 		{
 			xsFree(polygen);
@@ -430,7 +430,8 @@ void xsCanvasContext::rect(float x, float y, float width, float height)
 void xsCanvasContext::fillRect(float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
-	xsFillRectangle(gc, x, y, width, height, fillColor);
+	xsSetColor(gc, fillColor);
+	xsFillRectangle(gc, x, y, width, height);
 	xsFlushScreen(x, y, x + width, y + height);
 }
 
@@ -442,9 +443,10 @@ void xsCanvasContext::strokeRect(float x, float y, float width, float height)
 //另一种实现线宽为lineWidth矩形方法
 //	xsFillRectangle(gc, x - lineWidth + 1, y - lineWidth + 1, width + 2 * (lineWidth - 1), height + 2 * (lineWidth - 1), strokeColor);
 //	xsFillRectangle(gc, x, y, width, height, XS_COLOR_WHITE);
+	xsSetColor(gc, strokeColor);
 	for(i = 0; i < lineWidth; i++)
 	{
-		xsDrawRectangle(gc, x, y, width, height, strokeColor);
+		xsDrawRectangle(gc, x, y, width, height);
 	}
 	xsFlushScreen(x - lineWidth, y - lineWidth, x + width + 2*lineWidth, y + height + 2*lineWidth);
 }
@@ -452,7 +454,8 @@ void xsCanvasContext::strokeRect(float x, float y, float width, float height)
 void xsCanvasContext::clearRect(float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
-	xsFillRectangle(gc, x, y, width, height, XS_COLOR_WHITE);
+	xsSetColor(gc, XS_COLOR_WHITE);
+	xsFillRectangle(gc, x, y, width, height);
 	xsFlushScreen(x, y, x + width, y + height);
 }
 void xsCanvasContext::arc(float x, float y, float radius, float startAngle, float endAngle, xsBool anticlockwise)
@@ -579,7 +582,7 @@ void xsCanvasContext::drawImage(xsImage* image,float sx, float sy, float swidth,
 	clipRect.right = x + width;
 	clipRect.bottom = y + height;
 	xsSetClipRect(gc, &clipRect);
-	int originW,  originH;
+	float originW,  originH;
 	xsGetImageDimension(image, &originW, &originH);
 	xsDrawImage(gc, image, x - sx, y - sy, originW * width/swidth, originH*height/sheight);
 	xsResetClipRect(gc);
@@ -591,11 +594,11 @@ void xsCanvasContext::clip()
 	//需要对当前路径cilp，找不到合适接口
 }
 
-void xsCanvasContext::drawWithBaseline(const char* text,float x, float y, int maxWidth, int drawFlag)
+void xsCanvasContext::drawWithBaseline(const char* text, int count, float x, float y, int maxWidth, int drawFlag)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	float width, height;
-	xsMeasureText(gc, text, &font, &width, &height);
+	xsMeasureText(gc, text, count, &font, &width, &height);
 
 	if(drawFlag == 0)//stroke
 	{
@@ -604,18 +607,18 @@ void xsCanvasContext::drawWithBaseline(const char* text,float x, float y, int ma
 		case XS_BASELINE_ALPHABETIC:
 			break;
 		case XS_BASELINE_TOP:
-			xsDrawBorderText(gc, text, x, y, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
+			xsDrawBorderText(gc, text,  count, x, y, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
 			break;
 		case XS_BASELINE_HANGING:
-			xsDrawBorderText(gc, text, x, y, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
+			xsDrawBorderText(gc, text, count, x, y, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
 			break;
 		case XS_BASELINE_MIDDLE:
-			xsDrawBorderText(gc, text, x, y + height/2, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
+			xsDrawBorderText(gc, text, count, x, y + height/2, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
 			break;
 		case XS_BASELINE_IDEOGRAPHIC:
 			break;
 		case XS_BASELINE_BOTTOM:
-			xsDrawBorderText(gc, text, x, y - height/2, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
+			xsDrawBorderText(gc, text, count, x, y - height/2, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
 			break;
 		}
 	}
@@ -626,17 +629,17 @@ void xsCanvasContext::drawWithBaseline(const char* text,float x, float y, int ma
 		case XS_BASELINE_ALPHABETIC:
 			break;
 		case XS_BASELINE_TOP:
-			xsDrawBorderText(gc, text, x, y, maxWidth, fillColor, XS_COLOR_WHITE, XS_FALSE);
+			xsDrawBorderText(gc, text, count, x, y, maxWidth, fillColor, XS_COLOR_WHITE, XS_FALSE);
 			break;
 		case XS_BASELINE_HANGING:
 			break;
 		case XS_BASELINE_MIDDLE:
-			xsDrawBorderText(gc, text, x, y + height/2, maxWidth, fillColor, XS_COLOR_WHITE, XS_FALSE);
+			xsDrawBorderText(gc, text, count, x, y + height/2, maxWidth, fillColor, XS_COLOR_WHITE, XS_FALSE);
 			break;
 		case XS_BASELINE_IDEOGRAPHIC:
 			break;
 		case XS_BASELINE_BOTTOM:
-			xsDrawBorderText(gc, text, x, y - height/2, maxWidth, fillColor, XS_COLOR_WHITE, XS_FALSE);
+			xsDrawBorderText(gc, text, count, x, y - height/2, maxWidth, fillColor, XS_COLOR_WHITE, XS_FALSE);
 			break;
 		}
 	}
@@ -645,60 +648,60 @@ void xsCanvasContext::drawWithBaseline(const char* text,float x, float y, int ma
 	xsFlushScreen(0, 0, screenWidth, screenHeight);
 }
 
-void xsCanvasContext::fillText(const char* text,float x, float y, xsU32 maxWidth)
+void xsCanvasContext::fillText(const char* text, int count, float x, float y, xsU32 maxWidth)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsSetFont(gc, &font);
 	float width, height;
-	xsMeasureText(gc, text, &font, &width, &height);
+	xsMeasureText(gc, text, count, &font, &width, &height);
 	switch(textAlign)
 	{
 	case XS_TEXT_ALIGN_START:
-		drawWithBaseline(text, x, y, maxWidth, 1);
+		drawWithBaseline(text, count, x, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_END:
 		width = maxWidth > width ? width : maxWidth;
-		drawWithBaseline(text, x - width, y, maxWidth, 1);
+		drawWithBaseline(text, count, x - width, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_LEFT:
-		drawWithBaseline(text, x, y, maxWidth, 1);
+		drawWithBaseline(text, count, x, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_CENTER:
 		width = maxWidth > width ? width : maxWidth;
-		drawWithBaseline(text, x - width/2, y, maxWidth, 1);
+		drawWithBaseline(text, count, x - width/2, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_RIGHT:
 		width = maxWidth > width ? width : maxWidth;
-		drawWithBaseline(text, x - width, y, maxWidth, 1);
+		drawWithBaseline(text, count, x - width, y, maxWidth, 1);
 		break;
 	}
 }
 
-void xsCanvasContext::strokeText(const char* text, float x, float y, xsU32 maxWidth)
+void xsCanvasContext::strokeText(const char* text,  int count, float x, float y, xsU32 maxWidth)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsSetFont(gc, &font);
 	float width, height;
-	xsMeasureText(gc, text, &font, &width, &height);
+	xsMeasureText(gc, text, count, &font, &width, &height);
 	switch(textAlign)
 	{
 	case XS_TEXT_ALIGN_START:
-		drawWithBaseline(text, x, y, maxWidth,0);
+		drawWithBaseline(text, count, x, y, maxWidth,0);
 		break;
 	case XS_TEXT_ALIGN_END:
 		width = maxWidth > width ? width : maxWidth;
-		drawWithBaseline(text, x - width, y, maxWidth, 0);
+		drawWithBaseline(text, count, x - width, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_LEFT:
-		drawWithBaseline(text, x, y, maxWidth, 0);
+		drawWithBaseline(text, count, x, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_CENTER:
 		width = maxWidth > width ? width : maxWidth;
-		drawWithBaseline(text, x - width/2, y, maxWidth, 0);
+		drawWithBaseline(text, count, x - width/2, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_RIGHT:
 		width = maxWidth > width ? width : maxWidth;
-		drawWithBaseline(text, x - width, y, maxWidth, 0);
+		drawWithBaseline(text, count, x - width, y, maxWidth, 0);
 		break;
 	}
 }
@@ -707,7 +710,7 @@ xsTextSize xsCanvasContext::measureText(const char *text)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsTextSize size;
-	xsMeasureText(gc, text, &font, &size.width, &size.height);
+	xsMeasureText(gc, text, MAXLEN, &font, &size.width, &size.height);
 	return size;
 }
 

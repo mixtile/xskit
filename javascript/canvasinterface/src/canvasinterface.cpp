@@ -481,18 +481,19 @@ static duk_ret_t native_canvasContext_clip(duk_context *ctx)
 static duk_ret_t native_canvasContext_fillText(duk_context *ctx)
 {
 	const char *text = duk_require_string(ctx,0);
-	float x = (float)duk_require_number(ctx,1);
-	float y = (float)duk_require_number(ctx,2);
-	xsU32 width = (xsU32)duk_get_number(ctx,3);
+	int count = duk_require_int(ctx, 1);
+	float x = (float)duk_require_number(ctx,2);
+	float y = (float)duk_require_number(ctx,3);
+	xsU32 width = (xsU32)duk_get_number(ctx,4);
 
 	xsCanvasContext *context = get_native_context(ctx);
 	if(width > 0)
     {
-		context ->fillText(text, x, y, width);
+		context ->fillText(text, count, x, y, width);
     }
 	else
 	{
-		context ->fillText(text, x, y);
+		context ->fillText(text, count, x, y);
 	}
 
     return 1;
@@ -501,18 +502,19 @@ static duk_ret_t native_canvasContext_fillText(duk_context *ctx)
 static duk_ret_t native_canvasContext_strokeText(duk_context *ctx)
 {
 	const char *text = duk_require_string(ctx,0);
-	float x = (float)duk_require_number(ctx,1);
-	float y = (float)duk_require_number(ctx,2);
-	xsU32 width = (xsU32)duk_get_number(ctx,3);
+	int count = duk_require_int(ctx, 1);
+	float x = (float)duk_require_number(ctx,2);
+	float y = (float)duk_require_number(ctx,3);
+	xsU32 width = (xsU32)duk_get_number(ctx,4);
 
 	xsCanvasContext *context = get_native_context(ctx);
 	if(width > 0)
     {
-		context ->strokeText(text, x, y, width);
+		context ->strokeText(text, count, x, y, width);
     }
 	else
 	{
-		context ->strokeText(text, x, y);
+		context ->strokeText(text, count, x, y);
 	}
 
     return 1;

@@ -45,8 +45,8 @@ function primeTest() {
 	//xsImage image = {XS_IMGTYPE_UNKNOWN, XS_AFD_FILENAME, L"c:\\icon_bt.bmp", 0, 0, 0};
 	//ctx.drawImage(image,100,100);
 	//ctx.drawImage(&image,20,20,20,20,20,20,20,20);
-	ctx.fillText("AAAAA",50,50,4);
-	ctx.strokeText("def",100,200,50);
+	ctx.fillText("AAAAA",10,50,50,4);
+	ctx.strokeText("def",10,100,200,50);
 	ctx.fillStyle = rgb(255,0,0,0.5);
 	ctx.fill();
 }

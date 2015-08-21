@@ -91,12 +91,12 @@ void xs_canvas_demo(void)
 	image.srcType = XS_AFD_FILENAME;
 	image.src.filename = "/home/lewis/git/xs-new/HelloWorld.png";
 	image.srcparam = (void *)&param;
-	int width,height;
+	float width,height;
 	xsGetImageDimension(&image, &width, &height);
 	ctx->drawImage(&image,100,100);
 	//ctx->drawImage(&image,20,20,20,20,20,20,20,20);
-	ctx->fillText("AAAAA",50,50);
-	ctx->strokeText("def",100,200);
+	ctx->fillText("AAAAA",10,50,50);
+	ctx->strokeText("def",10,100,200);
 }
 
 }

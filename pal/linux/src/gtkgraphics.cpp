@@ -166,94 +166,84 @@ void xsSetStrokeStyle(xsGraphics *gc, xsStrokeStyle *style)
 	cairo_set_line_cap(XS_CAIRO(gc), cap);
 }
 
-void xsDrawLine(xsGraphics *gc, float x1, float y1, float x2, float y2, xsColor c)
+void xsDrawLine(xsGraphics *gc, float x1, float y1, float x2, float y2)
 {
-	xsSetColor(gc, c);
 	cairo_move_to(XS_CAIRO(gc), x1, y1);
 	cairo_line_to(XS_CAIRO(gc), x2, y2);
 	cairo_stroke(XS_CAIRO(gc));
 }
 
 void xsDrawRectangle(xsGraphics *gc, float x, float y,
-		float width, float height, xsColor c)
+		float width, float height)
 {
-	xsSetColor(gc, c);
 	cairo_rectangle(XS_CAIRO(gc), x, y, width, height);
 	cairo_stroke(XS_CAIRO(gc));
 }
 
 void xsFillRectangle(xsGraphics *gc, float x, float y, float width,
-		float height, xsColor c)
+		float height)
 {
-	xsSetColor(gc, c);
 	cairo_rectangle(XS_CAIRO(gc), x, y, width, height);
 	cairo_fill(XS_CAIRO(gc));
 }
 
-void xsDrawPolygon(xsGraphics *gc, xsPoint pt[], xsU32 num, xsColor c)
+void xsDrawPolygon(xsGraphics *gc, xsPoint pt[], xsU32 count)
 {
-	xsSetColor(gc, c);
 	cairo_move_to(XS_CAIRO(gc), pt[0].x ,pt[0].y);
-	for(xsU32 i = 1; i < num; i++)
+	for(xsU32 i = 1; i < count; i++)
 	{
 		cairo_line_to(XS_CAIRO(gc), pt[i].x, pt[i].y);
 	}
 	cairo_stroke(XS_CAIRO(gc));
 }
-void xsFillPolygon(xsGraphics *gc, xsPoint pt[], xsU32 num, xsColor c)
+void xsFillPolygon(xsGraphics *gc, xsPoint pt[], xsU32 count)
 {
-	xsSetColor(gc, c);
 	cairo_move_to(XS_CAIRO(gc), pt[0].x ,pt[0].y);
-	for(xsU32 i = 1; i < num; i++)
+	for(xsU32 i = 1; i < count; i++)
 	{
 		cairo_line_to(XS_CAIRO(gc), pt[i].x, pt[i].y);
 	}
 	cairo_fill(XS_CAIRO(gc));
 }
 
-void xsDrawArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle, xsColor c)
+void xsDrawArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle)
 {
-	xsSetColor(gc, c);
 	cairo_arc(XS_CAIRO(gc), x, y, r, startAngle, endAngle);
 	cairo_stroke(XS_CAIRO(gc));
 }
-void xsFillArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle, xsColor c)
+
+void xsFillArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle)
 {
-	xsSetColor(gc, c);
 	cairo_arc(XS_CAIRO(gc), x, y, r, startAngle, endAngle);
 	cairo_fill(XS_CAIRO(gc));
 }
 
-void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, xsColor c)
+void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3)
 {
-	xsSetColor(gc, c);
 	cairo_curve_to(XS_CAIRO(gc), x1, y1, x2, y2, x3, y3);
 	cairo_stroke(XS_CAIRO(gc));
 }
 
-void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, xsColor c)
+void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3)
 {
-	xsSetColor(gc, c);
 	cairo_curve_to(XS_CAIRO(gc), x1, y1, x2, y2, x3, y3);
 	cairo_fill(XS_CAIRO(gc));
 }
 
-void xsDrawQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, xsColor c)
+void xsDrawQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3)
 {}
 
-void xsFillQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, xsColor c)
+void xsFillQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3)
 {}
 
-void xsDrawCircle(xsGraphics *gc, float x, float y, float r, xsColor c)
+void xsDrawCircle(xsGraphics *gc, int x, int y, int r)
 {
-	xsSetColor(gc, c);
 	cairo_arc(XS_CAIRO(gc), x, y, r, 0, 360);
 	cairo_stroke(XS_CAIRO(gc));
 }
 
-void xsFillCircle(xsGraphics *gc, float x, float y, float r, xsColor c)
+void xsFillCircle(xsGraphics *gc, int x, int y, int r)
 {
-	xsSetColor(gc, c);
 	cairo_arc(XS_CAIRO(gc), x, y, r, 0, 360);
 	cairo_fill(XS_CAIRO(gc));
 }
@@ -296,13 +286,13 @@ float xsGetFontHeight(xsGraphics *gc, xsFontType *font)
 	return extents.height;
 }
 
-void xsDrawText(xsGraphics *gc, const xsTChar *text, float x, float y)
+void xsDrawText(xsGraphics *gc, const xsTChar *text, int count, float x, float y)
 {
 	cairo_move_to(XS_CAIRO(gc), x, y);
 	cairo_show_text(XS_CAIRO(gc), text);
 }
 
-void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, float x, float y, float width, xsColor tc, xsColor bc, xsBool is_bordered)
+void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count,  float x, float y,  float width, xsColor tc, xsColor bc, xsBool is_bordered)
 {
 	cairo_move_to(XS_CAIRO(gc), x, y);
 	cairo_text_path (XS_CAIRO(gc), text);
@@ -313,7 +303,7 @@ void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, float x, float y, flo
 	cairo_stroke (XS_CAIRO(gc));
 }
 
-void xsMeasureText(xsGraphics *gc, const xsTChar *text,
+void xsMeasureText(xsGraphics *gc, const xsTChar *text, int count,
 		xsFontType *font, float *width, float *height)
 {
 	cairo_text_extents_t extents;
@@ -471,7 +461,7 @@ static int ImageInstant(xsImage *img)
 	return ret;
 }
 
-int xsGetImageDimension(xsImage *img, int *width, int *height)
+int xsGetImageDimension(xsImage *img, float *width, float *height)
 {
 	if(NULL == img || (NULL != img && NULL == (xsImageParam *)img->srcparam))
 	{
