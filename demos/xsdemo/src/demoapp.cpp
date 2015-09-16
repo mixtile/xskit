@@ -14,6 +14,7 @@ DemoApp::~DemoApp(void)
 {
 }
 
+extern void xs_canvas_demo(void);
 int DemoApp::start()
 {
 	xsColor color = {255,255,255,255};
@@ -72,11 +73,11 @@ int DemoApp::processEvent(xsEvent *e)
 			break;
 			
 		case XS_EVT_MOUSE_DOWN:
-			xsStopTimer(timer);
+			//xsStopTimer(timer);
 			break;
 
 		case XS_EVT_MOUSE_UP:
-			timer = xsStartTimer(20, _onTimeout, this);
+			//timer = xsStartTimer(20, _onTimeout, this);
 			break;
 
 		case XS_EVT_KEY_DOWN:
