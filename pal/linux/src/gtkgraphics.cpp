@@ -220,14 +220,14 @@ void xsFillArc(xsGraphics *gc, float x, float y, float r, float startAngle, floa
 
 void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
 {
-	cairo_move_to(XS_CAIRO(gc), 100, 120);
+	cairo_move_to(XS_CAIRO(gc), x1, y1);
 	cairo_curve_to(XS_CAIRO(gc), x2, y2, x3, y3, x4, y4);
 	cairo_stroke(XS_CAIRO(gc));
 }
 
 void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
 {
-	cairo_move_to(XS_CAIRO(gc), 100, 120);
+	cairo_move_to(XS_CAIRO(gc), x1, y1);
 	cairo_curve_to(XS_CAIRO(gc), x2, y2, x3, y3, x4, y4);
 	cairo_fill(XS_CAIRO(gc));
 }
