@@ -734,23 +734,15 @@ static duk_ret_t native_image_creator(duk_context *ctx)
 	xsImageParam *param = (xsImageParam*)xsCalloc(sizeof(xsImageParam));
 	img ->fileType = XS_IMGTYPE_UNKNOWN;
 	img ->srcType = XS_AFD_FILENAME;
-	if(src)
-	{
-		img ->src.filename =XS_CHARTOWCHAR(const_cast<char *>(src));
-	}
-	else
-	{
-		img ->src.filename = XS_CHARTOWCHAR(" ");
-	}
 	img ->srcparam = (void *)param;
+
 	g_img[g_imgNum] = img;
 	g_imgNum++;
 	duk_push_this(ctx);
 	duk_push_pointer(ctx, (void *)img);
 	duk_put_prop_string(ctx, -2, "imageData");
-	duk_push_string(ctx, (const char *)img->src.filename);
+	duk_push_string(ctx, src);
     duk_put_prop_string(ctx, -2, "src");
-    printf("src = %s\n", img ->src.filename);
 
     return 1;
 }

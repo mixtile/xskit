@@ -397,7 +397,6 @@ void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float 
 
 void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
 {
-	XS_TRACE("y1 = %f, y2 = %f, y3 = %f, y4 = %f, offX = %f, offY = %f\n", y1, y2, y3, y4, gc->xoffset, gc->yoffset);
 	GraphicsPath path;
 	path.StartFigure();
 	path.AddBezier(x1 + gc->xoffset -1, y1 + gc->yoffset -1, x2 + gc->xoffset -1, y2 + gc->yoffset -1, x3 + gc->xoffset -1, y3 + gc->yoffset -1, x4 + gc->xoffset -1, y4 + gc->yoffset -1);
@@ -639,7 +638,15 @@ void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y, float width, fl
 		XS_ERROR("xsDrawImage failed.");
 		return;
 	}
-	g_gcBase->DrawImage((Bitmap *)img->object, x + gc->xoffset, y + gc->yoffset, width, height);
+
+	if(0.0 != width && 0.0 != height)
+	{
+		g_gcBase->DrawImage((Bitmap *)img->object, x + gc->xoffset, y + gc->yoffset, width, height);
+	}
+	else
+	{
+		g_gcBase->DrawImage((Bitmap *)img->object, x + gc->xoffset, y + gc->yoffset);
+	}
 }
 
 #define XS_INPUT_CTRL_ID	1020
