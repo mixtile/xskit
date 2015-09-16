@@ -33,10 +33,12 @@ typedef void *xsAny;
 typedef xsWChar		xsTChar;
 #define xsT(x)		(xsWChar *)L##x
 #define xsTC(x)		(xsWChar)L##x
+#define XS_CHARTOWCHAR(x) xsUtf8ToTcsDup(x)
 #else
 typedef char xsTChar;
 #define xsT(x)		x
 #define xsTC(x)		x
+#define XS_CHARTOWCHAR(x) x
 #endif
 
 typedef struct _xsAbstractFileDescriptor
