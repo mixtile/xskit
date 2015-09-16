@@ -21,6 +21,8 @@ public:
 	float y2;
 	float x3;
 	float y3;
+	float x4;
+	float y4;
 	float lineWidth;
 	xsBool isCubic;
 

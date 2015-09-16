@@ -961,12 +961,12 @@ XS_INTERFACE void xsResetClipRect(xsGraphics *gc);
 /**
  * Set drawing color
  */
-void xsSetColor(xsGraphics *gc, xsColor color);
+XS_INTERFACE void xsSetColor(xsGraphics *gc, xsColor color);
 
 /**
  * Set stroke line style
  */
-void xsSetStrokeStyle(xsGraphics *gc, xsStrokeStyle *style);
+XS_INTERFACE void xsSetStrokeStyle(xsGraphics *gc, xsStrokeStyle *style);
 
 /**
  * Draw a line.
@@ -1026,25 +1026,25 @@ XS_INTERFACE void xsFillArc(xsGraphics *gc, float x, float y, float r, float sta
  * Draw a cubic bezier curve.
  * @param
  */
-void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
+XS_INTERFACE void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
 
 /**
  *Fill a cubic bezier curve.
  * @param
  */
-void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
+XS_INTERFACE void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
 
 /**
  * Draw a quadratic bezier curve.
  * @param
  */
-void xsDrawQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
+XS_INTERFACE void xsDrawQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
 
 /**
  *Fill a quadratic bezier curve.
  * @param
  */
-void xsFillQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
+XS_INTERFACE void xsFillQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
 
 /**
  * Set the font style and size.
@@ -1052,6 +1052,10 @@ void xsFillQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, fl
  */
 XS_INTERFACE void xsSetFont(xsGraphics *gc, xsFontType *font);
 
+/**
+ * Get the font height.
+ * @param
+ */
 XS_INTERFACE float xsGetFontHeight(xsGraphics *gc, xsFontType *font);
 
 /**

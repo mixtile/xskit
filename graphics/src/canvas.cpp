@@ -50,6 +50,7 @@ xsCanvasContext *xsCanvas::getContext()
 	return context;
 }
 
+
 void xs_canvas_demo(void)
 {
 	xsCanvas canvas;
@@ -85,10 +86,10 @@ void xs_canvas_demo(void)
 	ctx ->fill();
 	//ctx->arc(20,100,20,0,90,true);
 	xsImageParam param = {100, 100, 0};
-	xsImage image = {XS_IMGTYPE_UNKNOWN, XS_AFD_FILENAME, L"C:\Users\Lewis\git\icon_bt.bmp", 0, 0, 0, (void *)&param};
+	xsImage image = {XS_IMGTYPE_UNKNOWN, XS_AFD_FILENAME, "/home/lewis/git/xs-new/icon_bt.bmp", 0, 0, 0, (void *)&param};
 	ctx->drawImage(&image,200,200);
 	//ctx->drawImage(&image,20,20,20,20,20,20,20,20);
-	ctx->fillText(L"AAAAA",10,50,50);
-	ctx->strokeText(L"def",10,100,200);
+	ctx->fillText("AAAAA",10,50,50);
+	ctx->strokeText("def",10,100,200);
 }
 

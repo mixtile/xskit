@@ -218,15 +218,17 @@ void xsFillArc(xsGraphics *gc, float x, float y, float r, float startAngle, floa
 	cairo_fill(XS_CAIRO(gc));
 }
 
-void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3)
+void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
 {
-	cairo_curve_to(XS_CAIRO(gc), x1, y1, x2, y2, x3, y3);
+	cairo_move_to(XS_CAIRO(gc), 100, 120);
+	cairo_curve_to(XS_CAIRO(gc), x2, y2, x3, y3, x4, y4);
 	cairo_stroke(XS_CAIRO(gc));
 }
 
-void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3)
+void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
 {
-	cairo_curve_to(XS_CAIRO(gc), x1, y1, x2, y2, x3, y3);
+	cairo_move_to(XS_CAIRO(gc), 100, 120);
+	cairo_curve_to(XS_CAIRO(gc), x2, y2, x3, y3, x4, y4);
 	cairo_fill(XS_CAIRO(gc));
 }
 
@@ -298,7 +300,15 @@ void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count,  float x, 
 	cairo_text_path (XS_CAIRO(gc), text);
 	xsSetColor(gc, tc);
 	cairo_fill_preserve (XS_CAIRO(gc));
-	xsSetColor(gc, bc);
+	if(is_bordered)
+	{
+		xsSetColor(gc, bc);
+	}
+	else
+	{
+		xsSetColor(gc, {255, 255, 255, 255});
+	}
+
 	cairo_set_line_width (XS_CAIRO(gc), 1);
 	cairo_stroke (XS_CAIRO(gc));
 }
@@ -371,7 +381,7 @@ static void ImageLoaderSizeCallback(GdkPixbufLoader *loader, int width,
 	}
 }
 
-static void ImageLoaderLoadedCallback(GdkPixbufLoader *lo, gpointer *user_data)
+static void ImageLoaderLoadedCallback(GdkPixbufLoader *loader, gpointer *user_data)
 {
 	xsImage *img = (xsImage *) user_data;
 	if (img == NULL)
@@ -399,6 +409,7 @@ static int ImageInstantFromFile(GdkPixbufLoader *loader, GError **err,
 		if (ret == FALSE)
 			break; // interrupt loading
 	}
+
 	xsCloseFile(imgFile);
 
 	return XS_EC_OK;
@@ -455,15 +466,15 @@ static int ImageInstant(xsImage *img)
 	}
 
 	// keep pixbuf
-	img->object = (void *)gdk_pixbuf_loader_get_pixbuf(loader);
+	img->object = gdk_pixbuf_loader_get_pixbuf(loader);
+	//g_object_unref(G_OBJECT(loader));
 
-	g_object_unref(G_OBJECT(loader));
 	return ret;
 }
 
 int xsGetImageDimension(xsImage *img, float *width, float *height)
 {
-	if(NULL == img || (NULL != img && NULL == (xsImageParam *)img->srcparam))
+	if(NULL == img || (NULL != img && NULL == img->srcparam))
 	{
 		return XS_EC_ERROR;
 	}
@@ -509,9 +520,10 @@ void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y, float width, fl
 	{
 		img->object = (void *)gdk_pixbuf_scale_simple((GdkPixbuf *)img->object, width, height, GDK_INTERP_BILINEAR);
 	}
-	printf("%p\n", (GdkPixbuf *)img->object);
+
 	gdk_cairo_set_source_pixbuf(XS_CAIRO(gc),
-			(GdkPixbuf *)img->object, x, y);
+			(GdkPixbuf *)(img->object), x, y);
+	cairo_paint(XS_CAIRO(gc));
 }
 
 /*为了编译通过，复制win32下的pal.c的部分函数*/
