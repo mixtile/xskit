@@ -104,7 +104,7 @@ protected:
 	void addStatus(xsCanvasAttribute* status);
 	void paintStroke(xsGraphics *gc);
 	void paintFill(xsGraphics *gc);
-	void drawWithBaseline(const xsTChar* text, int count, float x, float y, int maxWidth, int drawFlag);
+	void drawWithBaseline(const xsTChar* text, int count, float x, float y, float maxWidth, int drawFlag);
 
 public:
 

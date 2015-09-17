@@ -214,13 +214,20 @@ void xsGcTranslate(xsGraphics *gc, float xoffset, float yoffset)
 }
 
 void xsGcRotate(xsGraphics *gc, float angle)
-{}
+{
+	g_gcBase->RotateTransform(angle);
+}
 
 void xsGcScale(xsGraphics *gc, float scalewidth, float scaleheight)
-{}
+{
+	g_gcBase->ScaleTransform(scalewidth, scaleheight);
+}
 
 void xsGcTransform(xsGraphics *gc, float xx, float yx, float xy, float yy, float x0, float y0)
-{}
+{
+	Matrix matrix(xx, yx, xy, yy, x0, y0);
+	g_gcBase->SetTransform(&matrix);
+}
 
 
 xsBool xsSetScreenOrient(int orient)
@@ -471,7 +478,7 @@ void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count, float x, f
 	GraphicsPath path;
 	FontFamily fm(g_fontDefault);
 	path.StartFigure();
-	path.AddString((const WCHAR *)text, count,&fm, g_fontCurrent->GetStyle(), g_fontCurrent->GetSize(),PointF((REAL)x + gc->xoffset, (REAL)y + gc->yoffset),NULL);
+	path.AddString((const WCHAR *)text,count,&fm, g_fontCurrent->GetStyle(), g_fontCurrent->GetSize(),PointF((REAL)x + gc->xoffset, (REAL)y + gc->yoffset),NULL);
 	path.CloseFigure();
 	g_brushBase->SetColor(XS_RGB(tc));
 	g_gcBase->FillPath(g_brushBase, &path);
@@ -482,6 +489,7 @@ void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count, float x, f
 	}	
 }
 
+//不改变当前使用的font
 void xsMeasureText(xsGraphics *gc, const xsTChar *text, int count, xsFontType *font, float *width, float *height)
 {
 	RectF rect;

@@ -567,10 +567,7 @@ void xsCanvasContext::drawImage(xsImage* image,float x, float y)
 	xsGetImageDimension(image, &originW, &originH);
 	xsDrawImage(gc, image, x, y, 0, 0);
 	xsRect clientRect;
-	if(xsGetClientRect(&clientRect))
-	{
-		xsFlushScreen(clientRect.left, clientRect.top, clientRect.right, clientRect.bottom);
-	}
+	xsFlushScreen(x, y, originW, originH);
 }
 
 void xsCanvasContext::drawImage(xsImage* image,float x, float y, float width, float height)
@@ -603,12 +600,11 @@ void xsCanvasContext::clip()
 	//需要对当前路径cilp，找不到合适接口
 }
 
-void xsCanvasContext::drawWithBaseline(const xsTChar* text, int count, float x, float y, int maxWidth, int drawFlag)
+void xsCanvasContext::drawWithBaseline(const xsTChar* text, int count, float x, float y, float maxWidth, int drawFlag)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	float width, height;
 	xsMeasureText(gc, text, count, &font, &width, &height);
-
 	if(drawFlag == 0)//stroke
 	{
 		switch(textBaseline)
@@ -662,25 +658,24 @@ void xsCanvasContext::fillText(const xsTChar *text , int count, float x, float y
 	xsGraphics *gc = xsGetSystemGc();
 	xsSetFont(gc, &font);
 	float width, height;
+	count = count > XS_STRLEN(text) ? XS_STRLEN(text) : count;
 	xsMeasureText(gc, text, count, &font, &width, &height);
+	maxWidth = maxWidth > width ? width : maxWidth;
 	switch(textAlign)
 	{
 	case XS_TEXT_ALIGN_START:
 		drawWithBaseline(text, count, x, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_END:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_LEFT:
 		drawWithBaseline(text, count, x, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_CENTER:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width/2, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_RIGHT:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width, y, maxWidth, 1);
 		break;
 	}
@@ -691,25 +686,24 @@ void xsCanvasContext::strokeText(const xsTChar *text ,  int count, float x, floa
 	xsGraphics *gc = xsGetSystemGc();
 	xsSetFont(gc, &font);
 	float width, height;
+	count = count > XS_STRLEN(text) ? XS_STRLEN(text) : count;
 	xsMeasureText(gc, text, count, &font, &width, &height);
+	maxWidth = maxWidth > width ? width : maxWidth;
 	switch(textAlign)
 	{
 	case XS_TEXT_ALIGN_START:
 		drawWithBaseline(text, count, x, y, maxWidth,0);
 		break;
 	case XS_TEXT_ALIGN_END:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_LEFT:
 		drawWithBaseline(text, count, x, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_CENTER:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width/2, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_RIGHT:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width, y, maxWidth, 0);
 		break;
 	}
@@ -719,7 +713,7 @@ xsTextSize xsCanvasContext::measureText(const xsTChar *text)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsTextSize size;
-	xsMeasureText(gc, text, MAXLEN, &font, &size.width, &size.height);
+	xsMeasureText(gc, text, XS_STRLEN(text), &font, &size.width, &size.height);
 	return size;
 }
 
