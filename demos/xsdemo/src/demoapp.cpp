@@ -56,6 +56,7 @@ void DemoApp::exit()
 
 int DemoApp::processEvent(xsEvent *e)
 {
+	XS_TRACE("keycode = %d\n", e->sys ->data.key.keyCode);
 	switch (e->type)
 	{
 		case XS_EVT_START:
@@ -85,7 +86,7 @@ int DemoApp::processEvent(xsEvent *e)
 				xsStopTimer(timer);
 			if(e ->sys ->data.key.keyCode == XS_PAD_KEY_LEFT_ARROW  || e ->sys ->data.key.keyCode == XS_PAD_KEY_UP_ARROW
 					|| e ->sys ->data.key.keyCode == XS_PAD_KEY_RIGHT_ARROW || e ->sys ->data.key.keyCode == XS_PAD_KEY_DOWN_ARROW
-					|| e->sys ->data.key.keyCode == XS_PAD_KEY_ENTER)
+					|| e->sys ->data.key.keyCode == XS_PAD_KEY_ENTER || e->sys ->data.key.keyCode == XS_PAD_KEY_SELECT)
 				xsArrowKeysHandler(e);
 			break;
 

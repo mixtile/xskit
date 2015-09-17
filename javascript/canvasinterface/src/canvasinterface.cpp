@@ -801,17 +801,17 @@ void duktape_test(void) {
     }
     duk_pop(g_ctx);  /* ignore result */
 
-    duk_get_prop_string(g_ctx, -1, "primeTest");
+/*    duk_get_prop_string(g_ctx, -1, "primeTest");
     if (duk_pcall(g_ctx, 0) != 0) {
         printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
     }
     duk_pop(g_ctx);  /* ignore result */
 
-//    duk_get_prop_string(g_ctx, -1, "init");
-//    if (duk_pcall(g_ctx, 0) != 0) {
-//        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
-//    }
-//    duk_pop(g_ctx);  /* ignore result */
+    duk_get_prop_string(g_ctx, -1, "init");
+    if (duk_pcall(g_ctx, 0) != 0) {
+        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
+    }
+	duk_pop(g_ctx);  /* ignore result */
 
 }
 
@@ -831,6 +831,7 @@ void xsArrowKeysHandler(xsEvent *e)
 	case XS_PAD_KEY_DOWN_ARROW:
 		event.keyCode = 40;
 		break;
+	case XS_PAD_KEY_SELECT:
 	case XS_PAD_KEY_ENTER:
 		event.keyCode = 13;
 		break;

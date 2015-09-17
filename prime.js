@@ -504,7 +504,7 @@ else
 	    clearInterval(tid);
 	    ctx.font = "20px sans-serif";
 	    ctx.strokeStyle = "#000000";
-	    ctx.strokeText("GAME OVER",ctx.width/2-50,ctx.height/2,50);
+	    ctx.strokeText("GAME OVER",20,ctx.width/2-30,ctx.height/2,50);
 	    return false;
 	}
 }

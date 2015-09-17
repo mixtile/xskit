@@ -320,7 +320,7 @@ void xsMeasureText(xsGraphics *gc, const xsTChar *text, int count,
 {
 	cairo_text_extents_t extents;
 
-	xsSetFont(XS_CAIRO(gc), font);
+	xsSetFont(gc, font);
 	cairo_text_extents(XS_CAIRO(gc), text, &extents);
 
 	*width = extents.width;
