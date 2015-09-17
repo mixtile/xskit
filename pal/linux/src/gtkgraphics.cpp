@@ -254,7 +254,7 @@ static float GetFontRealSize(xsFontType *font)
 {
 	float size;
 
-	if (font->size < 0)
+	if (font->size < 0.0)
 	{// preset font size
 		int idx = -1 - font->size;
 		if (idx >= 0 && idx < XS_FONT_SIZE_COUNT)
@@ -306,18 +306,21 @@ void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count,  float x, 
 	}
 	else
 	{
-		xsSetColor(gc, {255, 255, 255, 255});
+		xsColor white = {255, 255, 255, 255};
+		xsSetColor(gc, white);
 	}
 
 	cairo_set_line_width (XS_CAIRO(gc), 1);
 	cairo_stroke (XS_CAIRO(gc));
 }
 
+//会改变当前使用的font
 void xsMeasureText(xsGraphics *gc, const xsTChar *text, int count,
 		xsFontType *font, float *width, float *height)
 {
 	cairo_text_extents_t extents;
 
+	xsSetFont(XS_CAIRO(gc), font);
 	cairo_text_extents(XS_CAIRO(gc), text, &extents);
 
 	*width = extents.width;
@@ -516,7 +519,7 @@ void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y, float width, fl
 	if(((xsImageParam *)img->srcparam)->loaded != 1)
 		return;
 
-	if(0 != width && 0 != height)
+	if(0.0 != width && 0.0 != height)
 	{
 		img->object = (void *)gdk_pixbuf_scale_simple((GdkPixbuf *)img->object, width, height, GDK_INTERP_BILINEAR);
 	}
