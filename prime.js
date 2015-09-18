@@ -22,11 +22,7 @@ function primeTest() {
 	ctx.lineTo(20,50);
 	ctx.lineTo(80,30);
 //	ctx.rect(50,50,50,50);
-//	xsColor black = {255,0,0,0};
-//	ctx.strokeColor = black;
 	ctx.stroke();
-//	xsColor red = {255,255,0,0};
-//	ctx.fillColor = red;
 	ctx.fill();
 	ctx.beginPath();
 	ctx.lineTo(120,120);
@@ -44,11 +40,13 @@ function primeTest() {
 	//ctx.arc(20,100,20,0,90,true);
 	//xsImage image = {XS_IMGTYPE_UNKNOWN, XS_AFD_FILENAME, L"c:\\icon_bt.bmp", 0, 0, 0};
 	//ctx.drawImage(image,100,100);
-	//ctx.drawImage(&image,20,20,20,20,20,20,20,20);
-	ctx.fillText("AAAAA",10,50,50,4);
-	ctx.strokeText("def",10,100,200,50);
-	ctx.fillStyle = rgb(255,0,0,0.5);
-	ctx.fill();
+	ctx.fillStyle = "#00FF00";
+	ctx.fillText("AAAAA",10,50,50);
+	ctx.strokeText("def",10,100,200);
+	//ctx.fillStyle = rgb(255,0,0,0.5);
+	//ctx.fill();
+	var img = new Image("/home/lewis/git/xs-new/icon_bt.bmp");
+	ctx.drawImage(img, 200, 200);
 }
 
 //7个基本形状，及变形后的坐标
@@ -265,8 +263,6 @@ if(getDirection(event)=='up'){
 
 	for(var j=0; j<4; j++)
 	{
-		print("******X =  "+(t[j*2+1]+rectY)+"   y =  "+(t[j*2]+rectX)+"  i = "+j);
-		print("@@@@@@X =  "+(tmp[j*2+1]+rectY)+"  y = "+(tmp[j*2]+oldX));
 		if(t[j*2+1]+rectY>=maxHeight)
 		{
 			print("I am in");
@@ -276,23 +272,17 @@ if(getDirection(event)=='up'){
 	       	if(t[j*2+1]+rectY>=maxHeight)
 			{
 				rectY-=1;
-				print("oooo");
 			}
-			print("******666666X =  "+(t[j*2+1]+rectY)+"   y =  "+(t[j*2]+rectX)+"  i = "+j);
-			print("@@@@@@666666X =  "+(tmp[j*2+1]+rectY)+"  y = "+(tmp[j*2]+oldX));
 		}
 		else if((resultArray[t[j*2+1]+rectY][t[j*2]+rectX] == 1)
 		|| (tmp[j*2+1]+rectY<maxHeight && (resultArray[tmp[j*2+1]+rectY][tmp[j*2]+oldX] == 1)))
 		{
-			print("x = "+(t[j*2+1]+rectY)+"  y = "+(t[j*2]+rectX));
-			print("I am in 2");
 			rotate = oldRotate;
 		   	t=shape[rotate];
 		   	rectX = oldX;
 			if(t[j*2+1]+rectY>=maxHeight || resultArray[t[j*2+1]+rectY][t[j*2]+rectX] == 1)
 			{
 				rectY-=1;
-				print("oooo222");
 			}
 		}
 	}
@@ -373,7 +363,7 @@ function CheckBottom()
 			var next = shaps[nextShape-1][nextRotate];
 			DrawLittleRect((next[i*2]+maxNum*2-4)*unitLen/2,(next[i*2+1])*unitLen/2);
 		}
-		print("#########################");
+		//print("#########################");
 		return true;
 	}
 
@@ -514,7 +504,7 @@ else
 	    clearInterval(tid);
 	    ctx.font = "20px sans-serif";
 	    ctx.strokeStyle = "#000000";
-	    ctx.strokeText("GAME OVER",ctx.width/2-50,ctx.height/2,50);
+	    ctx.strokeText("GAME OVER",20,ctx.width/2-30,ctx.height/2,50);
 	    return false;
 	}
 }

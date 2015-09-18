@@ -11,6 +11,7 @@ extern int g_nTitleHeight;
 static volatile xsBool g_doubleBufferLocked = XS_FALSE;
 
 #define XS_RGB(c) Color::MakeARGB(c.alpha, c.red, c.green, c.blue)
+const float PI = 3.1415926;
 
 //static Font *g_fonts[XS_FONT_SIZE_MAX] = {NULL};
 static REAL g_fontSizes[XS_FONT_SIZE_COUNT] = {6, 9, 12, 16, 20, 24, 36};
@@ -204,13 +205,30 @@ static void RelockPixelBuffer(xsGraphics *gc)
 		pf, (BitmapData *)gc->fb);
 }
 
-void xsGcTranslate(xsGraphics *gc, int xoffset, int yoffset)
+void xsGcTranslate(xsGraphics *gc, float xoffset, float yoffset)
 {
 	XS_ASSERT(gc != NULL);
 
 	gc->xoffset += xoffset;
 	gc->yoffset += yoffset;
 }
+
+void xsGcRotate(xsGraphics *gc, float angle)
+{
+	g_gcBase->RotateTransform(angle);
+}
+
+void xsGcScale(xsGraphics *gc, float scalewidth, float scaleheight)
+{
+	g_gcBase->ScaleTransform(scalewidth, scaleheight);
+}
+
+void xsGcTransform(xsGraphics *gc, float xx, float yx, float xy, float yy, float x0, float y0)
+{
+	Matrix matrix(xx, yx, xy, yy, x0, y0);
+	g_gcBase->SetTransform(&matrix);
+}
+
 
 xsBool xsSetScreenOrient(int orient)
 {
@@ -290,22 +308,28 @@ void xsResetClipRect(xsGraphics *gc)
 	g_gcBase->ResetClip();
 }
 
-void xsDrawLine(xsGraphics *gc, float x1, float y1, float x2, float y2, xsColor c)
+void xsSetColor(xsGraphics *gc, xsColor color)
+{
+	g_penBase->SetColor(XS_RGB(color));
+	g_brushBase->SetColor(XS_RGB(color));
+}
+
+void xsSetStrokeStyle(xsGraphics *gc, xsStrokeStyle *style)
+{}
+
+void xsDrawLine(xsGraphics *gc, float x1, float y1, float x2, float y2)
 {
 	Status status;
-	status = g_penBase->SetColor(XS_RGB(c));
 	status = g_gcBase->DrawLine(g_penBase, x1 + gc->xoffset, y1 + gc->yoffset, x2 + gc->xoffset, y2 + gc->yoffset);
 }
 
-void xsDrawRectangle(xsGraphics *gc, float x, float y, float width, float height, xsColor c)
+void xsDrawRectangle(xsGraphics *gc, float x, float y, float width, float height)
 {
-	g_penBase->SetColor(XS_RGB(c));
 	g_gcBase->DrawRectangle(g_penBase, x + gc->xoffset, y + gc->yoffset, width - 1, height - 1); // buggy GDI+?
 }
 
 void xsFillRectangle(xsGraphics *gc, float x, float y, float width, float height)
 {
-//	g_brushBase->SetColor(XS_RGB(c));
 	g_gcBase->FillRectangle(g_brushBase, x + gc->xoffset, y + gc->yoffset, width, height);
 }
 
@@ -324,17 +348,74 @@ void xsFillTriangle(xsGraphics *gc, float x1, float y1, float x2, float y2, floa
 	g_gcBase->FillPolygon(g_brushBase, points, 3);
 }
 
-void xsDrawCircle(xsGraphics *gc, float x, float y, float r, xsColor c)
+void xsDrawPolygon(xsGraphics *gc, xsPoint pt[], xsU32 count)
 {
-	g_penBase->SetColor(XS_RGB(c));
-	g_gcBase->DrawEllipse(g_penBase, x - r + gc->xoffset - 1, y - r + gc->yoffset - 1, r * 2 - 1, r * 2 - 1); // buggy GDI+?
+	Point *points = (Point*)malloc(sizeof(Point)*count);
+	memset(points, 0, sizeof(Point));
+	points[0].X = pt[0].x + gc->xoffset - 1;
+	points[0].Y = pt[0].y + gc->yoffset - 1;
+	for(int i=1; i<count; i++)
+	{
+		points[i].X = pt[i].x + gc->xoffset;
+		points[i].Y = pt[i].y + gc->yoffset;
+	}
+
+	g_gcBase->DrawPolygon(g_penBase, points, count);
 }
 
-void xsFillCircle(xsGraphics *gc, float x, float y, float r, xsColor c)
+void xsFillPolygon(xsGraphics *gc, xsPoint pt[], xsU32 count)
 {
-	g_brushBase->SetColor(XS_RGB(c));
-	g_gcBase->FillEllipse(g_brushBase, x - r + gc->xoffset - 1, y - r + gc->yoffset - 1, r * 2 - 1, r * 2 - 1); // buggy GDI+?
+	Point *points = (Point*)malloc(sizeof(Point)*count);
+	memset(points, 0, sizeof(Point));
+	points[0].X = pt[0].x + gc->xoffset - 1;
+	points[0].Y = pt[0].y + gc->yoffset - 1;
+	for(int i=1; i<count; i++)
+	{
+		points[i].X = pt[i].x + gc->xoffset;
+		points[i].Y = pt[i].y + gc->yoffset;
+	}
+	g_gcBase->FillPolygon(g_brushBase, points, count);
 }
+
+void xsDrawCircle(xsGraphics *gc, int x, int y, int r)
+{
+	g_gcBase->DrawEllipse(g_penBase, (int)(x - r + gc->xoffset - 1), (int)(y - r + gc->yoffset - 1), r * 2 - 1, r * 2 - 1); // buggy GDI+?
+}
+
+void xsFillCircle(xsGraphics *gc, int x, int y, int r)
+{
+	g_gcBase->FillEllipse(g_brushBase, (int)(x - r + gc->xoffset - 1), (int)(y - r + gc->yoffset - 1), r * 2 - 1, r * 2 - 1); // buggy GDI+?
+}
+
+void xsDrawArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle)
+{
+	g_gcBase->DrawPie(g_penBase, x - r/2 + gc->xoffset - 1, y - r/2 + gc->yoffset - 1, 2*r -1, 2*r -1, startAngle/PI*180, (startAngle + endAngle)/PI*180);
+}
+
+void xsFillArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle)
+{
+	g_gcBase->FillPie(g_brushBase, x - r/2 + gc->xoffset - 1, y - r/2 + gc->yoffset - 1, 2*r -1, 2*r -1, startAngle/PI*180, (startAngle + endAngle)/PI*180);
+}
+
+void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
+{
+	g_gcBase->DrawBezier(g_penBase, x1 + gc->xoffset -1, y1 + gc->yoffset -1, x2 + gc->xoffset -1, y2 + gc->yoffset -1, x3 + gc->xoffset -1, y3 + gc->yoffset -1, x4 + gc->xoffset -1, y4 + gc->yoffset -1);
+}
+
+void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
+{
+	GraphicsPath path;
+	path.StartFigure();
+	path.AddBezier(x1 + gc->xoffset -1, y1 + gc->yoffset -1, x2 + gc->xoffset -1, y2 + gc->yoffset -1, x3 + gc->xoffset -1, y3 + gc->yoffset -1, x4 + gc->xoffset -1, y4 + gc->yoffset -1);
+	path.CloseFigure();
+	g_gcBase->FillPath(g_brushBase, &path);
+}
+
+void xsDrawQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3)
+{}
+
+void xsFillQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3)
+{}
 
 static REAL GetRealSize(xsFontType *font)
 {
@@ -384,7 +465,7 @@ int xsGetFontHeight(xsFontType *font)
 	return (int)g_fontCurrent->GetHeight(g_gcBase);
 }
 
-void xsDrawText(xsGraphics *gc, const xsTChar *text, int count, int x, int y)
+void xsDrawText(xsGraphics *gc, const xsTChar *text, int count, float x, float y)
 {
 	LayoffPixelBuffer(gc);
 	g_gcBase->DrawString((const WCHAR *)text, count, g_fontCurrent,
@@ -392,7 +473,24 @@ void xsDrawText(xsGraphics *gc, const xsTChar *text, int count, int x, int y)
 	RelockPixelBuffer(gc);
 }
 
-void xsMeasureText(const xsTChar *text, int count, xsFontType *font, int *width, int *height)
+void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count, float x, float y, float width, xsColor tc, xsColor bc, xsBool is_bordered)
+{
+	GraphicsPath path;
+	FontFamily fm(g_fontDefault);
+	path.StartFigure();
+	path.AddString((const WCHAR *)text,count,&fm, g_fontCurrent->GetStyle(), g_fontCurrent->GetSize(),PointF((REAL)x + gc->xoffset, (REAL)y + gc->yoffset),NULL);
+	path.CloseFigure();
+	g_brushBase->SetColor(XS_RGB(tc));
+	g_gcBase->FillPath(g_brushBase, &path);
+	if(is_bordered)
+	{
+		g_penBase->SetColor(XS_RGB(bc));
+		g_gcBase->DrawPath(g_penBase, &path);
+	}	
+}
+
+//不改变当前使用的font
+void xsMeasureText(xsGraphics *gc, const xsTChar *text, int count, xsFontType *font, float *width, float *height)
 {
 	RectF rect;
 	PointF p(0, 0);
@@ -524,7 +622,7 @@ void xsFreeImageObject(xsImage *img)
 	}
 }
 
-int xsGetImageDimension(xsImage *img, int *width, int *height)
+int xsGetImageDimension(xsImage *img, float *width, float *height)
 {
 	XS_ASSERT(img != NULL);
 
@@ -538,7 +636,7 @@ int xsGetImageDimension(xsImage *img, int *width, int *height)
 	return XS_EC_OK;
 }
 
-void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y)
+void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y, float width, float height)
 {
 	XS_ASSERT(img != NULL);
 
@@ -548,7 +646,15 @@ void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y)
 		XS_ERROR("xsDrawImage failed.");
 		return;
 	}
-	g_gcBase->DrawImage((Bitmap *)img->object, Point(x + gc->xoffset, y + gc->yoffset));
+
+	if(0.0 != width && 0.0 != height)
+	{
+		g_gcBase->DrawImage((Bitmap *)img->object, x + gc->xoffset, y + gc->yoffset, width, height);
+	}
+	else
+	{
+		g_gcBase->DrawImage((Bitmap *)img->object, x + gc->xoffset, y + gc->yoffset);
+	}
 }
 
 #define XS_INPUT_CTRL_ID	1020

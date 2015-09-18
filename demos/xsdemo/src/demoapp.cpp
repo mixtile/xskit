@@ -14,6 +14,7 @@ DemoApp::~DemoApp(void)
 {
 }
 
+extern void xs_canvas_demo(void);
 int DemoApp::start()
 {
 	xsColor color = {255,255,255,255};
@@ -55,6 +56,7 @@ void DemoApp::exit()
 
 int DemoApp::processEvent(xsEvent *e)
 {
+	XS_TRACE("keycode = %d\n", e->sys ->data.key.keyCode);
 	switch (e->type)
 	{
 		case XS_EVT_START:
@@ -72,11 +74,11 @@ int DemoApp::processEvent(xsEvent *e)
 			break;
 			
 		case XS_EVT_MOUSE_DOWN:
-			xsStopTimer(timer);
+			//xsStopTimer(timer);
 			break;
 
 		case XS_EVT_MOUSE_UP:
-			timer = xsStartTimer(20, _onTimeout, this);
+			//timer = xsStartTimer(20, _onTimeout, this);
 			break;
 
 		case XS_EVT_KEY_DOWN:
@@ -84,7 +86,7 @@ int DemoApp::processEvent(xsEvent *e)
 				xsStopTimer(timer);
 			if(e ->sys ->data.key.keyCode == XS_PAD_KEY_LEFT_ARROW  || e ->sys ->data.key.keyCode == XS_PAD_KEY_UP_ARROW
 					|| e ->sys ->data.key.keyCode == XS_PAD_KEY_RIGHT_ARROW || e ->sys ->data.key.keyCode == XS_PAD_KEY_DOWN_ARROW
-					|| e->sys ->data.key.keyCode == XS_PAD_KEY_ENTER)
+					|| e->sys ->data.key.keyCode == XS_PAD_KEY_ENTER || e->sys ->data.key.keyCode == XS_PAD_KEY_SELECT)
 				xsArrowKeysHandler(e);
 			break;
 

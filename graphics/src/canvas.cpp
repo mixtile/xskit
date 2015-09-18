@@ -7,6 +7,7 @@
 
 xsCanvas::xsCanvas()
 {
+	context = NULL;
 	setFlag(0);
 	xsGetScreenDimension(&width, &height);
 }
@@ -49,8 +50,7 @@ xsCanvasContext *xsCanvas::getContext()
 	return context;
 }
 
-extern "C"
-{
+
 void xs_canvas_demo(void)
 {
 	xsCanvas canvas;
@@ -85,18 +85,11 @@ void xs_canvas_demo(void)
 	ctx ->stroke();
 	ctx ->fill();
 	//ctx->arc(20,100,20,0,90,true);
-	xsImageParam param = {100,100,0};
-	xsImage image = {0};
-	image.fileType = XS_IMGTYPE_PNG;
-	image.srcType = XS_AFD_FILENAME;
-	image.src.filename = "/home/lewis/git/xs-new/HelloWorld.png";
-	image.srcparam = (void *)&param;
-	float width,height;
-	xsGetImageDimension(&image, &width, &height);
-	ctx->drawImage(&image,100,100);
+	xsImageParam param = {100, 100, 0};
+	xsImage image = {XS_IMGTYPE_UNKNOWN, XS_AFD_FILENAME, L"C:\\Users\\Lewis\\git\\xs\\icon_bt.bmp", 0, 0, 0, (void *)&param};
+	ctx->drawImage(&image,200,200);
 	//ctx->drawImage(&image,20,20,20,20,20,20,20,20);
-	ctx->fillText("AAAAA",10,50,50);
-	ctx->strokeText("def",10,100,200);
+	ctx->fillText(L"AAAAA",10,50,50);
+	ctx->strokeText(L"ะกรรรร",1,100,200);
 }
 
-}

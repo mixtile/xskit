@@ -196,6 +196,7 @@ int xsConnection::close()
 {
 	XS_TRACE("[NET]xsConnShutdown");
 	//return xsSocketClose(sock);
+	return 0;
 }
 
 int xsConnection::send(xsBuffer *buffer)
