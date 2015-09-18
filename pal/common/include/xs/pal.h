@@ -688,14 +688,14 @@ XS_INTERFACE xsBool xsFileExists(const xsTChar *path);
 /**
  * Creates a new directory.
  * @param path directory path
- * @return return XS_ES_OK if a new directory was successfully created or error code.
+ * @return return XS_EC_OK if a new directory was successfully created or error code.
  */
 XS_INTERFACE int xsCreateDir(const xsTChar *path);
 
 /**
  * Remove a directory.
  * @param path directory path
- * @return return XS_ES_OK if directory was successfully deleted or error code.
+ * @return return XS_EC_OK if directory was successfully deleted or error code.
  */
 XS_INTERFACE int xsRemoveDir(const xsTChar *path);
 
@@ -1062,7 +1062,7 @@ XS_INTERFACE void xsDrawText(xsGraphics *gc, const xsTChar *text, int count, flo
 
 /**
  * Draw text with border in specified coordinates.
- * @param 
+ * @param
  */
 XS_INTERFACE void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count, float x, float y, float width, xsColor tc, xsColor bc, xsBool is_bordered);
 
