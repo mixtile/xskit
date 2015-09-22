@@ -14,23 +14,15 @@ DemoApp::~DemoApp(void)
 {
 }
 
-extern void xs_canvas_demo(void);
 int DemoApp::start()
 {
 	xsColor color = {255,255,255,255};
 	xsSetColor(xsGetSystemGc(), color);
 	xsGetScreenDimension(&width, &height);
 	xsFillRectangle(xsGetSystemGc(), 0, 0, width, height);//, xsArgbToColor(0xFFFFFFFF));
-//	xsColor color1 = {255,255,0,0};
-//	xsColor color2 = {255,0,255,0};
-//	xsDrawBorderText(xsGetSystemGc(), "d d d d d d", 150, 150, 3, color1, color2, false);
-
-	//xsGcTranslate(xsGetSystemGc(), 50, 50);
 	xsFlushScreen(0, 0, width - 1, height - 1);
 
-//	xs_canvas_demo();
-
-	duktape_test();
+	invokeJavascript("/home/lewis/git/xs-new/prime.js");
 
 	x = (width - BOX_SIZE) / 2;
 	y = (height - BOX_SIZE) / 2;

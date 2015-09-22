@@ -485,7 +485,7 @@ static duk_ret_t native_canvasContext_drawImage(duk_context *ctx)
 	const char *src = duk_to_string(ctx, -1);
 	duk_get_prop_string(ctx, 0, "imageData");
 	xsImage *image = (xsImage *)duk_to_pointer(ctx, -1);
-	image ->src.filename = XS_CHARTOWCHAR(const_cast<char *>(src));
+	image ->src.filename = xsUtf8ToTcsDup(const_cast<char *>(src));
 	duk_pop_2(ctx);
 
 	xsCanvasContext *context = get_native_context(ctx);
@@ -536,19 +536,18 @@ static duk_ret_t native_canvasContext_clip(duk_context *ctx)
 static duk_ret_t native_canvasContext_fillText(duk_context *ctx)
 {
 	const char *text = duk_require_string(ctx,0);
-	int count = duk_require_int(ctx, 1);
-	float x = (float)duk_require_number(ctx,2);
-	float y = (float)duk_require_number(ctx,3);
-	xsU32 width = (xsU32)duk_get_number(ctx,4);
+	float x = (float)duk_require_number(ctx,1);
+	float y = (float)duk_require_number(ctx,2);
+	xsU32 width = (xsU32)duk_get_number(ctx,3);
 
 	xsCanvasContext *context = get_native_context(ctx);
 	if(width > 0)
     {
-		context ->fillText(XS_CHARTOWCHAR(text), count, x, y, width);
+		context ->fillText(xsUtf8ToTcsDup(text), x, y, width);
     }
 	else
 	{
-		context ->fillText(XS_CHARTOWCHAR(text), count, x, y);
+		context ->fillText(xsUtf8ToTcsDup(text), x, y);
 	}
 
     return 1;
@@ -557,19 +556,18 @@ static duk_ret_t native_canvasContext_fillText(duk_context *ctx)
 static duk_ret_t native_canvasContext_strokeText(duk_context *ctx)
 {
 	const char *text = duk_require_string(ctx,0);
-	int count = duk_require_int(ctx, 1);
-	float x = (float)duk_require_number(ctx,2);
-	float y = (float)duk_require_number(ctx,3);
-	xsU32 width = (xsU32)duk_get_number(ctx,4);
+	float x = (float)duk_require_number(ctx,1);
+	float y = (float)duk_require_number(ctx,2);
+	xsU32 width = (xsU32)duk_get_number(ctx,3);
 
 	xsCanvasContext *context = get_native_context(ctx);
 	if(width > 0)
     {
-		context ->strokeText(XS_CHARTOWCHAR(text), count, x, y, width);
+		context ->strokeText(xsUtf8ToTcsDup(text),  x, y, width);
     }
 	else
 	{
-		context ->strokeText(XS_CHARTOWCHAR(text), count, x, y);
+		context ->strokeText(xsUtf8ToTcsDup(text), x, y);
 	}
 
     return 1;
@@ -580,7 +578,7 @@ static duk_ret_t native_canvasContext_measureText(duk_context *ctx)
 	const char *text = duk_require_string(ctx,0);
 
 	xsCanvasContext *context = get_native_context(ctx);
-	xsTextSize textSize = context ->measureText(XS_CHARTOWCHAR(text));
+	xsTextSize textSize = context ->measureText(xsUtf8ToTcsDup(text));
 
 	duk_push_this(ctx);
 	duk_push_number(ctx, textSize.width);
@@ -647,8 +645,8 @@ const duk_function_list_entry contextmethods[] = {
     { "drawImage",   native_canvasContext_drawImage,  9  },
 
     { "clip",   native_canvasContext_clip,  0   },
-    { "fillText",   native_canvasContext_fillText,  5   },
-    { "strokeText",   native_canvasContext_strokeText,  5   },
+    { "fillText",   native_canvasContext_fillText,  4   },
+    { "strokeText",   native_canvasContext_strokeText,  4   },
     { "measureText",   native_canvasContext_measureText,  1  },
     { "save",   native_canvasContext_save,  0   },
     { "restore",   native_canvasContext_restore,  0   },
@@ -763,7 +761,6 @@ static void destroyHeap()
 	}
 
 	duk_destroy_heap(g_ctx);
-//	exit(0);
 }
 
 const duk_function_list_entry globalmethods[] = {
@@ -777,41 +774,51 @@ const duk_function_list_entry globalmethods[] = {
     { NULL,  NULL,        0   }
 };
 
-void duktape_test(void) {
+void invokeJavascript(const char *scriptURL) {
 	g_ctx = duk_create_heap_default();
-    if (!g_ctx) {
+    if (!g_ctx)
+    {
         printf("Failed to create a Duktape heap.\n");
-        exit(1);
+        return;
     }
 
-    duk_push_global_object(g_ctx);
+	duk_push_global_object(g_ctx);
 	duk_put_function_list(g_ctx, -1, globalmethods);
-    duk_push_object(g_ctx);
-    duk_push_c_function(g_ctx, native_addEventListener, 3);
-    duk_put_prop_string(g_ctx, -2, "addEventListener");
-    duk_put_prop_string(g_ctx, -2, "document");
-    duk_push_object(g_ctx);
-    duk_push_number(g_ctx, event.keyCode);
-    duk_put_prop_string(g_ctx, -2, "keyCode");
-    duk_put_prop_string(g_ctx, -2, "event");
+	duk_push_object(g_ctx);
+	duk_push_c_function(g_ctx, native_addEventListener, 3);
+	duk_put_prop_string(g_ctx, -2, "addEventListener");
+	duk_put_prop_string(g_ctx, -2, "document");
+	duk_push_object(g_ctx);
+	duk_push_number(g_ctx, event.keyCode);
+	duk_put_prop_string(g_ctx, -2, "keyCode");
+	duk_put_prop_string(g_ctx, -2, "event");
 
-    if (duk_peval_file(g_ctx, "C:\\Users\\Lewis\\git\\xs\\prime.js") != 0) {
+    if (duk_peval_file(g_ctx, scriptURL) != 0)
+    {
         printf("Error: %s\n", duk_safe_to_string(g_ctx, -1));
         destroyHeap();
+		goto end;
+
     }
     duk_pop(g_ctx);  /* ignore result */
 
 /*    duk_get_prop_string(g_ctx, -1, "primeTest");
-    if (duk_pcall(g_ctx, 0) != 0) {
+    if (duk_pcall(g_ctx, 0) != 0)
+     {
         printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
     }
     duk_pop(g_ctx);  /* ignore result */
 
     duk_get_prop_string(g_ctx, -1, "init");
-    if (duk_pcall(g_ctx, 0) != 0) {
+    if (duk_pcall(g_ctx, 0) != 0)
+    {
         printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
     }
 	duk_pop(g_ctx);  /* ignore result */
+	return;
+end:
+	printf("Fail to invoke javascript file.\n");
+	return;
 
 }
 
@@ -842,7 +849,8 @@ void xsArrowKeysHandler(xsEvent *e)
     duk_get_prop_string(g_ctx, -2, "event");
 	duk_push_number(g_ctx, event.keyCode);
 	duk_put_prop_string(g_ctx, -2, "keyCode");
-    if (duk_pcall(g_ctx, 1) != 0) {
+    if (duk_pcall(g_ctx, 1) != 0)
+    {
         printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
     }
     duk_pop(g_ctx);

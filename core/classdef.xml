@@ -3,495 +3,522 @@
 
 <classdef>
 	<comment>
-		XSKit API让开发者可以使用多种语言（包括C++、JavaScript）来开发跨平台的应用程序。
+		Through XSKit API, developers can use multiple languages (including C ++, JavaScript) to develop cross-platform applications.
 	</comment>
 
 	<class name="Object" xtag="object">
-		<comment>Object是所有对象的基础原型，其他类型的对象均由Object继承而来。</comment>
+		<comment>Object class is the basis for the prototype of all objects, objects of other types are inherited from the object</comment>
 
 		<property name="prototype" type="string">
-			<comment>对象的原型</comment>
+			<comment>prototype of object</comment>
 		</property>
 
 		<property name="id" type="string">
-			<comment>静态定义的对象ID，作为对象被引用时的标识，在作用域内唯一。当对象无需被引用时，可以不指定对象的ID。
+			<comment>Statically defined object ID, as the identification of the object is referenced, unique in scope. When the object does not have to be a reference, you don not need to specify the object ID.
 			</comment>
 		</property>
 		
 		<property name="elements" type="array">
-			<comment>子Object列表</comment>
+			<comment>sub Object List</comment>
 		</property>
 
 		<method name="getElementById">
-			<comment>获得指定id的子对象。</comment>
-			<param name="name" type="string">
-				<comment>指定对象的Id</comment>
+			<comment>Obtain child objects of the specified id。</comment>
+			<param name="id" type="string">
+				<comment>specified id of the object</comment>
 			</param>
 			<return type="Object">
-				<comment>指定的对象。查找对象失败则返回空值。</comment>
+				<comment>Specified object, return a null value if  finding Object failed.</comment>
 			</return>
 		</method>
 	</class>
 
 	<class name="Manifest" xtag="manifest" inherit="Object">
-		<comment>应用程序包的属性清单。
+		<comment>Listing properties of the application package.
 		</comment>
 		
 		<property name="id" type="string">
-			<comment>表达应用程序唯一标识的ANSI字符串，例如：org.xskit.FirstApp</comment>
+			<comment>ANSI string expression that uniquely identifies the application，for example：org.xskit.FirstApp.</comment>
 		</property>
 		
 		<property name="uuid" type="string">
-			<comment>应用程序唯一标识的UUID字符串</comment>
+			<comment>UUID string that uniquely identifies the application.</comment>
 		</property>
 		
 		<property name="name" type="text">
-			<comment>表达应用程序名称的文本串</comment>
+			<comment>Text string that expresses application name</comment>
 		</property>
 		
 		<property name="mode" type="enum" enum="gui:0; console:1; service:2;">
-			<comment>指定应用程序的运行模式。默认为gui模式。</comment>
+			<comment>Specify the application operating mode. The default is gui mode.</comment>
 		</property>
 		
 		<property name="orient" type="enum" enum="default:0; landscape:1; portrait:2;">
-			<comment>指定应用程序初始的屏幕朝向。仅当mode=gui时，该属性才有效。default表示无需特别指定，</comment>
+			<comment>Specify the application initial screen orientation. Only if mode = gui, this property is valid. default indicates that no specified.</comment>
 		</property>
 		
 		<property name="preload" type="string">
-		  <comment>指定启动前必须载入的动态库，取值为不包含扩展名的动态库文件名。若脚本存放于lib目录下的子目录中，需要包含相对于lib目录的相对路径。</comment>
+		  <comment>Specify  necessary dynamic library before start,the value does not include an extension of the dynamic library file name. If the script is stored in a subdirectory under lib directory, you need a relative path with respect to the lib directory contains.</comment>
 		</property>
 
 		<property name="startup" type="string">
-		  <comment>指定启动时运行的JavaScript脚本，取值为不包含扩展名的脚本文件名称。若脚本存放于scripts目录下的子目录中，需要包含相对于scripts目录的相对路径。</comment>
+		  <comment>JavaScript script specified to run at startup, the value for the script file name without the extension. If the scripts are kept in a subdirectory under scripts directory, the relative path relative to the Scripts directory is required.</comment>
 		</property>
 	</class>
 		
 	<class name="CoreApplication" xtag="coreapplication" inherit="Object">
-		<comment>应用程序对象原型。在应用程序的运行生命周期内，由框架创建一个名为app的全局对象，原型即为CoreApplication或它的继承类。
+		<comment>The Application object prototype.Within the operational life cycle of an application, the framework creates a global object called app, the prototype is CoreApplication or its derived classes.
 		</comment>
 
 		<method name="trace" static="true">
-			<comment>在调试控制台上输出调试信息。</comment>
+			<comment>In the debug console output debug information.</comment>
 			<param name="text" type="text">
-				<comment>调试信息</comment>
+				<comment>debug information</comment>
 			</param>
 		</method>
 		
 		<method name="exit">
-			<comment>退出应用程序。</comment>
+			<comment>exit the application</comment>
 		</method>
 		
 		<method name="setTimeout">
-			<comment>设置延时执行指定的函数。</comment>
+			<comment>Set the specified delay time function to be executed</comment>
 			<param name="functionName" type="string">
-				<comment>延时结束时，将要执行的函数的名称</comment>
+				<comment>at the end of the delay, the name of the function to be executed</comment>
 			</param>
 			<param name="millisecond" type="int">
-				<comment>延时的长度，以毫秒数计算。</comment>
+				<comment>The length of the delay, measured in milliseconds.</comment>
 			</param>
 			<return type="int">
-				<comment>已设置的Timer ID，可用作clearTimeout的参数</comment>
+				<comment>Timer ID that can be used as parameters of the clearTimeout</comment>
 			</return>
 		</method>
 		
 		<method name="clearTimeout">
-			<comment>清除已设置的延时函数。</comment>
+			<comment>Clear the Delay function has been set。</comment>
 			<param name="timerId" type="int">
-				<comment>setTimeout返回的ID</comment>
+				<comment>setTimeout function returns the ID</comment>
 			</param>
 		</method>
 
 		<method name="launchApp" static="true">
-			<comment>运行指定的App</comment>
+			<comment>run the specified App</comment>
 			<param name="appId" type="string">
-				<comment>App的唯一ID</comment>
+				<comment>The only App ID.</comment>
 			</param>
 			<return type="boolean">
-				<comment>成功返回True，否则返回False</comment>
+				<comment>On success returns True, otherwise returns False</comment>
 			</return>
 		</method>
 		
 		<method name="invoke">
-			<comment>调用远程对象的默认方法。异步调用</comment>
+			<comment>call the remote object's default method, asynchronous call.</comment>
 			<param name="uri" type="string">
-				<comment>远程对象的URI</comment>
+				<comment>URI of the remote object</comment>
 			</param>
 			<param name="callback" type="string">
-				<comment>调用结束后将被调用的回调函数</comment>
+				<comment>The callback function is called after the end of call</comment>
 			</param>
 			<return type="Remote">
-				<comment>远程调用接口对象</comment>
+				<comment>Remote invocation interface object.</comment>
 			</return>
 		</method>
 	</class>
 
 	<class name="Remote" xtag="remote" inherit="Object">
-		<comment>远程调用接口对象。用户可以通过该对象访问远程对象提供的接口，所有的访问均以异步方式运行，运行结束后调用指定的回调函数。
+		<comment>Remote invocation interface object.Users can access the remote object interfaces provided by that object,all visits are running asynchronously invoke the specified callback function after the end of the run.
 		</comment>
 
 		<property name="uri" type="string">
-			<comment>远程对象的URI。与数据源的URI形式一致</comment>
+			<comment>URI of the remote object, URI form consistent with the data source.</comment>
 		</property>
-	</class>
-	
-	<class name="Canvas" xtag="canvas" inherit="Object">
-		<comment>绘图画布。</comment>
-		<method name="getContext">
-			<comment>获得画布的绘图上下文</comment>
-			<return type="CanvasContext">
-				<comment>画布的绘图上下文</comment>
-			</return>
-		</method>
 	</class>
 	
 	<class name="Shape" xtag="shape" inherit="Object">
-		<comment>基本图形对象的基类</comment>
+		<comment>Base class for Basic graphics objects.</comment>
 	</class>
 	
 	<class name="Line" xtag="line" inherit="Shape">
-		<comment>线段对象</comment>
+		<comment>line object</comment>
 	</class>
 	
 	<class name="Rectangle" xtag="rectangle" inherit="Shape">
-		<comment>矩形对象</comment>
+		<comment>rectangle object</comment>
 	</class>
 	
 	<class name="Arc" xtag="arc" inherit="Shape">
-		<comment>弧形对象</comment>
+		<comment>arc object</comment>
 	</class>
 	
 	<class name="BezierCurve" xtag="beziercurve" inherit="Shape">
-		<comment>曲线对象</comment>
+		<comment>Bezier object</comment>
 	</class>
 	
 	<class name="CanvasContext" xtag="canvascontext" inherit="Object">
-		<comment>画布的绘图上下文。</comment>
+		<comment>graphics context object, providing method to draw basic graphics, text, and image.</comment>
 
 		<property name="lineWidth" type="float">
-			<comment>线条粗细</comment>
+			<comment>set or return the current line width</comment>
 		</property>
 		
-		<property name="strokeColor" type="xsColor">
-			<comment>边线的颜色</comment>
+		<property name="strokeColor" type="object">
+			<comment>Set or return the color for stroke, supprot style like "#000000" only now</comment>
 		</property>
 		
-		<property name="fillColor" type="xsColor">	
-			<comment>边线的颜色</comment>
+		<property name="fillColor" type="object">	
+			<comment>Set or return the color used to fill the painting, supprot style like "#000000" only now</comment>
 		</property>
 		
-		<property name="font" type="xsFontType">
-			<comment>字体格式</comment>
+		<property name="font" type="object">
+			<comment>font for text</comment>
 		</property>
 		
 		<property name="textAlign" type="xsTextAlign" enum="start 0; end:1; left:2, center:3, right:4;">
-			<comment>字体对齐方式</comment>
+			<comment>Specifies the alignment of a text string relative to its layout rectangle .</comment>
 		</property>
 		
 		<property name="textBaseline" type="xsTextBaseline" enum="alphabetic 0; top:1; hang:2, middle:3, ideographic:4; bottom:5">
-			<comment>字体对齐方式</comment>
+			<comment>Text baseline alignment</comment>
 		</property>
-		
-		<!--<method name="clear">
-			<comment>清空整个画布</comment>
-		</method>-->
-		
+				
 		<method name="moveTo">
-			<comment>移动当前位置到指定的坐标</comment>
+			<comment>To move the path to the specified point in the canvas, not create a line</comment>
 			<param name="x" type="float">
-				<comment>X坐标</comment>
+				<comment>x-coordinate of the specified point </comment>
 			</param>
 			<param name="y" type="float">
-				<comment>Y坐标</comment>
+				<comment>y-coordinate of the specified point</comment>
 			</param>
 		</method>
 		
 		<method name="lineTo">
-			<comment>从当前位置绘制线段到指定坐标</comment>
+			<comment>Add a new point, and then create a line from that point to the last specified point in canvas坐标</comment>
 			<param name="x" type="float">
-				<comment>X坐标</comment>
+				<comment>x-coordinate of the new point </comment>
 			</param>
 			<param name="y" type="float">
-				<comment>Y坐标</comment>
+				<comment>x-coordinate of the new point </comment>
 			</param>
 		</method>
 		
 		<method name="stroke">
-			<comment>画出画笔路径</comment>
+			<comment>Draw a defined path.</comment>
 		</method> 
 		
 		<method name="fill">
-			<comment>填充画笔路径</comment>
+			<comment>Filling the current drawing (path).</comment>
 		</method> 
 		
 		<method name="rect">
-			<comment>在画图路径中加入矩形</comment>
+			<comment>Create a rectangle</comment>
 			<param name="x" type="float">
-				<comment>矩形左上角的 x 坐标</comment>
+				<comment>x-coordinate of the upper left corner of the rectangle</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>矩形左上角的 y 坐标</comment>
+				<comment>y-coordinate of the upper left corner of the rectangle</comment>
 			</param>
 			<param name="width" type="float">
-				<comment>矩形的宽度</comment>
+				<comment>Width of the rectangle</comment>
 			</param>
 			<param name="height" type="float">
-				<comment>矩形高度</comment>
+				<comment>Height of the rectangle</comment>
 			</param>
 		</method> 
 		
 		<method name="fillRect">
-			<comment>绘制填充矩形</comment>
+			<comment>Drawing " filled " rectangle.</comment>
 			<param name="x" type="float">
-				<comment>矩形左上角的 x 坐标</comment>
+				<comment>x-coordinate of the upper left corner of the rectangle</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>矩形左上角的 y 坐标</comment>
+				<comment>y-coordinate of the upper left corner of the rectangle</comment>
 			</param>
 			<param name="width" type="float">
-				<comment>矩形的宽度</comment>
+				<comment>Width of the rectangle</comment>
 			</param>
 			<param name="height" type="float">
-				<comment>矩形高度</comment>
+				<comment>Height of the rectangle</comment>
 			</param>
 		</method> 
 		
 		<method name="strokeRect">
-			<comment>绘制矩形(无填充)</comment>
+			<comment>Draws a rectangle ( no fill ).</comment>
 			<param name="x" type="float">
-				<comment>矩形左上角的 x 坐标</comment>
+				<comment>x-coordinate of the upper left corner of the rectangle</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>矩形左上角的 y 坐标</comment>
+				<comment>y-coordinate of the upper left corner of the rectangle</comment>
 			</param>
 			<param name="width" type="float">
-				<comment>矩形的宽度</comment>
+				<comment>Width of the rectangle</comment>
 			</param>
 			<param name="height" type="float">
-				<comment>矩形高度</comment>
+				<comment>Height of the rectangle</comment>
 			</param>
 		</method> 
 		
 		<method name="clearRect">
-			<comment>在给定的矩形内清除指定的像素</comment>
+			<comment>Clear the specified pixels within the given rectangle.</comment>
 			<param name="x" type="float">
-				<comment>矩形左上角的 x 坐标</comment>
+				<comment>x-coordinate of the upper left corner of the rectangle</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>矩形左上角的 y 坐标</comment>
+				<comment>y-coordinate of the upper left corner of the rectangle</comment>
 			</param>
 			<param name="width" type="float">
-				<comment>矩形的宽度</comment>
+				<comment>Width of the rectangle</comment>
 			</param>
 			<param name="height" type="float">
-				<comment>矩形高度</comment>
+				<comment>Height of the rectangle</comment>
 			</param>
 		</method> 
 		
 		<method name="arc">
-			<comment>在给定的矩形内清除指定的像素</comment>
+			<comment>Create an arc / curve ( used to create a circle or round ).</comment>
 			<param name="x" type="float">
-				<comment>弧形的 x 坐标</comment>
+				<comment>x-coordinate of center of the circle.</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>弧形的 y 坐标</comment>
+				<comment>y-coordinate of center of the circle.</comment>
 			</param>
 			<param name="radius" type="float">
-				<comment>弧形的半径</comment>
+				<comment>Arc radius</comment>
 			</param>
 			<param name="starAngle" type="float">
-				<comment>开始角度</comment>
+				<comment>Start angle, in radians. (Circular arc three o'clock position is 0 degrees).</comment>
 			</param>
 			<param name="endAngle" type="float">
-				<comment>结束角度</comment>
+				<comment>End angle, in radians.</comment>
 			</param>
 			<param name="anticlockwise" type="boolean">
-				<comment>是否逆时针(默认false)</comment>
+				<comment>Whether counterclockwise (default false)</comment>
 			</param>
 		</method> 
 		
 		<method name="arcTo">
-			<comment>过两点画指定半径的切线</comment>
+			<comment>Create arc / curve between two tangents.Unimplemented now.</comment>
 			<param name="x1" type="float">
-				<comment>切线起点的x坐标</comment>
+				<comment>X-coordinate of the starting point of the arc</comment>
 			</param>
 			<param name="y1" type="float">
-				<comment>切线起点的 y 坐标</comment>
+				<comment>Y-coordinate of the starting point of the arc</comment>
 			</param>
 			<param name="x2" type="float">
-				<comment>切线终点的x坐标</comment>
+				<comment>X-coordinate of the arc end point</comment>
 			</param>
 			<param name="y2" type="float">
-				<comment>切线终点的y坐标</comment>
+				<comment>y-coordinate of the arc end point.</comment>
 			</param>
 			<param name="radius" type="float">
-				<comment>切线所在圆的半径</comment>
+				<comment>Radius of the arc.</comment>
 			</param>
 		</method> 
 		
 		<method name="beginPath">
-			<comment>起始一条路径，或重置当前路径</comment>
+			<comment>Start a path, or reset the current path</comment>
 		</method> 
 		
 		<method name="closePath">
-			<comment>创建从当前点回到起始点的路径</comment>
+			<comment>Create a path from the current point back to the starting point of the path.</comment>
 		</method> 
 		
 		<method name="bezierCurveTo">
-			<comment>画三次贝赛尔曲线</comment>
+			<comment>Create a cubic Bezier curve.Unimplemented on MTK.</comment>
 			<param name="cp1x" type="float">
-				<comment> 	第一个贝塞尔控制点的 x 坐标</comment>
+				<comment>X-coordinate of the first control point of Bezier</comment>
 			</param>
 			<param name="cp1y" type="float">
-				<comment>第一个贝塞尔控制点的 y 坐标</comment>
+				<comment>Y-coordinate of the first control point of Bezier</comment>
 			</param>
 			<param name="cp2x" type="float">
-				<comment>第二个贝塞尔控制点的 x 坐标</comment>
+				<comment>X-coordinate of the second control point of Bezier</comment>
 			</param>
 			<param name="cp2y" type="float">
-				<comment>第二个贝塞尔控制点的 y 坐标</comment>
+				<comment>Y-coordinate of the second control point of Bezier</comment>
 			</param>
 			<param name="x" type="float">
-				<comment>结束点的 x 坐标</comment>
+				<comment>X-coordinate of the end point</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>结束点的 y 坐标</comment>
+				<comment>Y-coordinate of the end point</comment>
 			</param>
 		</method> 
 		
 		<method name="quadraticCurveTo">
-			<comment>画二次贝赛尔曲线</comment>
+			<comment>Create a quadratic Bezier curve.Unimplemented on linux,win32 and MTK.</comment>
 			<param name="qcpx" type="float">
-				<comment>贝塞尔控制点的 x 坐标</comment>
+				<comment>X-coordinate of Bezier control points</comment>
 			</param>
 			<param name="qcpxy" type="float">
-				<comment>贝塞尔控制点的 y 坐标</comment>
+				<comment>Y-coordinate of Bezier control points</comment>
 			</param>
 			<param name="qx" type="float">
-				<comment>结束点的 x 坐标</comment>
+				<comment>X-coordinate of the end point</comment>
 			</param>
 			<param name="qy" type="float">
-				<comment>结束点的 y 坐标</comment>
+				<comment>Y-coordinate of the end point</comment>
 			</param>
 		</method> 
 		
 		<method name="translate">
-			<comment>重新映射画布上的 (0,0) 位置</comment>
+			<comment>Remapping (0,0) position on the canvas.</comment>
 			<param name="x" type="float">
-				<comment>添加到水平坐标（x）上的值</comment>
+				<comment>Value added to the horizontal coordinate (x).</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>添加到垂直坐标（y）上的值</comment>
+				<comment>Value added to the vertical coordinate (y)</comment>
 			</param>
 		</method> 
 		
 		<method name="scale">
-			<comment>缩放当前绘图至更大或更小</comment>
+			<comment>Zoom the current drawing to a larger or smaller.Unimplemented on MTK.</comment>
 			<param name="scalewidth" type="float">
-				<comment>缩放当前绘图的宽度 (1=100%, 0.5=50%, 2=200%, 依次类推)</comment>
+				<comment>Scaling the current drawing width (1 = 100%, 0.5 = 50%, 2 = 200%, and so on)</comment>
 			</param>
 			<param name="scaleheight" type="float">
-				<comment>缩放当前绘图的高度 (1=100%, 0.5=50%, 2=200%, etc.)</comment>
+				<comment>Scaling the current drawing height (1 = 100%, 0.5 = 50%, 2 = 200%, and so on)</comment>
 			</param>
 		</method> 
 
 		<method name="rotate">
-			<comment>旋转当前绘图</comment>
+			<comment>Rotate the current drawing.Unimplemented on MTK.</comment>
 			<param name="angle" type="float">
-				<comment>旋转角度(以弧度计)</comment>
+				<comment>Rotation angle (in radians)</comment>
+			</param>
+		</method> 
+		
+		<method name="transform">
+			<comment>Replace the current transformation matrix of drawing.Unimplemented on MTK.</comment>
+			<param name="xx" type="float">
+				<comment>Horizontal scale</comment>
+			</param>
+			<param name="yx" type="float">
+				<comment>Horizontal tilt </comment>
+			</param>
+			<param name="xy" type="float">
+				<comment>Vertical tilt</comment>
+			</param>
+			<param name="yy" type="float">
+				<comment>Vertical scale</comment>
+			</param>
+			<param name="x0" type="float">
+				<comment>Horizontal movement</comment>
+			</param>
+			<param name="y0" type="float">
+				<comment>Vertical movement</comment>
 			</param>
 		</method> 
 		
 		<method name="isPointInPath">
-			<comment>判断点是否被路径包含</comment>
+			<comment>If the specified point  is in the current path, then return true, otherwise returns false.Unimplemented now.</comment>
 			<param name="x" type="float">
-				<comment>判断点的 x 坐标)</comment>
+				<comment>X-coordinate of the test point)</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>判断点的 y 坐标</comment>
+				<comment>Y-coordinate of the test point</comment>
 			</param>
 		</method> 
 		
 		<method name="drawImage">
-			<comment>绘制图像到画布上</comment>
-			<param name="image" type="xsImage">
-				<comment>规定钥匙用的图像</comment>
+			<comment>Draw the image to the canvas.</comment>
+			<param name="image" type="object">
+				<comment>Predetermined image you want to use.</comment>
 			</param>
 			<param name="sx" type="float">
-				<comment>可选，开始剪切的 x 坐标</comment>
+				<comment>Alternatively, x-coordinate began to cut.</comment>
 			</param>
 			<param name="sy" type="float">
-				<comment>可选，开始剪切的 y 坐标</comment>
+				<comment>Alternatively, y-coordinate began to cut.</comment>
 			</param>
 			<param name="swidth" type="float">
-				<comment>可选，被剪切图像的宽度</comment>
+				<comment>Alternatively, the width of the cutted image.</comment>
 			</param>
 			<param name="sheight" type="float">
-				<comment>可选，被剪切图像的高度</comment>
+				<comment>Alternatively, the height of the cutted image.</comment>
 			</param>
 			<param name="x" type="float">
-				<comment>在画布上放置图像的 x 坐标</comment>
+				<comment>X-coordinate of the point to place the image</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>在画布上放置图像的 y 坐标</comment>
+				<comment>Y-coordinate of the point to place the image</comment>
 			</param>
 			<param name="width" type="float">
-				<comment>可选，要使用的图像的宽度</comment>
+				<comment>Alternatively, the width of the image you want to use.</comment>
 			</param>
 			<param name="height" type="float">
-				<comment>可选，要使用的图像的高度</comment>
+				<comment>Alternatively, the height of the image you want to use.</comment>
 			</param>
 		</method> 
 		
 		<method name="clip">
-			<comment>从原始画布剪切任意形状和尺寸的区域</comment>
+			<comment>Cut any shape and size from the original canvas area.Unimplemented now.</comment>
 		</method> 
 		
 		<method name="fillText">
-			<comment> 在画布上绘制“被填充的”文本</comment>
+			<comment> Draw  "filled" text on the canvas.</comment>
 			<param name="text" type="text">
-				<comment>规定在画布上输出的文本</comment>
+				<comment>Setting the output text on the canvas.</comment>
+			</param>
+			<param name="count" type="int">
+				<comment>The number of characters to be displayed.</comment>
 			</param>
 			<param name="x" type="float">
-				<comment>开始绘制文本的 x 坐标位置（相对于画布）</comment>
+				<comment>Start drawing text x-coordinate position (relative to the canvas).</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>开始绘制文本的 y 坐标位置（相对于画布）</comment>
+				<comment>Start drawing text y-coordinate position (relative to the canvas)</comment>
 			</param>
 			<param name="maxWidth" type="int">
-				<comment>可选。允许的最大文本宽度，以像素计</comment>
+				<comment>Alternatively, the maximum allowable text width, in pixels.</comment>
 			</param>
 		</method> 
 		
 		<method name="strokeText">
-			<comment> 在画布上绘制文本（没有填色）</comment>
+			<comment> Draw text on the canvas (no filling).</comment>
 			<param name="text" type="text">
-				<comment>规定在画布上输出的文本</comment>
+				<comment>Setting the output text on the canvas.</comment>
+			</param>
+			<param name="count" type="int">
+				<comment>The number of characters to be displayed.</comment>
 			</param>
 			<param name="x" type="float">
-				<comment>开始绘制文本的 x 坐标位置（相对于画布）</comment>
+				<comment>Start drawing text x-coordinate position (relative to the canvas).</comment>
 			</param>
 			<param name="y" type="float">
-				<comment>开始绘制文本的 y 坐标位置（相对于画布）</comment>
+				<comment>Start drawing text y-coordinate position (relative to the canvas).</comment>
 			</param>
 			<param name="maxWidth" type="int">
-				<comment>可选。允许的最大文本宽度，以像素计</comment>
+				<comment>Alternatively, the maximum allowable text width, in pixels.</comment>
 			</param>
 		</method> 
 		
 		<method name="measureText">
-			<comment>返回包含一个对象，该对象包含以像素计的指定字体宽度</comment>
+			<comment>Return contains an object that contains the specified font size of the text in pixels.</comment>
 			<param name="text" type="text">
-				<comment>要测量的文本</comment>
+				<comment>text to be measured</comment>
 			</param>
+			<return type="object">
+				<comment>Return a data contains the width and height of the text </comment>
+			</return>
 		</method> 
 		
 		<method name="save">
-			<comment>保存当前环境的状态</comment>
+			<comment>Save the current state and properties of the environment.</comment>
 		</method> 
 		
 		<method name="restore">
-			<comment>返回之前保存过的路径状态和属性</comment>
+			<comment>Return the path previously saved state and properties.</comment>
 		</method> 
+	</class>
+	
+	<class name="Canvas" xtag="canvas" inherit="Object">
+		<comment>drawing canvas object</comment>
+		<method name="getContext">
+			<comment>Get the graphics context.</comment>
+			<return type="CanvasContext">
+				<comment>the graphics context </comment>
+			</return>
+		</method>
 	</class>
 
 </classdef>

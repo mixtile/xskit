@@ -4,8 +4,7 @@
 #include <xs/line.h>
 #include <xs/value.h>
 
-const int MAXLEN = 1024;
-const float PI  = 3.1415926;
+const float PI  = 3.1415926;//PI
 
 xsCanvasContext::xsCanvasContext()
 {
@@ -25,7 +24,6 @@ xsCanvasContext::xsCanvasContext()
 	rects = xsArrayListCreate(2);
 	arcs = xsArrayListCreate(2);
 	curves = xsArrayListCreate(2);
-	currentRect = NULL;
 	statusArchive = xsStackCreate(2);
 }
 
@@ -52,7 +50,6 @@ xsCanvasContext::~xsCanvasContext()
 	graphicsGroups = NULL;
 	currentgraphics = NULL;
 	rects = NULL;
-	currentRect = NULL;
 	statusArchive = NULL;
 }
 
@@ -422,7 +419,6 @@ void xsCanvasContext::rect(float x, float y, float width, float height)
 	rect ->lineWidth = lineWidth > 1.0 ? lineWidth : 1.0;
 	rect ->fillColor = fillColor;
 	rect ->strokeColor = strokeColor;
-	currentRect = rect;
 	addRect(rect);
 
 }
@@ -440,7 +436,7 @@ void xsCanvasContext::strokeRect(float x, float y, float width, float height)
 	xsGraphics *gc = xsGetSystemGc();
 	int i;
 	lineWidth = lineWidth > 1.0 ? lineWidth : 1.0;
-//另一种实现线宽为lineWidth矩形方法
+//another way to draw rectangle with specified linwWidth.
 //	xsFillRectangle(gc, x - lineWidth + 1, y - lineWidth + 1, width + 2 * (lineWidth - 1), height + 2 * (lineWidth - 1), strokeColor);
 //	xsFillRectangle(gc, x, y, width, height, XS_COLOR_WHITE);
 	xsSetColor(gc, strokeColor);
@@ -461,7 +457,7 @@ void xsCanvasContext::clearRect(float x, float y, float width, float height)
 }
 void xsCanvasContext::arc(float x, float y, float radius, float startAngle, float endAngle, xsBool anticlockwise)
 {
-	//MTK只支持０－３６０
+	//MTK support only 0-360 angle.
 	xsArc *arc = static_cast<xsArc *>(xsArc::createInstance());
 	arc ->x = x;
 	arc ->y = y;
@@ -597,7 +593,7 @@ void xsCanvasContext::drawImage(xsImage* image,float sx, float sy, float swidth,
 
 void xsCanvasContext::clip()
 {
-	//需要对当前路径cilp，找不到合适接口
+
 }
 
 void xsCanvasContext::drawWithBaseline(const xsTChar* text, int count, float x, float y, float maxWidth, int drawFlag)
@@ -653,12 +649,12 @@ void xsCanvasContext::drawWithBaseline(const xsTChar* text, int count, float x, 
 	xsFlushScreen(0, 0, screenWidth - 1, screenHeight - 1);
 }
 
-void xsCanvasContext::fillText(const xsTChar *text , int count, float x, float y, xsU32 maxWidth)
+void xsCanvasContext::fillText(const xsTChar *text , float x, float y, xsU32 maxWidth)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsSetFont(gc, &font);
 	float width, height;
-	count = count > XS_STRLEN(text) ? XS_STRLEN(text) : count;
+	int count = xsTcsLen(text);
 	xsMeasureText(gc, text, count, &font, &width, &height);
 	maxWidth = maxWidth > width ? width : maxWidth;
 	switch(textAlign)
@@ -681,12 +677,12 @@ void xsCanvasContext::fillText(const xsTChar *text , int count, float x, float y
 	}
 }
 
-void xsCanvasContext::strokeText(const xsTChar *text ,  int count, float x, float y, xsU32 maxWidth)
+void xsCanvasContext::strokeText(const xsTChar *text , float x, float y, xsU32 maxWidth)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsSetFont(gc, &font);
 	float width, height;
-	count = count > XS_STRLEN(text) ? XS_STRLEN(text) : count;
+	int count = xsTcsLen(text);
 	xsMeasureText(gc, text, count, &font, &width, &height);
 	maxWidth = maxWidth > width ? width : maxWidth;
 	switch(textAlign)
@@ -713,7 +709,7 @@ xsTextSize xsCanvasContext::measureText(const xsTChar *text)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsTextSize size;
-	xsMeasureText(gc, text, XS_STRLEN(text), &font, &size.width, &size.height);
+	xsMeasureText(gc, text, xsTcsLen(text), &font, &size.width, &size.height);
 	return size;
 }
 

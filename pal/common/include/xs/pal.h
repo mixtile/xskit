@@ -49,10 +49,16 @@ enum _xsCommandLineType
 /**
  * Add time header and print trace message.
  * time header format as "MM-DD HH:mm:ss"
- * @param format
+ * @param format format of the trace message
  */
 XS_INTERFACE void xsTrace(const char *format, ...);
 
+/**
+ * A message includes description of the action, the name of the source file, and the line number where the action happened is written to the standard error device and abort is called, terminating the program execution.
+ * @param expression description about what happened
+ * @param file dthe name of the source file where the action happened
+ * @param line line number where the action happened
+ */
 XS_INTERFACE void xsAssert(const char *expression, const char *file, int line);
 
 /**
@@ -560,6 +566,9 @@ XS_INTERFACE size_t xsWcsToMbs(char *dest, const xsWChar *src, size_t count);
  */
 /*@{*/
 
+/**
+ * File open mode.
+ */
 enum
 {
 	XS_OF_READONLY		= 0x00000001,
@@ -569,6 +578,9 @@ enum
 	XS_OF_EXCLUSIVE		= 0x00000010	/// do not create new file if file exists
 };
 
+/**
+ * File location type.
+ */
 enum
 {
 	XS_FILE_BEGIN,
@@ -576,6 +588,9 @@ enum
 	XS_FILE_END
 };
 
+/**
+ * The maximum file path length.
+ */
 #define XS_MAX_PATH			260
 
 /**
@@ -752,6 +767,9 @@ XS_INTERFACE size_t xsReadRes(xsRes handle, void *buffer, size_t begin, size_t s
  */
 /*@{*/
 
+/**
+ * A structure contains RGBA color data.
+ */
 typedef struct _xsColor
 {
 	xsU8 alpha;
@@ -760,6 +778,9 @@ typedef struct _xsColor
 	xsU8 blue;
 } xsColor;
 
+/**
+ * A structure stores font style and size of text.
+ */
 typedef struct _xsFontType
 {
 	xsU8 style;
@@ -767,6 +788,9 @@ typedef struct _xsFontType
 	float size;
 } xsFontType;
 
+/**
+ * A structure stores cap, join and width of  the line.
+ */
 typedef struct _xsStrokeStyle
 {
 	float width;
@@ -774,6 +798,9 @@ typedef struct _xsStrokeStyle
 	xsU8 join;
 } xsStrokeStyle;
 
+/**
+ * type of line cap
+ */
 enum _xsStrokeCap
 {
     XS_STROKE_CAP_BUTT,
@@ -781,12 +808,18 @@ enum _xsStrokeCap
     XS_STROKE_CAP_SQUARE
 };
 
+/**
+ * A structure stores X and Y coordinate of a point.
+ */
 typedef struct _xsPoint
 {
     float x;
     float y;
 } xsPoint;
 
+/**
+ * A structure stores the coordinates of the upper left and lower right corner of a rectangle.
+ */
 typedef struct _xsRect
 {
 	float left;
@@ -798,6 +831,9 @@ typedef struct _xsRect
 #define XS_RECT_WIDTH(rp)	(rp->right - rp->left + 1)
 #define XS_RECT_HEIGHT(rp)	(rp->bottom - rp->top + 1)
 
+/**
+ * A struct stores the context to draw on.
+ */
 typedef struct _xsGraphicsContext
 {
 	float xoffset;
@@ -810,6 +846,9 @@ typedef struct _xsGraphicsContext
 	int pixelDepth; // current framebuffer bits-per-pixel
 } xsGraphics;
 
+/**
+ * The xsImageParam structure contains  image size and load flag for linux.
+ */
 typedef struct _xsImageParam
 {
 	int width;
@@ -819,6 +858,9 @@ typedef struct _xsImageParam
 
 typedef xsAFD xsImage;
 
+/**
+ * image type
+ */
 enum _xsImageType
 {
 	XS_IMGTYPE_UNKNOWN	= 0,
@@ -830,6 +872,9 @@ enum _xsImageType
 	XS_IMGTYPE_OTHER	= 255
 };
 
+/**
+ * font style
+ */
 enum _xsFontStyle
 {
 	XS_FONT_NORMAL		= 0,
@@ -838,6 +883,9 @@ enum _xsFontStyle
 	XS_FONT_UNDERLINE	= 0x00000004
 };
 
+/**
+ * font size
+ */
 enum _xsFontDefaultSize
 {
 	XS_FONT_XX_SMALL	= -1,
@@ -851,6 +899,9 @@ enum _xsFontDefaultSize
 	XS_FONT_SIZE_COUNT	= 7
 };
 
+/**
+ * text input type
+ */
 enum _xsInputType
 {
 	XS_INPUT_NORMAL		= 0,
@@ -911,19 +962,19 @@ XS_INTERFACE void xsUnlockPixelBuffer(xsGraphics *gc);
 XS_INTERFACE void xsGcTranslate(xsGraphics *gc, float xoffset, float yoffset);
 
 /**
- * Rotate coordinate.
+ * Rotate coordinate.Unimplemented on MTK.
  *
  */
 XS_INTERFACE void xsGcRotate(xsGraphics *gc, float angle);
 
 /**
- * Scale coordinate.
+ * Scale coordinate.Unimplemented on MTK.
  *
  */
 XS_INTERFACE void xsGcScale(xsGraphics *gc, float scalewidth, float scaleheight);
 
 /**
- * Transform coordinate.
+ * Transform coordinate.Unimplemented on MTK.
  *
  */
 XS_INTERFACE void xsGcTransform(xsGraphics *gc, float xx, float yx, float xy, float yy, float x0, float y0);
@@ -1023,25 +1074,25 @@ XS_INTERFACE void xsDrawArc(xsGraphics *gc, float x, float y, float r, float sta
 XS_INTERFACE void xsFillArc(xsGraphics *gc, float x, float y, float r, float startAngle, float endAngle);
 
 /**
- * Draw a cubic bezier curve.
+ * Draw a cubic bezier curve.Unimplemented on MTK.
  * @param
  */
 XS_INTERFACE void xsDrawCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
 
 /**
- *Fill a cubic bezier curve.
+ *Fill a cubic bezier curve.Unimplemented on MTK.
  * @param
  */
 XS_INTERFACE void xsFillCubicBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
 
 /**
- * Draw a quadratic bezier curve.
+ * Draw a quadratic bezier curve.Unimplemented on MTK, linux and win32.
  * @param
  */
 XS_INTERFACE void xsDrawQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
 
 /**
- *Fill a quadratic bezier curve.
+ *Fill a quadratic bezier curve.Unimplemented on MTK, linux, and win32.
  * @param
  */
 XS_INTERFACE void xsFillQuadraticBezierCurve(xsGraphics *gc, float x1, float y1, float x2, float y2, float x3, float y3);
