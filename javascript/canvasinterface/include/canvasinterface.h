@@ -10,7 +10,16 @@
 
 #include "duktape.h"
 
-extern void duktape_test(void);
+/**
+ * init canvas for javascript and load javascript file
+ * @param scriptURL URL of javascript source file
+ */
+extern void invokeJavascript(const char *scriptURL);
+
+/**
+ * handle key event for javascript
+ * @param e event data
+ */
 extern void xsArrowKeysHandler(xsEvent *e);
 
 #endif /* CANVASINTERFACE_H_ */

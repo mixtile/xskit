@@ -13,7 +13,7 @@ typedef unsigned short xsWChar;
 
 typedef FILE * xsFile;
 
-typedef cairo_pattern_t xsGradientPattern;
+//typedef cairo_pattern_t xsGradientPattern;
 
 int PalGiInit(GdkWindow *window);
 void PalGiUninit(void);

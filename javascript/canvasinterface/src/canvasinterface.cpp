@@ -8,10 +8,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "duktape.h"
-#include "xs/canvas.h"
-#include "xs/pal.h"
 #include <iostream>
+
+#include "xs/pal.h"
+#include "xs/canvas.h"
+#include "xs/string.h"
+#include "duktape.h"
 
 typedef struct _xsJSEvent
 {
@@ -22,21 +24,10 @@ typedef struct _xsJSEvent
 duk_context *g_ctx = NULL;
 char keyProcessingFunc[128] = {0};
 xsJSEvent event = {};
+xsImage *g_img[100] = {0};
+int g_imgNum = 0;
 
-/*将大写字母转换成小写字母*/
-int tolower(int c)
-{
-	if (c >= 'A' && c <= 'Z')
-	{
-		return c + 'a' - 'A';
-	}
-	else
-	{
-		return c;
-	}
-}
-
-//将十六进制的字符串转换成整数
+//convert a hexadecimal string to an integer.
 int htoi(char s[])
 {
     int i;
@@ -223,10 +214,10 @@ static duk_ret_t updrate_param(duk_context *ctx)
     context ->fillColor.green = htoi(const_cast<char *>(fillTmp.substr(3, 2).c_str()));
     context ->fillColor.blue = htoi(const_cast<char *>(fillTmp.substr(5, 2).c_str()));
     duk_pop(ctx);
-    duk_get_prop_string(ctx, -1, "font");
-    const char *font = duk_to_string(ctx, -1);
-    std::string fontTmp = font;
-    parseFontString(fontTmp, context ->font);
+//    duk_get_prop_string(ctx, -1, "font");
+//    const char *font = duk_to_string(ctx, -1);
+//    std::string fontTmp = font;
+//    parseFontString(fontTmp, context ->font);
 
     return 1;
 }
@@ -454,20 +445,71 @@ static duk_ret_t native_canvasContext_transform(duk_context *ctx)
     return 1;
 }
 
-//static duk_ret_t native_canvasContext_drawImage(duk_context *ctx)
-//{
-//	float x1 = (float)duk_require_number(ctx,0);
-//	float y1 = (float)duk_require_number(ctx,1);
-//	float x2 = (float)duk_require_number(ctx,2);
-//	float y2 = (float)duk_require_number(ctx,3);
-//	float x3 = (float)duk_require_number(ctx,4);
-//	float y3 = (float)duk_require_number(ctx,5);
-//
-//	xsCanvasContext *context = get_native_context(ctx);
-//    context ->transform(x1, y1, x2, y2, x3, y3);
-//
-//    return 1;
-//}
+static duk_ret_t native_canvasContext_drawImage(duk_context *ctx)
+{
+	float sx = (float)duk_require_number(ctx,1);
+	float sy = (float)duk_require_number(ctx,2);
+	float swidth = (float)duk_get_number(ctx,3);
+	float sheight = (float)duk_get_number(ctx,4);
+	float x = (float)duk_get_number(ctx,5);
+	float y = (float)duk_get_number(ctx,6);
+	float width = (float)duk_get_number(ctx,7);
+	float height = (float)duk_get_number(ctx,8);
+
+	/*获取object对象的方法一*/
+//	void *imgFunc = duk_require_heapptr(ctx, 0);
+//	duk_push_heapptr(ctx, imgFunc);
+//	duk_get_prop_string(ctx, -1, "src");
+//    const char *src = duk_to_string(ctx, -1);
+//    duk_pop(ctx);
+//    duk_get_prop_string(ctx, -1, "imageData");
+//    xsImage *image = (xsImage *)duk_to_pointer(ctx, -1);
+//    image ->src.filename = const_cast<char *>(src);
+//    duk_pop(ctx);
+
+	/*获取object对象的方法二*/
+	duk_get_prop_string(ctx, 0, "src");
+	const char *src = duk_to_string(ctx, -1);
+	duk_get_prop_string(ctx, 0, "imageData");
+	xsImage *image = (xsImage *)duk_to_pointer(ctx, -1);
+	image ->src.filename = xsUtf8ToTcsDup(const_cast<char *>(src));
+	duk_pop_2(ctx);
+
+	xsCanvasContext *context = get_native_context(ctx);
+	duk_push_number(ctx, swidth);
+	if(duk_is_nan(ctx, -1))
+	{
+		context ->drawImage(image, sx, sy);
+	}
+	else
+	{
+		duk_push_number(ctx, x);
+		if(duk_is_nan(ctx, -1))
+		{
+			duk_push_number(ctx, sheight);
+			if(!duk_is_nan(ctx, -1))
+			{
+				context ->drawImage(image, sx, sy, swidth, sheight);
+			}
+			duk_pop(ctx);
+		}
+		else
+		{
+			duk_push_number(ctx, y);
+			duk_push_number(ctx, width);
+			duk_push_number(ctx, height);
+			if(!duk_is_nan(ctx, -1) && !duk_is_nan(ctx, -2) && !duk_is_nan(ctx, -3))
+			{
+				context ->drawImage(image, sx, sy, swidth, sheight, x, y, width, height);
+			}
+			duk_pop_3(ctx);
+		}
+		duk_pop(ctx);
+	}
+	duk_pop(ctx);
+
+    return 1;
+}
 
 static duk_ret_t native_canvasContext_clip(duk_context *ctx)
 {
@@ -481,19 +523,18 @@ static duk_ret_t native_canvasContext_clip(duk_context *ctx)
 static duk_ret_t native_canvasContext_fillText(duk_context *ctx)
 {
 	const char *text = duk_require_string(ctx,0);
-	int count = duk_require_int(ctx, 1);
-	float x = (float)duk_require_number(ctx,2);
-	float y = (float)duk_require_number(ctx,3);
-	xsU32 width = (xsU32)duk_get_number(ctx,4);
+	float x = (float)duk_require_number(ctx,1);
+	float y = (float)duk_require_number(ctx,2);
+	xsU32 width = (xsU32)duk_get_number(ctx,3);
 
 	xsCanvasContext *context = get_native_context(ctx);
 	if(width > 0)
     {
-		context ->fillText(text, count, x, y, width);
+		context ->fillText(xsUtf8ToTcsDup(text), x, y, width);
     }
 	else
 	{
-		context ->fillText(text, count, x, y);
+		context ->fillText(xsUtf8ToTcsDup(text), x, y);
 	}
 
     return 1;
@@ -502,19 +543,18 @@ static duk_ret_t native_canvasContext_fillText(duk_context *ctx)
 static duk_ret_t native_canvasContext_strokeText(duk_context *ctx)
 {
 	const char *text = duk_require_string(ctx,0);
-	int count = duk_require_int(ctx, 1);
-	float x = (float)duk_require_number(ctx,2);
-	float y = (float)duk_require_number(ctx,3);
-	xsU32 width = (xsU32)duk_get_number(ctx,4);
+	float x = (float)duk_require_number(ctx,1);
+	float y = (float)duk_require_number(ctx,2);
+	xsU32 width = (xsU32)duk_get_number(ctx,3);
 
 	xsCanvasContext *context = get_native_context(ctx);
 	if(width > 0)
     {
-		context ->strokeText(text, count, x, y, width);
+		context ->strokeText(xsUtf8ToTcsDup(text),  x, y, width);
     }
 	else
 	{
-		context ->strokeText(text, count, x, y);
+		context ->strokeText(xsUtf8ToTcsDup(text), x, y);
 	}
 
     return 1;
@@ -525,7 +565,7 @@ static duk_ret_t native_canvasContext_measureText(duk_context *ctx)
 	const char *text = duk_require_string(ctx,0);
 
 	xsCanvasContext *context = get_native_context(ctx);
-	xsTextSize textSize = context ->measureText(text);
+	xsTextSize textSize = context ->measureText(xsUtf8ToTcsDup(text));
 
 	duk_push_this(ctx);
 	duk_push_number(ctx, textSize.width);
@@ -554,17 +594,17 @@ static duk_ret_t native_canvasContext_restore(duk_context *ctx)
 	duk_push_number(ctx, context ->lineWidth);
 	duk_put_prop_string(ctx, -2, "lineWidth");
 	char colorNum[8] = {0};
-	snprintf(colorNum, 8, "#%02x%02x%02x", context ->strokeColor.red, context ->strokeColor.green, context ->strokeColor.blue);
+	xsSnprintf(colorNum, 8, "#%02x%02x%02x", context ->strokeColor.red, context ->strokeColor.green, context ->strokeColor.blue);
 	duk_push_string(ctx, colorNum);
 	duk_put_prop_string(ctx, -2, "strokeStyle");
-	snprintf(colorNum, 8, "#%02x%02x%02x", context ->fillColor.red, context ->fillColor.green, context ->fillColor.blue);
+	xsSnprintf(colorNum, 8, "#%02x%02x%02x", context ->fillColor.red, context ->fillColor.green, context ->fillColor.blue);
 	duk_push_string(ctx, colorNum);
 	duk_put_prop_string(ctx, -2, "fillStyle");
-	char fontString[128] ={0};
-	snprintf(fontString, 128, "%dpx %s", context ->font.size, context ->font.style);
-	duk_push_string(ctx, fontString);
-	duk_put_prop_string(ctx, -2, "font");
-
+//	char fontString[128] ={0};
+//	xsSnprintf(fontString, 128, "%fpx %d", context ->font.size, context ->font.style);
+//	duk_push_string(ctx, fontString);
+//	duk_put_prop_string(ctx, -2, "font");
+//	printf("%s    %s\n", fontString, colorNum);
     return 1;
 }
 
@@ -589,6 +629,7 @@ const duk_function_list_entry contextmethods[] = {
     { "scale",   native_canvasContext_scale,  2  },
     { "rotate",   native_canvasContext_rotate,  1   },
     { "transform",   native_canvasContext_transform,  6   },
+    { "drawImage",   native_canvasContext_drawImage,  9  },
 
     { "clip",   native_canvasContext_clip,  0   },
     { "fillText",   native_canvasContext_fillText,  4   },
@@ -671,10 +712,42 @@ static duk_ret_t native_rgba_creator(duk_context *ctx)
 	return 1;
 }
 
+static duk_ret_t native_image_creator(duk_context *ctx)
+{
+	const char *src = duk_require_string(ctx, 0);
+	xsImage *img = (xsImage*)xsCalloc(sizeof(xsImage));
+	xsImageParam *param = (xsImageParam*)xsCalloc(sizeof(xsImageParam));
+	img ->fileType = XS_IMGTYPE_UNKNOWN;
+	img ->srcType = XS_AFD_FILENAME;
+	img ->srcparam = (void *)param;
+
+	g_img[g_imgNum] = img;
+	g_imgNum++;
+	duk_push_this(ctx);
+	duk_push_pointer(ctx, (void *)img);
+	duk_put_prop_string(ctx, -2, "imageData");
+	duk_push_string(ctx, src);
+    duk_put_prop_string(ctx, -2, "src");
+
+    return 1;
+}
+
 static void destroyHeap()
 {
+	for(int i = 0; i < g_imgNum; i++)
+	{
+		if(NULL != g_img[i])
+		{
+			if(NULL != g_img[i] ->srcparam)
+			{
+				delete (xsImageParam *)(g_img[i] ->srcparam);
+			}
+
+			delete g_img[i];
+		}
+	}
+
 	duk_destroy_heap(g_ctx);
-	exit(0);
 }
 
 const duk_function_list_entry globalmethods[] = {
@@ -684,44 +757,55 @@ const duk_function_list_entry globalmethods[] = {
     { "clearInterval",   native_clearInterval,  1  },
     { "rgb",   native_rgb_creator,  3  },
     { "rgba",   native_rgba_creator,  4  },
+    { "Image",   native_image_creator,  1  },
     { NULL,  NULL,        0   }
 };
 
-void duktape_test(void) {
+void invokeJavascript(const char *scriptURL) {
 	g_ctx = duk_create_heap_default();
-    if (!g_ctx) {
+    if (!g_ctx)
+    {
         printf("Failed to create a Duktape heap.\n");
-        exit(1);
+        return;
     }
 
-    duk_push_global_object(g_ctx);
+	duk_push_global_object(g_ctx);
 	duk_put_function_list(g_ctx, -1, globalmethods);
-    duk_push_object(g_ctx);
-    duk_push_c_function(g_ctx, native_addEventListener, 3);
-    duk_put_prop_string(g_ctx, -2, "addEventListener");
-    duk_put_prop_string(g_ctx, -2, "document");
-    duk_push_object(g_ctx);
-    duk_push_number(g_ctx, event.keyCode);
-    duk_put_prop_string(g_ctx, -2, "keyCode");
-    duk_put_prop_string(g_ctx, -2, "event");
+	duk_push_object(g_ctx);
+	duk_push_c_function(g_ctx, native_addEventListener, 3);
+	duk_put_prop_string(g_ctx, -2, "addEventListener");
+	duk_put_prop_string(g_ctx, -2, "document");
+	duk_push_object(g_ctx);
+	duk_push_number(g_ctx, event.keyCode);
+	duk_put_prop_string(g_ctx, -2, "keyCode");
+	duk_put_prop_string(g_ctx, -2, "event");
 
-    if (duk_peval_file(g_ctx, "/home/lewis/git/xs-new/prime.js") != 0) {
+    if (duk_peval_file(g_ctx, scriptURL) != 0)
+    {
         printf("Error: %s\n", duk_safe_to_string(g_ctx, -1));
         destroyHeap();
+		goto end;
+
     }
     duk_pop(g_ctx);  /* ignore result */
 
-//    duk_get_prop_string(g_ctx, -1, "primeTest");
-//    if (duk_pcall(g_ctx, 0) != 0) {
-//        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
-//    }
-//    duk_pop(g_ctx);  /* ignore result */
-
-    duk_get_prop_string(g_ctx, -1, "init");
-    if (duk_pcall(g_ctx, 0) != 0) {
+/*    duk_get_prop_string(g_ctx, -1, "primeTest");
+    if (duk_pcall(g_ctx, 0) != 0)
+     {
         printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
     }
     duk_pop(g_ctx);  /* ignore result */
+
+    duk_get_prop_string(g_ctx, -1, "init");
+    if (duk_pcall(g_ctx, 0) != 0)
+    {
+        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
+    }
+	duk_pop(g_ctx);  /* ignore result */
+	return;
+end:
+	printf("Fail to invoke javascript file.\n");
+	return;
 
 }
 
@@ -741,6 +825,7 @@ void xsArrowKeysHandler(xsEvent *e)
 	case XS_PAD_KEY_DOWN_ARROW:
 		event.keyCode = 40;
 		break;
+	case XS_PAD_KEY_SELECT:
 	case XS_PAD_KEY_ENTER:
 		event.keyCode = 13;
 		break;
@@ -751,7 +836,8 @@ void xsArrowKeysHandler(xsEvent *e)
     duk_get_prop_string(g_ctx, -2, "event");
 	duk_push_number(g_ctx, event.keyCode);
 	duk_put_prop_string(g_ctx, -2, "keyCode");
-    if (duk_pcall(g_ctx, 1) != 0) {
+    if (duk_pcall(g_ctx, 1) != 0)
+    {
         printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
     }
     duk_pop(g_ctx);

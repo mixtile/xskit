@@ -20,16 +20,9 @@ int DemoApp::start()
 	xsSetColor(xsGetSystemGc(), color);
 	xsGetScreenDimension(&width, &height);
 	xsFillRectangle(xsGetSystemGc(), 0, 0, width, height);//, xsArgbToColor(0xFFFFFFFF));
-//	xsColor color1 = {255,255,0,0};
-//	xsColor color2 = {255,0,255,0};
-//	xsDrawBorderText(xsGetSystemGc(), "d d d d d d", 150, 150, 3, color1, color2, false);
-
-	//xsGcTranslate(xsGetSystemGc(), 50, 50);
 	xsFlushScreen(0, 0, width - 1, height - 1);
 
-//	xs_canvas_demo();
-
-	duktape_test();
+	invokeJavascript("/home/lewis/git/xs-new/prime.js");
 
 	x = (width - BOX_SIZE) / 2;
 	y = (height - BOX_SIZE) / 2;
@@ -55,6 +48,7 @@ void DemoApp::exit()
 
 int DemoApp::processEvent(xsEvent *e)
 {
+	XS_TRACE("keycode = %d\n", e->sys ->data.key.keyCode);
 	switch (e->type)
 	{
 		case XS_EVT_START:
@@ -72,11 +66,11 @@ int DemoApp::processEvent(xsEvent *e)
 			break;
 			
 		case XS_EVT_MOUSE_DOWN:
-			xsStopTimer(timer);
+			//xsStopTimer(timer);
 			break;
 
 		case XS_EVT_MOUSE_UP:
-			timer = xsStartTimer(20, _onTimeout, this);
+			//timer = xsStartTimer(20, _onTimeout, this);
 			break;
 
 		case XS_EVT_KEY_DOWN:
@@ -84,7 +78,7 @@ int DemoApp::processEvent(xsEvent *e)
 				xsStopTimer(timer);
 			if(e ->sys ->data.key.keyCode == XS_PAD_KEY_LEFT_ARROW  || e ->sys ->data.key.keyCode == XS_PAD_KEY_UP_ARROW
 					|| e ->sys ->data.key.keyCode == XS_PAD_KEY_RIGHT_ARROW || e ->sys ->data.key.keyCode == XS_PAD_KEY_DOWN_ARROW
-					|| e->sys ->data.key.keyCode == XS_PAD_KEY_ENTER)
+					|| e->sys ->data.key.keyCode == XS_PAD_KEY_ENTER || e->sys ->data.key.keyCode == XS_PAD_KEY_SELECT)
 				xsArrowKeysHandler(e);
 			break;
 

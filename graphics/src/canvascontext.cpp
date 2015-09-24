@@ -4,8 +4,7 @@
 #include <xs/line.h>
 #include <xs/value.h>
 
-const int MAXLEN = 1024;
-const float PI  = 3.1415926;
+const float PI  = 3.1415926;//PI
 
 xsCanvasContext::xsCanvasContext()
 {
@@ -17,7 +16,7 @@ xsCanvasContext::xsCanvasContext()
 	textAlign = XS_TEXT_ALIGN_START;
 	textBaseline = XS_BASELINE_MIDDLE;
 
-	font.size = XS_FONT_SMALL;
+	font.size = 12;
 	font.style = XS_FONT_NORMAL;
 
 	graphicsGroups = NULL;
@@ -25,7 +24,6 @@ xsCanvasContext::xsCanvasContext()
 	rects = xsArrayListCreate(2);
 	arcs = xsArrayListCreate(2);
 	curves = xsArrayListCreate(2);
-	currentRect = NULL;
 	statusArchive = xsStackCreate(2);
 }
 
@@ -52,7 +50,6 @@ xsCanvasContext::~xsCanvasContext()
 	graphicsGroups = NULL;
 	currentgraphics = NULL;
 	rects = NULL;
-	currentRect = NULL;
 	statusArchive = NULL;
 }
 
@@ -422,7 +419,6 @@ void xsCanvasContext::rect(float x, float y, float width, float height)
 	rect ->lineWidth = lineWidth > 1.0 ? lineWidth : 1.0;
 	rect ->fillColor = fillColor;
 	rect ->strokeColor = strokeColor;
-	currentRect = rect;
 	addRect(rect);
 
 }
@@ -440,13 +436,14 @@ void xsCanvasContext::strokeRect(float x, float y, float width, float height)
 	xsGraphics *gc = xsGetSystemGc();
 	int i;
 	lineWidth = lineWidth > 1.0 ? lineWidth : 1.0;
-//另一种实现线宽为lineWidth矩形方法
+//another way to draw rectangle with specified linwWidth.
 //	xsFillRectangle(gc, x - lineWidth + 1, y - lineWidth + 1, width + 2 * (lineWidth - 1), height + 2 * (lineWidth - 1), strokeColor);
 //	xsFillRectangle(gc, x, y, width, height, XS_COLOR_WHITE);
 	xsSetColor(gc, strokeColor);
+
 	for(i = 0; i < lineWidth; i++)
 	{
-		xsDrawRectangle(gc, x, y, width, height);
+		xsDrawRectangle(gc, x - i, y - i, width + 2*i, height + 2*i);
 	}
 	xsFlushScreen(x - lineWidth, y - lineWidth, x + width + 2*lineWidth, y + height + 2*lineWidth);
 }
@@ -460,7 +457,7 @@ void xsCanvasContext::clearRect(float x, float y, float width, float height)
 }
 void xsCanvasContext::arc(float x, float y, float radius, float startAngle, float endAngle, xsBool anticlockwise)
 {
-	//MTK只支持０－３６０
+	//MTK support only 0-360 angle.
 	xsArc *arc = static_cast<xsArc *>(xsArc::createInstance());
 	arc ->x = x;
 	arc ->y = y;
@@ -498,12 +495,14 @@ void xsCanvasContext::closePath()
 void xsCanvasContext::bezierCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, float x, float y)
 {
 	xsBezierCurve *curve = static_cast<xsBezierCurve *>(xsBezierCurve::createInstance());
-	curve ->x1 = cp1x;
-	curve ->y1 = cp1y;
-	curve ->x2 = cp2x;
-	curve ->y2 = cp2y;
-	curve ->x3 = x;
-	curve ->y3 = y;
+	curve ->x1 = lastX;
+	curve ->y1 = lastY;
+	curve ->x2 = cp1x;
+	curve ->y2 = cp1y;
+	curve ->x3 = cp2x;
+	curve ->y3 = cp2y;
+	curve ->x4 = x;
+	curve ->y4 = y;
 	curve ->fillColor = fillColor;
 	curve ->strokeColor = strokeColor;
 	curve ->lineWidth = lineWidth;
@@ -514,10 +513,12 @@ void xsCanvasContext::bezierCurveTo(float cp1x, float cp1y, float cp2x, float cp
 void xsCanvasContext::quadraticCurveTo(float qcpx, float qcpy, float qx, float qy)
 {
 	xsBezierCurve *curve = static_cast<xsBezierCurve *>(xsBezierCurve::createInstance());
-	curve ->x1 = qcpx;
-	curve ->y1 = qcpy;
-	curve ->x2 = qx;
-	curve ->y2 = qy;
+	curve ->x1 = lastX;
+	curve ->y1 = lastY;
+	curve ->x2 = qcpx;
+	curve ->y2 = qcpy;
+	curve ->x3 = qx;
+	curve ->y3 = qy;
 	curve ->fillColor = fillColor;
 	curve ->strokeColor = strokeColor;
 	curve ->lineWidth = lineWidth;
@@ -558,17 +559,18 @@ bool xsCanvasContext::isPointInPath(float x, float y)
 void xsCanvasContext::drawImage(xsImage* image,float x, float y)
 {
 	xsGraphics *gc = xsGetSystemGc();
+	float originW,  originH;
+	xsGetImageDimension(image, &originW, &originH);
 	xsDrawImage(gc, image, x, y, 0, 0);
 	xsRect clientRect;
-	if(xsGetClientRect(&clientRect))
-	{
-		xsFlushScreen(clientRect.left, clientRect.top, clientRect.right, clientRect.bottom);
-	}
+	xsFlushScreen(x, y, originW, originH);
 }
 
 void xsCanvasContext::drawImage(xsImage* image,float x, float y, float width, float height)
 {
 	xsGraphics *gc = xsGetSystemGc();
+	float originW,  originH;
+	xsGetImageDimension(image, &originW, &originH);
 	xsDrawImage(gc, image, x, y, width, height);
 	xsFlushScreen(x, y, x + width, y + height);
 }
@@ -591,15 +593,14 @@ void xsCanvasContext::drawImage(xsImage* image,float sx, float sy, float swidth,
 
 void xsCanvasContext::clip()
 {
-	//需要对当前路径cilp，找不到合适接口
+
 }
 
-void xsCanvasContext::drawWithBaseline(const char* text, int count, float x, float y, int maxWidth, int drawFlag)
+void xsCanvasContext::drawWithBaseline(const xsTChar* text, int count, float x, float y, float maxWidth, int drawFlag)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	float width, height;
 	xsMeasureText(gc, text, count, &font, &width, &height);
-
 	if(drawFlag == 0)//stroke
 	{
 		switch(textBaseline)
@@ -607,7 +608,7 @@ void xsCanvasContext::drawWithBaseline(const char* text, int count, float x, flo
 		case XS_BASELINE_ALPHABETIC:
 			break;
 		case XS_BASELINE_TOP:
-			xsDrawBorderText(gc, text,  count, x, y, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
+			xsDrawBorderText(gc, text, count, x, y, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
 			break;
 		case XS_BASELINE_HANGING:
 			xsDrawBorderText(gc, text, count, x, y, maxWidth, XS_COLOR_WHITE,strokeColor, XS_TRUE);
@@ -645,72 +646,70 @@ void xsCanvasContext::drawWithBaseline(const char* text, int count, float x, flo
 	}
 	int screenWidth, screenHeight;
 	xsGetScreenDimension(&screenWidth, &screenHeight);
-	xsFlushScreen(0, 0, screenWidth, screenHeight);
+	xsFlushScreen(0, 0, screenWidth - 1, screenHeight - 1);
 }
 
-void xsCanvasContext::fillText(const char* text, int count, float x, float y, xsU32 maxWidth)
+void xsCanvasContext::fillText(const xsTChar *text , float x, float y, xsU32 maxWidth)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsSetFont(gc, &font);
 	float width, height;
+	int count = xsTcsLen(text);
 	xsMeasureText(gc, text, count, &font, &width, &height);
+	maxWidth = maxWidth > width ? width : maxWidth;
 	switch(textAlign)
 	{
 	case XS_TEXT_ALIGN_START:
 		drawWithBaseline(text, count, x, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_END:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_LEFT:
 		drawWithBaseline(text, count, x, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_CENTER:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width/2, y, maxWidth, 1);
 		break;
 	case XS_TEXT_ALIGN_RIGHT:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width, y, maxWidth, 1);
 		break;
 	}
 }
 
-void xsCanvasContext::strokeText(const char* text,  int count, float x, float y, xsU32 maxWidth)
+void xsCanvasContext::strokeText(const xsTChar *text , float x, float y, xsU32 maxWidth)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsSetFont(gc, &font);
 	float width, height;
+	int count = xsTcsLen(text);
 	xsMeasureText(gc, text, count, &font, &width, &height);
+	maxWidth = maxWidth > width ? width : maxWidth;
 	switch(textAlign)
 	{
 	case XS_TEXT_ALIGN_START:
 		drawWithBaseline(text, count, x, y, maxWidth,0);
 		break;
 	case XS_TEXT_ALIGN_END:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_LEFT:
 		drawWithBaseline(text, count, x, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_CENTER:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width/2, y, maxWidth, 0);
 		break;
 	case XS_TEXT_ALIGN_RIGHT:
-		width = maxWidth > width ? width : maxWidth;
 		drawWithBaseline(text, count, x - width, y, maxWidth, 0);
 		break;
 	}
 }
 
-xsTextSize xsCanvasContext::measureText(const char *text)
+xsTextSize xsCanvasContext::measureText(const xsTChar *text)
 {
 	xsGraphics *gc = xsGetSystemGc();
 	xsTextSize size;
-	xsMeasureText(gc, text, MAXLEN, &font, &size.width, &size.height);
+	xsMeasureText(gc, text, xsTcsLen(text), &font, &size.width, &size.height);
 	return size;
 }
 
@@ -751,5 +750,6 @@ void xsCanvasContext::restore()
 		font = oldStatus ->font;
 		textAlign = oldStatus ->textAlign;
 		textBaseline = oldStatus ->textBaseline;
+		xsFree(oldStatus);
 	}
 }

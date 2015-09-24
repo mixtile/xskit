@@ -113,27 +113,52 @@ void xsBezierCurve::fill(xsGraphics *gc)
 	}
 	else
 	{
-		xsFillCubicBezierCurve(gc, x1, y1, x2, y2, x3, y3);
+		xsFillCubicBezierCurve(gc, x1, y1, x2, y2, x3, y3, x4, y4);
 	}
 }
 
 void xsBezierCurve::stroke(xsGraphics *gc)
 {
 	int i = 0;
+	float offset = -lineWidth / 2;
 
 	xsSetColor(gc, strokeColor);
 	if(XS_FALSE == isCubic)
 	{
-		for(i = 0; i < lineWidth; i++)
+		if (x2 - x1 > y2 - y1 || y1 == y2)
 		{
-			xsDrawQuadraticBezierCurve(gc, x1, y1, x2, y2, x3, y3);
+			for(i = 0; i < lineWidth; i++)
+			{
+				xsDrawQuadraticBezierCurve(gc, x1, y1 + offset, x2, y2 + offset, x3, y3 + offset);
+				offset++;
+			}
+		}
+		else
+		{
+			for(i = 0; i < lineWidth; i++)
+			{
+				xsDrawQuadraticBezierCurve(gc, x1+offset, y1, x2 + offset, y2, x3 + offset, y3);
+				offset++;
+			}
 		}
 	}
 	else
 	{
-		for(i = 0; i < lineWidth; i++)
+		if (x2 - x1 > y2 - y1 || y1 == y2)
 		{
-			xsDrawCubicBezierCurve(gc, x1, y1, x2, y2, x3, y3);
+			for(i = 0; i < lineWidth; i++)
+			{
+				xsDrawCubicBezierCurve(gc, x1, y1 + offset, x2, y2 + offset, x3, y3 + offset, x4, y4 + offset);
+				offset++;
+			}
+		}
+		else
+		{
+			for(i = 0; i < lineWidth; i++)
+			{
+				xsDrawCubicBezierCurve(gc, x1+offset, y1, x2 + offset, y2, x3 + offset, y3, x4 + offset, y4);
+				offset++;
+			}
 		}
 	}
 }
