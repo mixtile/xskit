@@ -31,10 +31,11 @@ def configure(ctx):
 	if PLATFORM == 'win32':
 		ctx.load('msdev')
 	ctx.recurse(os.path.join('pal', ctx.options.targetos))
-	ctx.recurse('graphics')
 	ctx.recurse('core')
-	ctx.recurse('demos')
-	ctx.recurse('javascript')
+	ctx.recurse('extensions')
+	#ctx.recurse('graphics')
+	#ctx.recurse('javascript')
+	#ctx.recurse('demos')
 
 def build(bld):
 	print('start building at ' + datetime.datetime.now().isoformat())
@@ -56,7 +57,8 @@ def build(bld):
 	bld.env.PAL_LIB = 'pal' + bld.options.targetos;
 
 	bld.recurse(os.path.join('pal', bld.options.targetos))
-	bld.recurse('graphics')
 	bld.recurse('core')
-	bld.recurse('demos')
-	bld.recurse('javascript')
+	bld.recurse('extensions')
+	#bld.recurse('graphics')
+	#bld.recurse('javascript')
+	#bld.recurse('demos')

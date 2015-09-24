@@ -13,7 +13,7 @@
 //#include <xs/widget.h>
 //#include <xs/script.h>
 //#include <xs/shape.h>
-#include <xs/canvas.h>
+//#include <xs/canvas.h>
 //#include <xs/canvascontext.h>
 
 ////////////////////////////////////////////////////////
@@ -298,13 +298,14 @@ int xsObjInit(void)
 	xsObjectRegister(XS_CLASS(xsManifest));
 //	xsObjectRegister(XS_CLASS(xsDataSource));
 //	xsObjectRegister(XS_CLASS(xsRemote));
-	xsObjectRegister(XS_CLASS(xsCanvas));
-	xsObjectRegister(XS_CLASS(xsCanvasContext));
-	xsObjectRegister(XS_CLASS(xsShape));
-	xsObjectRegister(XS_CLASS(xsLine));
-	xsObjectRegister(XS_CLASS(xsRectangle));
-	xsObjectRegister(XS_CLASS(xsArc));
-	xsObjectRegister(XS_CLASS(xsBezierCurve));
+
+	//xsObjectRegister(XS_CLASS(xsCanvas));
+	//xsObjectRegister(XS_CLASS(xsCanvasContext));
+	//xsObjectRegister(XS_CLASS(xsShape));
+	//xsObjectRegister(XS_CLASS(xsLine));
+	//xsObjectRegister(XS_CLASS(xsRectangle));
+	//xsObjectRegister(XS_CLASS(xsArc));
+	//xsObjectRegister(XS_CLASS(xsBezierCurve));
 
 	return XS_EC_OK;
 }

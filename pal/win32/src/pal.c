@@ -154,6 +154,36 @@ size_t xsGetFileSize(xsFile handle)
 	return (size_t)GetFileSize((HANDLE)handle, NULL);
 }
 
+xsBool xsFileExists(const xsTChar *path)
+{
+	WIN32_FIND_DATA FindFileData;
+
+	HANDLE handle = FindFirstFile(path, &FindFileData);
+	if (handle != INVALID_HANDLE_VALUE) 
+	{
+		FindClose(handle);
+		return XS_FALSE;
+	}
+
+	return XS_TRUE;
+}
+
+int xsCreateDir(const xsTChar *path)
+{
+	if (CreateDirectory(path, NULL))
+		return XS_EC_OK;
+
+	return XS_EC_ERROR;
+}
+
+int xsRemoveDir(const xsTChar *path)
+{
+	if (RemoveDirectory(path))
+		return XS_EC_OK;
+
+	return XS_EC_ERROR;
+}
+
 xsRes xsOpenRes(const xsTChar *name)
 {
 	return (xsRes)xsOpenFile(name, XS_OF_READONLY);
