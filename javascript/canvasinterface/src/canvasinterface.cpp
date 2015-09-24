@@ -27,20 +27,7 @@ xsJSEvent event = {};
 xsImage *g_img[100] = {0};
 int g_imgNum = 0;
 
-/*将大写字母转换成小写字母
-int tolower(int c)
-{
-	if (c >= 'A' && c <= 'Z')
-	{
-		return c + 'a' - 'A';
-	}
-	else
-	{
-		return c;
-	}
-}
-*/
-//将十六进制的字符串转换成整数
+//convert a hexadecimal string to an integer.
 int htoi(char s[])
 {
     int i;

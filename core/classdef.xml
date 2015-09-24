@@ -154,6 +154,19 @@
 		<comment>Bezier object</comment>
 	</class>
 	
+	<class name="Gradient" xtag="gradient" inherit="Object">
+		<comment>gradient color object</comment>
+		<method name="addColorStop">
+			<comment>Specify gradient color and stop of the gradient object. </comment>
+			<param name="stop" type="float">
+				<comment>A value between 0.0 and 1.0, that represents the position between the beginning and end of the ramp. </comment>
+			</param>
+			<param name="color" type="string">
+				<comment>CSS color value at the end of the displayed location.</comment>
+			</param>
+		</method>
+	</class>
+	
 	<class name="CanvasContext" xtag="canvascontext" inherit="Object">
 		<comment>graphics context object, providing method to draw basic graphics, text, and image.</comment>
 
@@ -192,7 +205,7 @@
 		</method>
 		
 		<method name="lineTo">
-			<comment>Add a new point, and then create a line from that point to the last specified point in canvas坐标</comment>
+			<comment>Add a new point, and then create a line from that point to the last specified point in canvas.</comment>
 			<param name="x" type="float">
 				<comment>x-coordinate of the new point </comment>
 			</param>
