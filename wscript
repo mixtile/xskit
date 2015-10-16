@@ -48,6 +48,7 @@ def configure(ctx):
 		ctx.load('msdev')
 	ctx.recurse(os.path.join('pal', ctx.options.targetos))
 	ctx.recurse('core')
+	ctx.recurse('extensions')
 	ctx.recurse('graphics')
 	ctx.recurse('javascript')
 	ctx.recurse('demos')
@@ -76,6 +77,7 @@ def build(bld):
 
 	bld.recurse(os.path.join('pal', bld.options.targetos))
 	bld.recurse('core')
+	bld.recurse('extensions')
 	bld.recurse('graphics')
 	bld.recurse('javascript')
 	bld.recurse('demos')
