@@ -211,7 +211,7 @@ int xsConnection::doConnect()
 int xsConnection::close()
 {
 	XS_TRACE("[NET]xsConnShutdown");
-	return xsSocketClose(sock);
+//	return xsSocketClose(sock);
 }
 
 int xsConnection::send(xsBuffer *buffer)
@@ -260,7 +260,7 @@ int xsConnection::doSend()
 		if (buf == NULL)
 			break;
 
-		sent = xsSocketSend(sock, buf->head, buf->len);
+//		sent = xsSocketSend(sock, buf->head, buf->len);
 		if (sent > 0)
 		{
 			xsBufferConsume(buf, sent);
@@ -314,7 +314,7 @@ int xsConnection::doRecv()
 			break;
 
 		size = xsBufferBlockSize(buf);
-		read = xsSocketRecv(sock, buf->tail, size);
+//		read = xsSocketRecv(sock, buf->tail, size);
 		if (read > 0)
 		{
 			xsBufferProduce(buf, read);
