@@ -1,3 +1,4 @@
+#if 0
 #include <xs/pal.h>
 
 #define XS_EVKIT_STORAGE		0
@@ -645,3 +646,4 @@ int xsGetAddrByName(const char *hostname, xsSockAddr *addr, int tag)
 {
     return -1;
 }
+#endif

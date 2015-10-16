@@ -14,3 +14,7 @@ build
 *.suo
 */gen/*
 *classid.h
+*.o
+Default
+pal/linux/Debug
+*~
