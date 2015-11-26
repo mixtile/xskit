@@ -1,3 +1,4 @@
+#if 0
 static void TestMemCpy()
 {
 	char dst[6] =
@@ -26,3 +27,4 @@ static void TestMemCpy()
 	xsReAllocNative(dst1,10);
 	XS_TEST ( dst1[0] == 0 && dst1[5] == 0 && dst1[9] != 0);
 }
+#endif

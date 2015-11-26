@@ -1,3 +1,4 @@
+#if 0
 #if XS_EVKIT_ANSIONE
 ///ANSIONE test six functions,including xsStrLen,xsStrCpy,xsStrCpyN,xsStrCat,xsStrCatN and xsSnprintf.
 
@@ -1737,3 +1738,4 @@ static void TestString()
 	size_t count = xsWcsLen(wcs);
 	printf("t:%d\ncount:%d\n",t,count);
 }
+#endif

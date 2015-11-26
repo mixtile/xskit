@@ -1,11 +1,27 @@
+/*
+ * Copyright (C) 2015 Focalcrest, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 #include <windows.h>
 #include <gdiplus.h>
 using namespace Gdiplus;
 
 #include <xs/pal.h>
 
-extern int g_nScreenWidth;
-extern int g_nScreenHeight;
+extern float g_nScreenWidth;
+extern float g_nScreenHeight;
 extern int g_nTitleHeight;
 
 static volatile xsBool g_doubleBufferLocked = XS_FALSE;
@@ -274,8 +290,8 @@ xsBool xsGetClientRect(xsRect *rect)
 
 	rect->left = 0;
 	rect->top = 0;
-	rect->bottom = g_nScreenHeight - 1;
-	rect->right = g_nScreenWidth - 1;
+	rect->bottom = (float)g_nScreenHeight - 1;
+	rect->right = (float)g_nScreenWidth - 1;
 
 	return XS_TRUE;
 }
@@ -283,10 +299,10 @@ xsBool xsGetClientRect(xsRect *rect)
 void xsSetClipRect(xsGraphics *gc, xsRect *rect)
 {
 	Rect rc;
-	rc.X = rect->left + gc->xoffset;
-	rc.Y = rect->top + gc->yoffset;
-	rc.Width = rect->right - rect->left + 1;
-	rc.Height = rect->bottom - rect->top + 1;
+	rc.X = (INT)(rect->left + gc->xoffset);
+	rc.Y = (INT)(rect->top + gc->yoffset);
+	rc.Width = (INT)(rect->right - rect->left + 1);
+	rc.Height = (INT)(rect->bottom - rect->top + 1);
 	g_gcBase->SetClip(rc);
 }
 
@@ -337,12 +353,12 @@ void xsFillTriangle(xsGraphics *gc, float x1, float y1, float x2, float y2, floa
 {
 	Point points[3];
 
-	points[0].X = x1 + gc->xoffset - 1; // buggy GDI+?
-	points[0].Y = y1 + gc->yoffset - 1; // buggy GDI+?
-	points[1].X = x2 + gc->xoffset;
-	points[1].Y = y2 + gc->yoffset;
-	points[2].X = x3 + gc->xoffset;
-	points[2].Y = y3 + gc->yoffset;
+	points[0].X = (INT)(x1 + gc->xoffset - 1); // buggy GDI+?
+	points[0].Y = (INT)(y1 + gc->yoffset - 1); // buggy GDI+?
+	points[1].X = (INT)(x2 + gc->xoffset);
+	points[1].Y = (INT)(y2 + gc->yoffset);
+	points[2].X = (INT)(x3 + gc->xoffset);
+	points[2].Y = (INT)(y3 + gc->yoffset);
 
 	g_brushBase->SetColor(XS_RGB(c));
 	g_gcBase->FillPolygon(g_brushBase, points, 3);
@@ -423,7 +439,7 @@ static REAL GetRealSize(xsFontType *font)
 
 	if (font->size < 0) 
 	{// preset font size
-		int idx = -1 - font->size;
+		int idx = -1 - (int)font->size;
 		if (idx >= 0 && idx < XS_FONT_SIZE_COUNT)
 			size = g_fontSizes[idx];
 		else
@@ -489,7 +505,7 @@ void xsDrawBorderText(xsGraphics *gc, const xsTChar *text, int count, float x, f
 	}	
 }
 
-//不改变当前使用的font
+
 void xsMeasureText(xsGraphics *gc, const xsTChar *text, int count, xsFontType *font, float *width, float *height)
 {
 	RectF rect;
@@ -647,7 +663,7 @@ void xsDrawImage(xsGraphics *gc, xsImage *img, float x, float y, float width, fl
 		return;
 	}
 
-	if(0.0 != width && 0.0 != height)
+	if (0.0 != width && 0.0 != height)
 	{
 		g_gcBase->DrawImage((Bitmap *)img->object, x + gc->xoffset, y + gc->yoffset, width, height);
 	}

@@ -1,4 +1,4 @@
-
+#if 0
 static void InitConsole();
 static void UninitConsole();
 static void OutputConsole(const char *text);
@@ -353,3 +353,4 @@ static void DoTest()
 
 	g_testCursor++;
 }
+#endif

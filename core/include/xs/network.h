@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2015 Focalcrest, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #ifndef _XS_NETWORK_H_
 #define _XS_NETWORK_H_
 
@@ -36,27 +52,27 @@ int xsStrToAddr(const char *ipStr, xsSockAddr *addr);
 xsU16 xsHtons(xsU16 hostshort);
 
 /**
- * ·¢ÆðHTTP GETÇëÇó£¬Í¨¹ýcallback½ÓÊÕÒì²½ÊÂ¼þ
- * @param url GETÇëÇóµÄÄ¿µÄµØÖ·
- * @param singleBuffer ÊÇ·ñ½«·µ»ØÄÚÈÝ·ÅÈëµ¥Ò»»º³åÇø¡£Îª±ÜÃâGET·µ»ØµÄÄÚÈÝ¹ý´ó¶øÔì³ÉÄÚ´æµÄ¹ý¶ÈÕ¼ÓÃ£¬¸ÃÑ¡Ïî½¨ÒéÎªXS_FALSE¡£
- * @param cb HTTPÊÂ¼þµÄ»Øµ÷º¯Êý£¬»Øµ÷²ÎÊýÎª(xsEvent *)
- * @return HTTPÇëÇóµÄ¾ä±ú
+ * ï¿½ï¿½ï¿½ï¿½HTTP GETï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½callbackï¿½ï¿½ï¿½ï¿½ï¿½ì²½ï¿½Â¼ï¿½
+ * @param url GETï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½Äµï¿½Ö·
+ * @param singleBuffer ï¿½Ç·ñ½«·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ëµ¥Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½GETï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½Ý¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½Ä¹ï¿½ï¿½Õ¼ï¿½Ã£ï¿½ï¿½ï¿½Ñ¡ï¿½î½¨ï¿½ï¿½ÎªXS_FALSEï¿½ï¿½
+ * @param cb HTTPï¿½Â¼ï¿½ï¿½Ä»Øµï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½Îª(xsEvent *)
+ * @return HTTPï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½
  */
 xsHandle xsHttpGet(const char *url, xsBool singleBuffer, xsCallbackFunc cb);
 
 /**
- * Ê¹ÓÃHTTP GETÇëÇóÏÂÔØ×ÊÔ´²¢±£´æµ½Ö¸¶¨µÄÎÄ¼þ¡£Í¨¹ýcallback½ÓÊÕÏÂÔØ½ø¶ÈºÍ×´Ì¬
- * @param url GETÇëÇóµÄÄ¿µÄµØÖ·
- * @param savePath ±£´æµÄÎÄ¼þÂ·¾¶
- * @param cb HTTPÊÂ¼þµÄ»Øµ÷º¯Êý£¬»Øµ÷²ÎÊýÎª(xsEvent *)
- * @return HTTPÇëÇóµÄ¾ä±ú
+ * Ê¹ï¿½ï¿½HTTP GETï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½æµ½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Í¨ï¿½ï¿½callbackï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø½ï¿½Èºï¿½×´Ì¬
+ * @param url GETï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½Äµï¿½Ö·
+ * @param savePath ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½
+ * @param cb HTTPï¿½Â¼ï¿½ï¿½Ä»Øµï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½Îª(xsEvent *)
+ * @return HTTPï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½
  */
 xsHandle xsHttpDownload(const char *url, const xsTChar *savePath, xsCallbackFunc cb);
 
 /**
- * È¡ÏûÕýÔÚ½øÐÐÖÐµÄHTTP GETÇëÇó¡£ÒÑ¾­Íê³É»òÊ§°ÜµÄHTTP GETÇëÇó»á×Ô¶¯ÊÍ·ÅÕ¼ÓÃµÄ×ÊÔ´£¬ÎÞÐèµ÷ÓÃxsHttpCancel¡£
- * @param ´´½¨ÇëÇóÊ±·µ»ØµÄ¾ä±ú
- * @return ³É¹¦·µ»ØXS_EC_OK, Ê§°Ü·µ»Ø´íÎóÖµ
+ * È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½Ðµï¿½HTTP GETï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½É»ï¿½Ê§ï¿½Üµï¿½HTTP GETï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½Í·ï¿½Õ¼ï¿½Ãµï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½xsHttpCancelï¿½ï¿½
+ * @param ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ØµÄ¾ï¿½ï¿½
+ * @return ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½XS_EC_OK, Ê§ï¿½Ü·ï¿½ï¿½Ø´ï¿½ï¿½ï¿½Öµ
  */
 int xsHttpCancel(xsHandle *handle);
 

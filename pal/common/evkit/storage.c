@@ -1,3 +1,4 @@
+#if 0
 static void TestCreateFile()
 {
 	xsFile file = xsOpenFile(xsT("evkit_test.txt"), XS_OF_CREATE);
@@ -5,3 +6,4 @@ static void TestCreateFile()
 
 	xsCloseFile(file);
 }
+#endif
