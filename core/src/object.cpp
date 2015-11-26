@@ -21,15 +21,14 @@
 #include <xs/memory.h>
 #include <xs/value.h>
 #include <xs/string.h>
-#include <xs/utils.h>
-#include <xs/coreapplication.h>
+//#include <xs/utils.h>
+//#include <xs/coreapplication.h>
 //#include <xs/widget.h>
 //#include <xs/remote.h>
 //#include <xs/datasource.h>
 //#include <xs/widget.h>
 //#include <xs/script.h>
 //#include <xs/shape.h>
-#include <xs/canvas.h>
 //#include <xs/canvascontext.h>
 
 ////////////////////////////////////////////////////////
@@ -84,6 +83,7 @@ xsObject::xsObject()
 	parent = NULL;
 	elements = NULL;
 	props = NULL;
+	prototype.str =  xsStrDup("Object");
 
 	references = 0;
 
@@ -132,6 +132,12 @@ xsObject::~xsObject()
 		xsFree(id);
 		id = NULL;
 	}
+
+	if(prototype.str != NULL)
+	{
+		xsFree(prototype.str);
+		prototype.str = NULL;
+	}
 }
 
 xsBool xsObject::isTypeOf(const xsClass *cls) const
@@ -144,11 +150,25 @@ void xsObject::setId(const char *id)
 	xsReplaceAny((void **)&this->id, xsStrDup(id));
 }
 
-xsBool xsObject::getProperty(int propId, xsValue *value)
+xsBool xsObject::getProperty(int propId, const char *name, xsValue *value)
 {
 	xsValue *val;
 	XS_ASSERT(value != NULL);
 
+	switch (propId)
+	{
+	case XS_PROP_OBJECT_ID:
+		value->type = XS_VALUE_STRING;
+		value->data.s = this->id;
+		return XS_TRUE;
+	case XS_PROP_OBJECT_PROTOTYPE:
+		value->type = XS_VALUE_STRING;
+		value->data.s = this->prototype.str;
+		return XS_TRUE;
+	case XS_PROP_OBJECT_ELEMENTS:
+		//no such case?
+		break;
+	}
 	if (props == NULL)
 		return XS_FALSE;
 
@@ -160,7 +180,7 @@ xsBool xsObject::getProperty(int propId, xsValue *value)
 	return XS_TRUE;
 }
 
-xsBool xsObject::setProperty(int propId, xsValue *value)
+xsBool xsObject::setProperty(int propId, const char *name, xsValue *value)
 {
 	xsValue *oldVal;
 	XS_ASSERT(value != NULL);
@@ -174,6 +194,17 @@ xsBool xsObject::setProperty(int propId, xsValue *value)
 			return XS_TRUE;
 		}
 		return XS_FALSE;
+	case XS_PROP_OBJECT_PROTOTYPE:
+		if(value->type == XS_VALUE_STRING)
+		{
+			xsReplaceAny((void **)&this->prototype.str, xsStrDup(value->data.s));
+			return XS_TRUE;
+		}
+		else if(value->type == XS_VALUE_UINT32)
+		{
+			//no hash now,if use hash,please change all code where "prototype" appears.
+			return XS_TRUE;
+		}
 	case XS_PROP_OBJECT_ELEMENTS:
 		if (value->type == XS_VALUE_ARRAY)
 		{
@@ -197,11 +228,20 @@ xsBool xsObject::setProperty(int propId, xsValue *value)
 	if (props == NULL)
 		props = xsHashMapCreate(2);
 
-	oldVal = (xsValue *)xsHashMapPut(props, propId, xsValueDuplicate(value));
+	oldVal = (xsValue *)xsHashMapPut(props, propId, name, xsValueDuplicate(value));
 	if (oldVal != NULL)
 		xsValueDestroy(oldVal, XS_TRUE);
 
 	return XS_TRUE;
+}
+
+xsBool xsObject::getProperty(int propId, xsValue *value)
+{
+	return getProperty(propId, NULL, value);
+}
+xsBool xsObject::setProperty(int propId, xsValue *value)
+{
+	return setProperty(propId, NULL, value);
 }
 
 xsBool xsObject::getProperty(const char *propName, xsValue *value)
@@ -210,7 +250,7 @@ xsBool xsObject::getProperty(const char *propName, xsValue *value)
 	if (id == 0)
 		id = hashName(propName); // TODO: separate native props and dynamics.
 
-	return getProperty(id, value);
+	return getProperty(id, propName, value);
 }
 
 xsBool xsObject::setProperty(const char *propName, xsValue *value)
@@ -219,7 +259,7 @@ xsBool xsObject::setProperty(const char *propName, xsValue *value)
 	if (id == 0)
 		id = hashName(propName); // XXX: Maybe dynamic prop has a same hash with native id
 
-	return setProperty(id, value);
+	return setProperty(id, propName, value);
 }
 
 int xsObject::getPropertyId(const char *propName)
@@ -297,40 +337,6 @@ int xsObject::count()
 int xsObject::processEvent(xsEvent *e)
 {
 	return XS_EC_OK;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-
-int xsObjInit(void)
-{
-//	int i = 0;
-
-	XS_TRACE("[CORE]xsObjInit");
-
-	// register inner object classes
-	xsObjectRegister(XS_CLASS(xsObject));
-	xsObjectRegister(XS_CLASS(xsCoreApplication));
-	xsObjectRegister(XS_CLASS(xsManifest));
-//	xsObjectRegister(XS_CLASS(xsDataSource));
-//	xsObjectRegister(XS_CLASS(xsRemote));
-
-	xsObjectRegister(XS_CLASS(xsCanvas));
-	xsObjectRegister(XS_CLASS(xsCanvasContext));
-	xsObjectRegister(XS_CLASS(xsShape));
-	xsObjectRegister(XS_CLASS(xsLine));
-	xsObjectRegister(XS_CLASS(xsRectangle));
-	xsObjectRegister(XS_CLASS(xsArc));
-	xsObjectRegister(XS_CLASS(xsBezierCurve));
-
-	return XS_EC_OK;
-}
-
-void xsObjUninit(void)
-{
-
-	// release object class list
-
 }
 
 xsObject *xsObjectCreate(const char *name)

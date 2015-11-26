@@ -51,13 +51,13 @@ void *xsArrayListIterate(xsArrayList array, xsIterator *iterator);
 
 xsHashMap xsHashMapCreate(int size);
 void xsHashMapDestroy(xsHashMap map);
-void *xsHashMapPut(xsHashMap map, int key, void *value);
+void *xsHashMapPut(xsHashMap map, int key, const char *name, void *value);
 void *xsHashMapGet(xsHashMap map, int key);
 xsBool xsHashMapHas(xsHashMap map, int key);
 int xsHashMapRemove(xsHashMap map, int key);
 int xsHashMapSize(xsHashMap map);
 void *xsHashMapIterate(xsHashMap map, xsIterator *iterator);
-xsBool xsHashMapIterateEntry(xsHashMap map, xsIterator *iterator, int *key, void **value);
+xsBool xsHashMapIterateEntry(xsHashMap map, xsIterator *iterator, int *key, char *name, void **value);
 
 xsStack xsStackCreate(int size);
 void xsStackDestroy(xsStack stack);

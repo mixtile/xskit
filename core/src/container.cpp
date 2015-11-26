@@ -21,6 +21,7 @@ typedef struct _xsHashElement
 {
 	int key;
 	int inUse;
+	char  name[20] = {0};
 
 	void *data;
 } xsHashElement;
@@ -229,7 +230,7 @@ void xsHashMapDestroy(xsHashMap map)
 	xsArrayListDestroy((xsArrayList)map);
 }
 
-void *xsHashMapPut(xsHashMap map, int key, void *value)
+void *xsHashMapPut(xsHashMap map, int key, const char *name, void *value)
 {
 	int i;
 	xsHashElement *el;
@@ -274,6 +275,8 @@ void *xsHashMapPut(xsHashMap map, int key, void *value)
 		{
 			el->inUse = XS_TRUE;
 			el->key = key;
+			if(name != NULL)
+				xsStrCpy(el->name, name);
 			el->data = value;
 			ar->count++;
 			return NULL;
@@ -352,7 +355,7 @@ void *xsHashMapIterate(xsHashMap map, xsIterator *iterator)
 	return NULL;
 }
 
-xsBool xsHashMapIterateEntry(xsHashMap map, xsIterator *iterator, int *key, void **value)
+xsBool xsHashMapIterateEntry(xsHashMap map, xsIterator *iterator, int *key, char *name, void **value)
 {
 		int i;
 	xsHashElement *el;
@@ -366,6 +369,8 @@ xsBool xsHashMapIterateEntry(xsHashMap map, xsIterator *iterator, int *key, void
 		{
 			*(int *)iterator = i + 1;
 			*key = el->key;
+			if(xsStrCmp(el->name, "") != 0)
+				xsStrCpy(name, el->name);
 			*value = el->data;
 			return XS_TRUE;
 		}

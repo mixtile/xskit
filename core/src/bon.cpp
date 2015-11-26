@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <stdlib.h>
 #include <xs/pal.h>
 #include <xs/bon.h>
 #include <xs/error.h>
@@ -21,6 +22,7 @@
 #include <xs/memory.h>
 #include <xs/container.h>
 #include <xs/filestream.h>
+#include <xs/bufferstream.h>
 #include <xs/resourcestream.h>
 #include <xs/utils.h>
 #include <xs/value.h>
@@ -34,6 +36,15 @@
 #else
 #define XS_TRACE_DEBUG	XS_TRACE_NONE
 #endif
+
+const int FLAG_USE_UTF8 = 0x02;
+const int FLAG_USE_NATIVE = 0x04;
+const int FLAG_INDEXED = 0x10;
+const int FLAG_HASHED = 0x20;
+const int MAX_SALT_RETRY = 10;
+
+static int flag = 0;
+static const char *charset = "utf8";
 
 typedef struct _xsParseNode
 {
@@ -158,12 +169,22 @@ int xsBonPack(xsStream &stream, xsValue *value)
 #ifdef XS_UNICODE
 		stream.write(XS_BON_STRING | XS_BON_TEXT_UCS2);
 #else
-		stream.write(XS_BON_STRING | XS_BON_TEXT_NCS); // Native charset
+		if((flag & FLAG_USE_UTF8) == FLAG_USE_UTF8)
+		{
+			stream.write(XS_BON_STRING | XS_BON_TEXT_UTF8);
+		}
+		else
+		{
+			stream.write(XS_BON_STRING | XS_BON_TEXT_NCS); // Native charset
+		}
 #endif
 		if (value->data.t == NULL)
 			stream.write(xsT("\0"), sizeof(xsTChar));
 		else
+		{
+			stream.write((xsTcsLen(value->data.t) + 1) * sizeof(xsTChar));
 			stream.write(value->data.t, (xsTcsLen(value->data.t) + 1) * sizeof(xsTChar));
+		}
 	}
 	else if (value->type == XS_VALUE_STRING)
 	{
@@ -171,7 +192,10 @@ int xsBonPack(xsStream &stream, xsValue *value)
 		if (value->data.s == NULL)
 			stream.write("\0", 1);
 		else
+		{
+			stream.write(xsStrLen(value->data.s) + 1);
 			stream.write(value->data.s, xsStrLen(value->data.s) + 1);
+		}
 	}
 	else if (value->type == XS_VALUE_BOOL)
 	{
@@ -419,7 +443,6 @@ int xsBonLoadFromFile(const xsTChar *filename, xsValue *value)
 	xsBool bigendian;
 	if (BonCheckEndian(stream, &bigendian) == XS_EC_OK)
 		ret = xsBonUnpack(stream, bigendian, value);
-
 	stream.close();
 	XS_TRACE("[BON]xsBONLoadFromFile: loaded value.type:%d", value->type);
 	return ret;
@@ -428,7 +451,7 @@ int xsBonLoadFromFile(const xsTChar *filename, xsValue *value)
 /**
  * Save BON to file
  */
-int xsBonSaveToFile(const xsTChar *filename, xsValue *value)
+int xsBonSaveToFile(const xsTChar *filename, xsValue *value, xsBool indexed)
 {
 	xsFileStream stream;
 	stream.open(filename, XS_OF_WRITEONLY | XS_OF_CREATE);
@@ -437,6 +460,8 @@ int xsBonSaveToFile(const xsTChar *filename, xsValue *value)
 		stream.write("BON\0", 4);
 	else
 		stream.write("bon\0", 4);
+
+	setPackFlag(indexed);
 
 	xsBonPack(stream, value);
 
@@ -474,6 +499,23 @@ xsBool xsIsBigEndian(void)
 {
 	short n = 0x0100;
 	return *((char*)(&n));
+}
+
+void setPackFlag(xsBool indexed)
+{
+	if(indexed)
+	{
+		flag |= FLAG_INDEXED;
+	}
+
+	if(xsStrCmp(charset, "utf8") == 0)
+	{
+		flag |= FLAG_USE_UTF8;
+	}
+	else if(xsStrCmp(charset, "native") == 0)
+	{
+		flag |= FLAG_USE_NATIVE;
+	}
 }
 
 /**
@@ -1313,9 +1355,11 @@ static void WriteObject(xsStream &stream, xsValue *value)
 	xsObject *obj = value->data.obj;
 	xsU32 key;
 	xsValue *val;
+	xsValue tmpVal = {XS_VALUE_NONE, 0};
 	int size = 0;
 	xsBool ret;
 	xsU8 type;
+	char name[20] = {0};
 
 	if (obj == NULL)
 	{
@@ -1335,6 +1379,14 @@ static void WriteObject(xsStream &stream, xsValue *value)
 	// Write headers
 	type = XS_BON_OBJECT;
 	size = xsHashMapSize(obj->getProperties());
+	if(obj->getProperty("id", &tmpVal))
+	{
+		if(tmpVal.data.s != NULL)
+		{
+			size += 1;
+		}
+	}
+
 	if (size < 32)
 	{
 		stream.write(XS_BON_OBJECT_COMBO | (xsU8)size);
@@ -1350,19 +1402,209 @@ static void WriteObject(xsStream &stream, xsValue *value)
 		WriteInt32(stream, size);
 	}
 
-	// write dynamic properties
-	for (;;)
+	if(obj->getProperty("prototype", &tmpVal))
 	{
-		ret = xsHashMapIterateEntry(obj->getProperties(), &iter, (int *)&key, (void **)&val);
-		if (!ret || iter == NULL || val == NULL)
-			break;
+		if(tmpVal.type == XS_VALUE_STRING)
+		{
+			stream.write(XS_BON_PROTOTYPE | XS_BON_PROTOTYPE_STRING);
+			stream.write(xsStrLen(tmpVal.data.s) + 1);
+			stream.write(tmpVal.data.s, xsStrLen(tmpVal.data.s) + 1);
+		}
+		else if(tmpVal.type == XS_VALUE_UINT32)
+		{
+			stream.write(XS_BON_PROTOTYPE | XS_BON_PROTOTYPE_HASH);
+			WriteInt32(stream, tmpVal.data.n);
+		}
+	}
 
-		// write key
-		stream.write(XS_BON_UINT | XS_BON_UINT32);
-		WriteInt32(stream, key);
+	if((flag & FLAG_INDEXED) != FLAG_INDEXED)
+	{
+		if(obj->getProperty("id", &tmpVal))
+		{
+			if(NULL != tmpVal.data.s)
+			{
+				if((flag & FLAG_HASHED) == FLAG_HASHED)
+				{
+					stream.write(XS_BON_INT | XS_BON_UINT32);
+					WriteInt32(stream, obj->getPropertyId("id"));
+				}
+				else
+				{
+					stream.write(XS_BON_STRING | XS_BON_STRING_ANSI);
+					stream.write(xsStrLen("id") + 1);
+					stream.write("id", xsStrLen("id") + 1);
+				}
+				xsBonPack(stream, &tmpVal);
+			}
+		}
 
-		// write value
-		xsBonPack(stream, val);
+		// write dynamic properties
+		for (;;)
+		{
+			ret = xsHashMapIterateEntry(obj->getProperties(), &iter, (int *)&key, name, (void **)&val);
+			if (!ret || iter == NULL || val == NULL)
+				break;
+
+			// write key
+			if((flag & FLAG_HASHED) == FLAG_HASHED)
+			{
+				stream.write(XS_BON_UINT | XS_BON_UINT32);
+				WriteInt32(stream, key);
+			}
+			else
+			{
+				stream.write(XS_BON_STRING | XS_BON_STRING_ANSI);
+				stream.write(xsStrLen(name) + 1);
+				stream.write(name, xsStrLen(name) + 1);
+			}
+			printf("name = %s\n", name);
+			// write value
+			xsBonPack(stream, val);
+		}
+	}
+	else
+	{
+		int salt = 0, retry = 0, index = 0;
+		bool collisionFlag = false;
+		long offsets[size];
+		int hashSet[size];
+		xsBufferStream buffer;
+RESTART:
+		if(obj->getProperty("id", &tmpVal))
+		{
+			if(NULL != tmpVal.data.s)
+			{
+				if((flag & FLAG_HASHED) == FLAG_HASHED)
+				{
+					buffer.write(XS_BON_INT | XS_BON_UINT32);
+					WriteInt32(buffer, obj->getPropertyId("id"));
+				}
+				else
+				{
+					buffer.write(XS_BON_STRING | XS_BON_STRING_ANSI);
+					buffer.write(xsStrLen("id") + 1);
+					buffer.write("id", xsStrLen("id") + 1);
+				}
+				offsets[index] = buffer.getSize();
+				index++;
+				xsBonPack(buffer, &tmpVal);
+			}
+		}
+
+		for (;;)
+		{
+			ret = xsHashMapIterateEntry(obj->getProperties(), &iter, (int *)&key, name, (void **)&val);
+			if (!ret || iter == NULL || val == NULL)
+				break;
+
+			for(int i = 0; i < size; i++)
+			{
+				if(hashSet[i] == key)
+				{
+					printf("Object fields hash collision: [%s]\n", name);
+					salt = rand();
+					iter = NULL;
+					index = 1;
+					for(int i = 0; i < size; i++)
+					{
+						offsets[i] = 0;
+						hashSet[i] = 0;
+					}
+					retry++;
+					collisionFlag = true;
+					if(retry > MAX_SALT_RETRY)
+					{
+						printf("Cannot find valid salt!");
+						abort();
+					}
+					break;
+				}
+			}
+			if(collisionFlag)
+			{
+				collisionFlag = false;
+				buffer.clear();
+				goto RESTART;
+			}
+			// write key
+			if((flag & FLAG_HASHED) == FLAG_HASHED)
+			{
+				buffer.write(XS_BON_UINT | XS_BON_UINT32);
+				WriteInt32(buffer, key);
+			}
+			else
+			{
+				buffer.write(XS_BON_STRING | XS_BON_STRING_ANSI);
+				buffer.write(xsStrLen(name) + 1);
+				buffer.write(name, xsStrLen(name) + 1);
+			}
+			offsets[index] = buffer.getSize();
+			index++;
+			// write value
+			xsBonPack(buffer, val);
+		}
+		if(salt != 0)
+		{
+			stream.write(XS_BON_INDEX | XS_BON_INDEX_SALT);
+			WriteInt32(stream, salt);
+		}
+
+		int bufferSize = buffer.getSize();
+		int type = XS_BON_INDEX;
+		if(bufferSize <= 255)
+		{
+			type |= XS_BON_INDEX8;
+		}
+		else if(bufferSize <= 65535)
+		{
+			type |= XS_BON_INDEX16;
+		}
+		else
+		{
+			type |= XS_BON_INDEX32;
+		}
+		stream.write(type);
+
+		WriteInt32(stream, xsBonHashName("id", salt));
+		if(type == (XS_BON_INDEX | XS_BON_INDEX8))
+		{
+			stream.write(offsets[0]);
+		}
+		else if(type == (XS_BON_INDEX | XS_BON_INDEX16))
+		{
+			WriteInt16(stream, offsets[0]);
+		}
+		else
+		{
+			WriteInt32(stream, offsets[0]);
+		}
+
+		iter = NULL;
+		index = 1;
+		for (;;)
+		{
+			ret = xsHashMapIterateEntry(obj->getProperties(), &iter, (int *)&key, name, (void **)&val);
+			if (!ret || iter == NULL || val == NULL)
+				break;
+
+			WriteInt32(stream, xsBonHashName(name, salt));
+			if(type == (XS_BON_INDEX | XS_BON_INDEX8))
+			{
+				stream.write(offsets[index]);
+			}
+			else if(type == (XS_BON_INDEX | XS_BON_INDEX16))
+			{
+				WriteInt16(stream, offsets[index]);
+			}
+			else
+			{
+				WriteInt32(stream, offsets[index]);
+			}
+			index++;
+		}
+
+		stream.write(buffer.getData(), buffer.getSize());
+		buffer.close();
 	}
 }
 

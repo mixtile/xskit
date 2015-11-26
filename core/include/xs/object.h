@@ -73,10 +73,13 @@ public: \
 class xsObject : public xsListener
 {
 	XS_OBJECT_DECLARE(Object, XS_CLS_OBJECT)
+private:
+	virtual xsBool getProperty(int propId, const char *name, xsValue *value);
+	virtual xsBool setProperty(int propId, const char *name, xsValue *value);
+
 public:
 	virtual xsBool getProperty(int propId, xsValue *value);
 	virtual xsBool setProperty(int propId, xsValue *value);
-
 	virtual xsBool getProperty(const char *propName, xsValue *value);
 	virtual xsBool setProperty(const char *propName, xsValue *value);
 
@@ -118,6 +121,11 @@ public: // Static functions
 
 protected:
 	char *id;
+	 union
+	 {
+		char *str;
+		xsS32 hash;
+	 } prototype;
 	void *vmObject;
 	xsObject *parent;
 	xsElementList *elements;
