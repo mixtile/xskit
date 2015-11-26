@@ -104,13 +104,16 @@ typedef int (*xsBonHandler)(xsValue *value, void *userdata);
 xsBool xsIsBigEndian(void);
 xsU32 xsBonHashName(const char *key, int salt);
 xsU32 xsBonHashNameN(const char *name, size_t len, int salt);
+void setPackFlag(xsBool indexed);
 
 int xsBonParser(xsStream &stream, xsBool bigendian, xsBonHandler handler,
 		void *userdata);
 int xsBonUnpack(xsStream &stream, xsBool bigendian, xsValue *value);
 
+int xsBonPack(xsStream &stream, xsValue *value);
+
 int xsBonLoadFromFile(const xsTChar *filename, xsValue *value);
-int xsBonSaveToFile(const xsTChar *filename, xsValue *value);
+int xsBonSaveToFile(const xsTChar *filename, xsValue *value, xsBool indexed);
 
 int xsBonReadValueFromStream(xsRandomAccessStream &stream, const char *path, xsValue *value);
 int xsBonReadValueFromFile(const xsTChar *filename, const char *path, xsValue *value);

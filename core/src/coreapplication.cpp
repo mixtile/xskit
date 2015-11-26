@@ -191,7 +191,7 @@ xsBool xsCoreApplication::setVar(const char *var, xsValue *value)
 		return XS_FALSE;
 
 	hash = xsObject::hashName(var, 0);
-	oldVal = (xsValue *)xsHashMapPut(vars, hash, xsValueDuplicate(value));
+	oldVal = (xsValue *)xsHashMapPut(vars, hash, var, xsValueDuplicate(value));
 	if (oldVal != NULL)
 		xsValueDestroy(oldVal, XS_TRUE);
 

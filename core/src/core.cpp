@@ -84,6 +84,10 @@ int xsSysEventHandler(xsSysEvent *event)
 			XS_WARN("Application create NULL object. Try to continue.");
 			return XS_EC_ERROR;
 		}
+		xsCommonEvent evt;
+		evt.sys = event;
+		evt.type = event->type;
+		xsInvokeApplication(theApp, &evt);
 		break;
 	case XS_EVT_START:
 		{

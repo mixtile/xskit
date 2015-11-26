@@ -213,6 +213,8 @@ void xsCanvasContext::paintFill(xsGraphics *gc)
 			return;
 		line = static_cast<xsLine *>(xsArrayListGet(lines, 0));
 		xsPoint *polygen = (xsPoint*)xsCalloc(sizeof(xsPoint)*(n + 1));
+		if(polygen == NULL)
+			return;
 		polygen[0].x = line ->x1;
 		polygen[0].y = line ->y1;
 		int i = 1;
@@ -292,6 +294,8 @@ void xsCanvasContext::createGraphics()
 	if(NULL == graphicsGroups)
 	{
 		currentgraphics = (xsGraphicsGroup *)xsCalloc(sizeof(xsGraphicsGroup));
+		if(currentgraphics == NULL)
+			return;
 		currentgraphics ->lines = xsArrayListCreate(2);
 		currentgraphics ->next = NULL;
 		graphicsGroups = currentgraphics;
@@ -300,6 +304,8 @@ void xsCanvasContext::createGraphics()
 	else
 	{
 		xsGraphicsGroup *newgraphics =  (xsGraphicsGroup *)xsCalloc(sizeof(xsGraphicsGroup));
+		if(newgraphics == NULL)
+			return;
 		newgraphics ->lines = xsArrayListCreate(2);
 		newgraphics ->next = NULL;
 		currentgraphics ->next = newgraphics;
@@ -732,6 +738,8 @@ xsTextSize xsCanvasContext::measureText(const xsTChar *text)
 void xsCanvasContext::save()
 {
 	xsCanvasAttribute* newStatus = (xsCanvasAttribute*)xsCalloc(sizeof(xsCanvasAttribute));
+	if(newStatus == NULL)
+		return;
 	newStatus ->fillColor = fillColor;
 	newStatus ->strokeColor = strokeColor;
 //	newStatus ->shadowColor = shadowColor;
