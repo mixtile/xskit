@@ -17,7 +17,11 @@
 #ifndef _XS_PAL_H_
 #define _XS_PAL_H_
 
+#ifdef _QT_IDE_
+#include "../../../qt/include/xsosdep.h"
+#else
 #include "xsosdep.h"
+#endif
 #include <xs/systypes.h>
 #include <xs/sysevent.h>
 
@@ -719,14 +723,14 @@ XS_INTERFACE xsBool xsFileExists(const xsTChar *path);
 /**
  * Creates a new directory.
  * @param path directory path
- * @return return XS_EC_OK if a new directory was successfully created or error code.
+ * @return return XS_ES_OK if a new directory was successfully created or error code.
  */
 XS_INTERFACE int xsCreateDir(const xsTChar *path);
 
 /**
  * Remove a directory.
  * @param path directory path
- * @return return XS_EC_OK if directory was successfully deleted or error code.
+ * @return return XS_ES_OK if directory was successfully deleted or error code.
  */
 XS_INTERFACE int xsRemoveDir(const xsTChar *path);
 

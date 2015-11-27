@@ -17,7 +17,11 @@
 #ifndef _XS_SYSTYPES_H_
 #define _XS_SYSTYPES_H_
 
+#ifdef _QT_IDE_
+#include "../../../qt/include/xsosdep.h"
+#else
 #include "xsosdep.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
