@@ -22,6 +22,7 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <syslog.h>
+//#include <sys/vfs.h>
 
 #include <xs/pal.h>
 
@@ -336,6 +337,25 @@ size_t xsGetFileSize(xsFile handle)
 
 
 /*为了编译通过，复制win32下的pal.c的部分函数*/
+
+xsBool xsFileExists(const xsTChar *path)
+{
+	if(access(path, F_OK) == 0)
+	{
+		return XS_TRUE;
+	}
+
+	return XS_FALSE;
+}
+
+int xsCreateDir(const xsTChar *path)
+{
+
+}
+
+int xsRemoveDir(const xsTChar *path)
+{}
+
 xsU32 xsStartTimer(xsU32 elapseInMs, xsCallbackFunc cb, void *userdata)
 {
 	guint timer = g_timeout_add(elapseInMs, (GSourceFunc)cb, (gpointer)userdata);
@@ -360,18 +380,35 @@ xsWChar *xsWcsCpy(xsWChar *strTo, const xsWChar *strFrom)
 xsWChar *xsWcsCpyN(xsWChar *strTo, const xsWChar *strFrom, size_t max)
 {}
 xsBool xsResHandleValid(xsRes handle)
-{}
+{
+
+}
+
 xsRes xsResInvalidHandle()
-{}
+{
+
+}
 
 xsRes xsOpenRes(const xsTChar *name)
-{}
+{
+
+}
 
 void xsCloseRes(xsRes handle)
-{}
+{
+
+}
 
 size_t xsReadRes(xsRes handle, void *buffer, size_t begin, size_t size)
-{}
+{
+
+}
 
 int xsGetAddrByName(const char *hostname, xsSockAddr *addr, int tag)
+{}
+
+int xsSocketInitialize(void)
+{}
+
+int xsSocketUninitialize(void)
 {}

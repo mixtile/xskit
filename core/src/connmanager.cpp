@@ -81,7 +81,7 @@ int xsConnManager::processEvent(xsEvent *e)
 
 int xsConnManager::checkin(xsConnection *conn)
 {
-	int unused = (int)xsStackPop(_connUnused);
+	int unused = *((int *)xsStackPop(_connUnused));
 	int index;
 
 	XS_TRACE("[NET]xsConnManAdd");

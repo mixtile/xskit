@@ -177,9 +177,9 @@ int xsAppContext::fromFile(const char *path)
 	
 	filename = base;
 #else
-	filename = path;
+	filename = const_cast<char *>(path);
 #endif
-	
+
 	if (stream.open(filename, XS_OF_READONLY) != XS_EC_OK)
 	{
 		XS_ERROR("Open app.bon failed.");
@@ -226,7 +226,7 @@ int xsAppContext::fromRes(const char *name)
 
 	resname = tstr;
 #else
-	resname = name;
+	resname = const_cast<char *>(name);
 #endif
 
 	xsResourceStream stream;
@@ -284,6 +284,7 @@ int xsAppContext::fromStream(xsRandomAccessStream &stream, const xsTChar *loadPa
 	_orient = orient.data.n;
 	_name = name.data.t;
 	_id = aid.data.s;
+//	printf("mode = %d, orient = %d, name = %s, id = %s\n", _loadMode, _orient, _name, _id);
 
 	if (loadPath != NULL)
 		_loadPath = xsTcsDup(loadPath);
@@ -367,9 +368,9 @@ int xsAppContext::prepare(const char *appUri)
 	if (_loaded != LOAD_COMPLETE)
 		return XS_EC_OK;
 
-	context->_appCreator = xsCreateApplication;
-	context->_appDestroyer = xsDestroyApplication;
-	context->_appInvoker = xsInvokeApplication;
+	_appCreator = xsCreateApplication;
+	_appDestroyer = xsDestroyApplication;
+	_appInvoker = xsInvokeApplication;
 
 	// create application object
 	XS_TRACE("Create application object");

@@ -3,7 +3,8 @@
 
 #include <xs/runtimecontext.h>
 #include <xs/launcher.h>
-#include <xs/loader.h>
+//#include <xs/loader.h>
+#include <xs/stream.h>
 #include <xs/entry.h>
 #include <xs/httpconnection.h>
 
