@@ -54,7 +54,6 @@ xsUri *xsUriParse(const char *uri)
 
 	head = tail + 3;
 	tail = head;
-
 	// schema://base/path/to?query#fragment
 	while (*head)
 	{

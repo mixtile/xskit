@@ -23,6 +23,7 @@
 #include "xs/canvas.h"
 #include "xs/string.h"
 #include "duktape.h"
+#include "canvasinterface.h"
 
 typedef struct _xsJSEvent
 {
@@ -770,7 +771,8 @@ const duk_function_list_entry globalmethods[] = {
     { NULL,  NULL,        0   }
 };
 
-void invokeJavascript(const char *scriptURL) {
+void invokeJavascript(const char *scriptURL, int type)
+{
 	g_ctx = duk_create_heap_default();
     if (!g_ctx)
     {
@@ -789,13 +791,24 @@ void invokeJavascript(const char *scriptURL) {
 	duk_put_prop_string(g_ctx, -2, "keyCode");
 	duk_put_prop_string(g_ctx, -2, "event");
 
-    if (duk_peval_file(g_ctx, scriptURL) != 0)
+	if(type == LOAD_JS_FILE)
     {
-        printf("Error: %s\n", duk_safe_to_string(g_ctx, -1));
-        destroyHeap();
-		goto end;
-
+		if (duk_peval_file(g_ctx, scriptURL) != 0)
+		{
+			printf("Error: %s\n", duk_safe_to_string(g_ctx, -1));
+			destroyHeap();
+			goto end;
+		}
     }
+	else if(type == LOAD_JS_STRING)
+	{
+		if (duk_peval_string(g_ctx, scriptURL) != 0)
+		{
+			printf("Error: %s\n", duk_safe_to_string(g_ctx, -1));
+			destroyHeap();
+			goto end;
+		}
+	}
     duk_pop(g_ctx);  /* ignore result */
 
 /*    duk_get_prop_string(g_ctx, -1, "primeTest");

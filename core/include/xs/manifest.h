@@ -30,7 +30,7 @@ public:
 	inline xsTChar *getName() { return _name; }
 	inline const char *getUUID() { return _uuid; };
 	inline const char *getPreload() { return _preload; };
-	inline const char *getStartup() { return _startup; };
+	inline const char *getStartup() const { return _startup; };
 
 protected:
 	~xsManifest();

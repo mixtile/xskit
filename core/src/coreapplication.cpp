@@ -124,7 +124,11 @@ int xsCoreApplication::load(xsEvent *e)
 
 	xsValue value = _res->loadValue("app");
 	if (value.type == XS_VALUE_OBJECT && value.data.obj->isTypeOf(XS_CLASS(xsManifest)))
+	{
 		manifest = static_cast<xsManifest *>(value.data.obj);
+		xsValue test = _res->loadValue("main.js");
+		manifest->setProperty(XS_PROP_MANIFEST_STARTUP, &test);
+	}
 	else if (value.type != XS_VALUE_NONE)
 		xsValueDestroy(&value, XS_FALSE);
 

@@ -38,7 +38,8 @@ int DemoApp::start()
 	xsFillRectangle(xsGetSystemGc(), 0, 0, width, height);//, xsArgbToColor(0xFFFFFFFF));
 	xsFlushScreen(0, 0, width - 1, height - 1);
 
-	invokeJavascript("/home/lewis/git/xs-new/prime.js");
+	const char * js = getManifest()->getStartup();
+	invokeJavascript(js, LOAD_JS_STRING);
 
 	x = (width - BOX_SIZE) / 2;
 	y = (height - BOX_SIZE) / 2;

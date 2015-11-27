@@ -182,7 +182,11 @@ int xsBonPack(xsStream &stream, xsValue *value)
 			stream.write(xsT("\0"), sizeof(xsTChar));
 		else
 		{
-			stream.write((xsTcsLen(value->data.t) + 1) * sizeof(xsTChar));
+			int size = (xsTcsLen(value->data.t) + 1) * sizeof(xsTChar);
+			xsValue val;
+			val.type = XS_VALUE_UINT32;
+			val.data.n = size;
+			xsBonPack(stream, &val);
 			stream.write(value->data.t, (xsTcsLen(value->data.t) + 1) * sizeof(xsTChar));
 		}
 	}
@@ -193,7 +197,11 @@ int xsBonPack(xsStream &stream, xsValue *value)
 			stream.write("\0", 1);
 		else
 		{
-			stream.write(xsStrLen(value->data.s) + 1);
+			int size =xsStrLen(value->data.s) + 1;
+			xsValue val;
+			val.type = XS_VALUE_UINT32;
+			val.data.n = size;
+			xsBonPack(stream, &val);
 			stream.write(value->data.s, xsStrLen(value->data.s) + 1);
 		}
 	}

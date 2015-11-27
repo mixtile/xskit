@@ -19,11 +19,16 @@
 
 #include "duktape.h"
 
+enum
+{
+	LOAD_JS_FILE = 0,
+	LOAD_JS_STRING = 1,
+};
 /**
  * init canvas for javascript and load javascript file
  * @param scriptURL URL of javascript source file
  */
-extern void invokeJavascript(const char *scriptURL);
+extern void invokeJavascript(const char *scriptURL, int type);
 
 /**
  * handle key event for javascript

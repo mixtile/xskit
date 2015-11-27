@@ -17,6 +17,9 @@
 #ifndef _XS_CORE_H_
 #define _XS_CORE_H_
 
+#include <xs/event.h>
+
+#define XS_DYNAMIC_APP  //dynamic load
 #ifdef __cplusplus
 extern "C" {
 #endif
