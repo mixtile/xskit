@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/xs_icon">
+        <file>images/start.jpeg</file>
+        <file>images/package.jpeg</file>
+        <file>images/stop.jpeg</file>
+        <file>images/open.png</file>
+    </qresource>
+    <qresource prefix="/xs_model">
+        <file>models/app.xml</file>
+        <file>models/main.js</file>
+        <file>models/transform.json</file>
+    </qresource>
+</RCC>

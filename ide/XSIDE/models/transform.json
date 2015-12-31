@@ -1,0 +1,274 @@
+
+{
+
+	"object":{
+		
+		"@prototype":"Object",
+		"prototype":{"type":"string"},
+		"id":{"type":"string"},
+		"elements":{"type":"array"}
+	},
+
+	"manifest":{
+		"@inherit":"Object",
+		"@prototype":"Manifest",
+		"id":{"type":"string"},
+		"uuid":{"type":"string"},
+		"name":{"type":"text"},
+		"orient":{"type":"enum", "enum":{"default":0, "landscape":1, "portrait":2}},
+		"preload":{"type":"string"},
+		"startup":{"type":"string"}
+	},
+	
+	"coreapplication":{
+		"@inherit":"Object",
+		"@prototype":"CoreApplication",
+		"id":{"type":"string"},
+		"uuid":{"type":"string"},
+		"name":{"type":"text"},
+		"orient":{"type":"enum", "enum":{"default":0, "landscape":1, "portrait":2}}
+	},
+	
+	"application":{
+		"@inherit":"coreapplication",
+		"@prototype":"Application"
+	},
+
+	"datasource":{
+		"@inherit":"Object",
+		"@prototype":"DataSource",
+		"uri":{"type":"string"}
+	},
+
+	"remote":{
+		"@inherit":"Object",
+		"@prototype":"Remote",
+		"uri":{"type":"string"}
+	},
+
+	"widget":{
+		"@inherit":"Object",
+		"@prototype":"Widget",
+		"x":{"type":"int"},
+		"y":{"type":"int"},
+		"width":{"type":"int"},
+		"height":{"type":"int"},
+		"bgcolor":{"type":"int"},
+		"type":{"type":"int"},
+		"align":{"type":"combine", "enum":{"left":1, "top":2, "right":4, "bottom":8, "center":16, "fill":32}},
+		"visible":{"type":"boolean"},
+		"enable":{"type":"boolean"},
+		"focusable":{"type":"boolean"},
+		"layout":{"type":"object"},
+		"colspan":{"type":"int"},
+		"rowspan":{"type":"int"},
+		"weightx":{"type":"int"},
+		"weighty":{"type":"int"},
+		"ref":{"type":"string"},
+		"value":{"type":"any"}
+	},
+
+	"form":{
+		"@inherit":"Widget",
+		"@prototype":"Form",
+		"type":{"type":"combine", "enum":{"normal":0, "splash":1, "fullscreen":2}}
+	},
+
+	"layer":{
+		"@inherit":"Widget",
+		"@prototype":"Layer"
+	},
+
+	"panel":{
+		"@inherit":"Widget",
+		"@prototype":"Panel",
+		"scroll":{"type":"enum", "enum":{"none":0, "horizontal":1, "vertical":2, "both":3}}
+	},
+
+	"textwidget":{
+		"@inherit":"Widget",
+		"@prototype":"TextWidget",
+		"text":{"type":"text"},
+		"font":{"type":"object"}
+	},
+
+	"textarea":{
+		"@inherit":"Widget",
+		"@prototype":"TextArea",
+		"text":{"type":"text"},
+		"font":{"type":"object"}
+	},
+
+	"picturewidget":{
+		"@inherit":"Widget",
+		"@prototype":"PictureWidget",
+		"src":{"type":"text"}
+	},
+
+	"button":{
+		"@inherit":"Widget",
+		"@prototype":"Button",
+		"type":{"type":"combine", "enum":{"normal":0, "checkbox":1, "radio":2, "showstate":4}},
+		"text":{"type":"text"},
+		"font":{"type":"object"},
+		"icon":{"type":"text"},
+		"checked":{"type":"boolean"}
+	},
+
+	"tabpanel":{
+		"@inherit":"Widget",
+		"@prototype":"TabPanel"
+	},
+
+	"tabitem":{
+		"@inherit":"Widget",
+		"@prototype":"TabItem",
+		"tab":{"type":"object"},
+		"content":{"type":"object"}
+	},
+
+	"tab":{
+		"@inherit":"Widget",
+		"@prototype":"Tab"
+	},
+
+	"tabcontent":{
+		"@inherit":"Panel",
+		"@prototype":"TabContent"
+	},
+
+	"popup":{
+		"@inherit":"Widget",
+		"@prototype":"Popup",
+		"scroll":{"type":"enum", "enum":{"none":0, "horizontal":1, "vertical":2, "both":3}}
+	},
+
+	"menu":{
+		"@inherit":"Widget",
+		"@prototype":"Menu",
+		"popup":{"type":"object"},
+		"value":{"type":"any"},
+		"text":{"type":"text"},
+		"font":{"type":"object"},
+		"icon":{"type":"string"}
+	},
+
+	"combo":{
+		"@inherit":"Widget",
+		"@prototype":"Combo",
+		"popup":{"type":"object"},
+		"maxselect":{"type":"int"}
+	},
+
+	"dock":{
+		"@inherit":"Widget",
+		"@prototype":"Dock",
+		"type":{"type":"combine", "enum":{"normal":0, "float":1, "autohide":2}},
+		"position":{"type":"enum", "enum":{"left":0, "top":1, "right":2, "bottom":3}}
+	},
+
+	"inputwidget":{
+		"@inherit":"Widget",
+		"@prototype":"InputWidget",
+		"type":{"type":"enum", "enum":{"normal":0, "number":1, "password":2}},
+		"font":{"type":"object"},
+		"prompt":{"type":"text"},
+		"text":{"type":"text"},
+		"size":{"type":"int"},
+		"maxlength":{"type":"int"}
+	},
+
+	"progressbar":{
+		"@inherit":"Widget",
+		"@prototype":"ProgressBar",
+		"color":{"type":"int"},
+		"value":{"type":"int"}
+	},
+
+	"throbber":{
+		"@inherit":"Widget",
+		"@prototype":"Throbber",
+		"color":{"type":"int"}
+	},
+
+	"spacer":{
+		"@inherit":"Widget",
+		"@prototype":"Spacer"
+	},
+
+	"audio":{
+		"@inherit":"Widget",
+		"@prototype":"Audio",
+		"src":{"type":"text"}
+	},
+
+	"canvas":{
+		"@inherit":"Widget",
+		"@prototype":"Canvas"
+	},
+
+	"font":{
+		"@inherit":"Object",
+		"@prototype":"Font",
+		"size":{"type":"enum", "enum":{"xx-small":-1, "x-small":-2, "small":-3, "medium":-4, "large":-5, "x-large":-6, "xx-large":-7}},
+		"style":{"type":"combine", "enum":{"normal":0, "bold":1, "italic":2}},
+		"color":{"type":"int"}
+	},
+
+	"canvascontext":{
+		"@inherit":"Object",
+		"@prototype":"CanvasContext",
+		"lineWidth":{"type":"int"},
+		"strokeStyle":{"type":"int"}
+	},
+
+	"layout":{
+		"@inherit":"Object",
+		"@prototype":"Layout",
+		"align":{"type":"combine", "enum":{"left":1, "top":2, "right":4, "bottom":8, "center":16, "fill":32}},
+		"left":{"type":"int"},
+		"top":{"type":"int"},
+		"right":{"type":"int"},
+		"bottom":{"type":"int"}
+	},
+
+	"linerlayout":{
+		"@inherit":"Layout",
+		"@prototype":"LinerLayout",
+		"orient":{"type":"enum", "enum":{"horizontal":1, "vertical":2}},
+		"gap":{"type":"int"}
+	},
+
+	"tablelayout":{
+		"@inherit":"Layout",
+		"@prototype":"TableLayout",
+		"columns":{"type":"int"},
+		"hgap":{"type":"int"},
+		"vgap":{"type":"int"}
+	},
+
+	"shape":{
+		"@inherit":"Object",
+		"@prototype":"Shape"
+	},
+
+	"line":{
+		"@inherit":"Object",
+		"@prototype":"Line",
+		"x1":{"type":"int"},
+		"y1":{"type":"int"},
+		"x2":{"type":"int"},
+		"y2":{"type":"int"}
+	},
+
+	"connection":{
+		"@inherit":"Object",
+		"@prototype":"Connection"
+	},
+
+	"httpconnection":{
+		"@inherit":"Connection",
+		"@prototype":"HttpConnection"
+	}
+
+}
