@@ -168,6 +168,14 @@ size_t xsGetFileSize(xsFile handle)
 {
 	return (size_t)GetFileSize((HANDLE)handle, NULL);
 }
+//xsLauncher need
+int xsCreateDir(const xsTChar *path)
+{
+
+}
+//xsLauncher need
+int xsRemoveDir(const xsTChar *path)
+{}
 
 xsRes xsOpenRes(const xsTChar *name)
 {

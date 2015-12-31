@@ -28,6 +28,7 @@
 									<listOptionValue builtIn="false" value="../../../graphics/include"/>
 									<listOptionValue builtIn="false" value="../../../javascript/duktape/include"/>
 									<listOptionValue builtIn="false" value="../../../javascript/canvasinterface/include"/>
+ 									<listOptionValue builtIn="false" value="../../../demos/xsdemo/src"/>
 									<listOptionValue builtIn="false" value="/usr/include/gtk-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/atk-1.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/cairo"/>
@@ -57,6 +58,7 @@
 									<listOptionValue builtIn="false" value="../../../graphics/include"/>
 									<listOptionValue builtIn="false" value="../../../javascript/duktape/include"/>
 									<listOptionValue builtIn="false" value="../../../javascript/canvasinterface/include"/>
+									<listOptionValue builtIn="false" value="../../../demos/xsdemo/src"/>
 									<listOptionValue builtIn="false" value="/usr/include/gtk-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/atk-1.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/cairo"/>

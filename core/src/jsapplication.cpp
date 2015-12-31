@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-#include "demoapp.h"
+#include "xs/jsapplication.h"
 #include <xs/utils.h>
 #include "canvasinterface.h"
 
 #define BOX_SIZE	50
 
-DemoApp::DemoApp(void)
+xsJSApplication::xsJSApplication(void)
 {
 	rateX = 1;
 	rateY = 2;
 }
 
-DemoApp::~DemoApp(void)
+xsJSApplication::~xsJSApplication(void)
 {
 }
 
-int DemoApp::start()
+int xsJSApplication::start()
 {
 	xsColor color = {255,255,255,255};
 	xsSetColor(xsGetSystemGc(), color);
@@ -49,39 +49,39 @@ int DemoApp::start()
 	return XS_EC_OK;
 }
 
-void DemoApp::suspend()
+void xsJSApplication::suspend()
 {
 }
 
-int DemoApp::resume()
+int xsJSApplication::resume()
 {
 	return XS_EC_OK;
 }
 
-void DemoApp::exit()
+void xsJSApplication::exit()
 {
 	this->getResource()->freeImage(img);
 }
 
-int DemoApp::processEvent(xsEvent *e)
+int xsJSApplication::processEvent(xsEvent *e)
 {
 	XS_TRACE("keycode = %d\n", e->type);
 	switch (e->type)
 	{
 		case XS_EVT_START:
 			return start();
-			
+
 		case XS_EVT_SUSPEND:
 			suspend();
 			break;
-			
+
 		case XS_EVT_RESUME:
 			return resume();
-			
+
 		case XS_EVT_EXIT:
 			exit();
 			break;
-			
+
 		case XS_EVT_MOUSE_DOWN:
 			//xsStopTimer(timer);
 			break;
@@ -104,6 +104,16 @@ int DemoApp::processEvent(xsEvent *e)
 //				timer = xsStartTimer(20, _onTimeout, this);
 			break;
 
+		case XS_EVT_KEY_HOLD:
+			if (e->sys->data.key.keyCode == XS_PAD_KEY_LEFT_ARROW)
+			{
+#ifdef MTK_GENA
+				xsReturnWatchme();
+#endif
+			}
+			break;
+
+
 		default:
 			return xsCoreApplication::processEvent(e);
 	}
@@ -111,12 +121,12 @@ int DemoApp::processEvent(xsEvent *e)
 	return XS_EC_OK;
 }
 
-int DemoApp::_onTimeout(void *userdata)
+int xsJSApplication::_onTimeout(void *userdata)
 {
-	return ((DemoApp *)userdata)->onTimeout();
+	return ((xsJSApplication *)userdata)->onTimeout();
 }
 
-int DemoApp::onTimeout()
+int xsJSApplication::onTimeout()
 {
 	xsGraphics *gc = xsGetSystemGc();
 
@@ -135,7 +145,7 @@ int DemoApp::onTimeout()
 		rateY = -rateY;
 
 	xsDrawImage(gc, img, x, y, 0, 0);
-	
+
 	xsFlushScreen(0, 0, width - 1, height - 1);
 
 	return 0;

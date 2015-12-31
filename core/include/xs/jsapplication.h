@@ -14,7 +14,34 @@
  * limitations under the License.
  */
 
-#ifndef _XSDEMO_H_
-#define _XSDEMO_H_
+#ifndef JSAPPLICATION_H_
+#define JSAPPLICATION_H_
 
-#endif /* _XSDEMO_H_ */
+#include <xs/coreapplication.h>
+
+class xsJSApplication : public xsCoreApplication
+{
+public:
+	xsJSApplication(void);
+	~xsJSApplication(void);
+
+	int start();
+	void suspend();
+	int resume();
+	void exit();
+
+	int processEvent(xsEvent *e);
+
+private:
+	int width, height;
+	xsU32 timer;
+	int x, y;
+	int rateX, rateY;
+	xsImage *img;
+
+	static int _onTimeout(void *userdata);
+	int onTimeout();
+
+};
+
+#endif /* JSAPPLICATION_H_ */

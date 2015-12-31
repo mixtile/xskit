@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "xsdemo.h"
+#include "xs/jsapplication.h"
 #include "demoapp.h"
 
 #include <xs/entry.h>
@@ -22,7 +22,11 @@
 
 void *xsCreateApplication()
 {
+#ifndef  XS_DYNAMIC_APP
 	return new DemoApp();
+#else
+	return new xsJSApplication();
+#endif
 }
 
 void xsDestroyApplication(void *app)
