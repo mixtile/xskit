@@ -21,7 +21,7 @@ typedef struct _xsHashElement
 {
 	int key;
 	int inUse;
-	char  name[20] = {0};
+	char  name[20];
 
 	void *data;
 } xsHashElement;

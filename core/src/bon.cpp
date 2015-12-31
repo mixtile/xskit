@@ -1474,10 +1474,17 @@ static void WriteObject(xsStream &stream, xsValue *value)
 	{
 		int salt = 0, retry = 0, index = 0;
 		bool collisionFlag = false;
-		long offsets[size];
-		int hashSet[size];
+		long *offsets = (long *)xsCalloc(size * sizeof(long));
+		int *hashSet= (int *)xsCalloc(size * sizeof(int));
+		if(offsets == NULL || hashSet == NULL)
+		{
+			printf("calloc failed!");
+			return;
+		}
 		xsBufferStream buffer;
 RESTART:
+		xsMemSet(offsets, 0, size * sizeof(long));
+		xsMemSet(offsets, 0, size * sizeof(int));
 		if(obj->getProperty("id", &tmpVal))
 		{
 			if(NULL != tmpVal.data.s)
@@ -1611,6 +1618,8 @@ RESTART:
 			index++;
 		}
 
+		xsFree(offsets);
+		xsFree(hashSet);
 		stream.write(buffer.getData(), buffer.getSize());
 		buffer.close();
 	}

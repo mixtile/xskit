@@ -168,6 +168,7 @@ int xsSysEventHandler(xsSysEvent *event)
 		if(xsCoreInit() == XS_EC_OK && xsLauncher::init() == XS_EC_OK && xsConnManager::init() == XS_EC_OK)
 		{
 			xsAppContext *context = (xsAppContext *)event->data.app.instance;
+			
 			if (context == NULL)
 				context = xsLauncher::load(event->data.app.uri);
 			else
