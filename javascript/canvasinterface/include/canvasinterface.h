@@ -19,6 +19,10 @@
 
 #include "duktape.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum
 {
 	LOAD_JS_FILE = 0,
@@ -36,4 +40,7 @@ extern void invokeJavascript(const char *scriptURL, int type);
  */
 extern void xsArrowKeysHandler(xsEvent *e);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* CANVASINTERFACE_H_ */

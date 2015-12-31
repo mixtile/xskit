@@ -159,7 +159,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	HWND hWnd;
 	DWORD dwStyle;
 	xsSysEvent evt = {0};
-
+	//for test
+	xsStrCpyN(g_szAppId, "file:///C:\\Users\\Lewis\\workspace\\xskit\\app.xpk", sizeof(g_szAppId));
 	evt.type = XS_EVT_LOAD;
 	evt.data.app.uri = g_szAppId;
 	if (xsSysEventHandler(&evt) == XS_EC_OK)

@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 	GtkWidget *window;
 	char title[64] = {0};
 	char appId[XS_MAX_PATH] = {0};
-	xsStrCpy(appId, "file:////home/lewis/project/test/app.xpk");
+	xsStrCpy(appId, "file:////home/lewis/git/xs-new/app.xpk");
 
 	// parser arguments
 	gtk_init(&argc, &argv);

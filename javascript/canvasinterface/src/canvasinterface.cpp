@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
+#include <ctype.h>
 
 #include "xs/pal.h"
 #include "xs/canvas.h"
@@ -64,16 +64,33 @@ int htoi(char s[])
     return n;
 }
 
-void parseFontString(std::string &fontString, xsFontType &font)
+void parseFontString(const char *fontString, xsFontType &font)
 {
-    int spacePos = fontString.find(" ", 0);
-    std::string font1 = fontString.substr(0, spacePos).c_str();
-    int pxPos = font1.find("px", 0);
-    if(pxPos)
+    const char *spacePos = xsStrChr(fontString, ' ');
+    const char *currentStart = fontString;
+    char divideStr[20] = {0};
+    const char *pxPos = NULL;
+    while(spacePos != NULL)
     {
-    	const char *px = font1.substr(0, pxPos).c_str();
-    	int size = atoi(px);
-    	font.size = size;
+    	if(spacePos - currentStart < 20)
+    	{
+    		xsStrCpyN(divideStr, currentStart, spacePos - currentStart);
+    	}
+
+    	pxPos = xsStrStr(divideStr, "px") == NULL ? xsStrStr(divideStr, "PX") : NULL;
+    	if(pxPos)
+    	{
+    		if(pxPos - divideStr < 10)
+    		{
+    			char px[10] = {0};
+    			xsStrCpyN(px, divideStr, pxPos - divideStr);
+    			font.size = atoi(px);
+    		}
+    	}
+    	else
+    	{
+
+    	}
     }
 }
 
@@ -200,10 +217,13 @@ static duk_ret_t updrate_param(duk_context *ctx)
     duk_pop(ctx);
     duk_get_prop_string(ctx, -1, "strokeStyle");
     const char *strokeStyle = duk_to_string(ctx, -1);
-    std::string strokeTmp = strokeStyle;
-    context ->strokeColor.red = htoi(const_cast<char *>(strokeTmp.substr(1, 2).c_str()));
-    context ->strokeColor.green = htoi(const_cast<char *>(strokeTmp.substr(3, 2).c_str()));
-    context ->strokeColor.blue = htoi(const_cast<char *>(strokeTmp.substr(5, 2).c_str()));
+    char strokeTmp[2] = {0};
+    xsStrCpyN(strokeTmp, strokeStyle + 1, 2);
+    context ->strokeColor.red = htoi(strokeTmp);
+    xsStrCpyN(strokeTmp, strokeStyle + 3, 2);
+    context ->strokeColor.green = htoi(strokeTmp);
+    xsStrCpyN(strokeTmp, strokeStyle + 5, 2);
+    context ->strokeColor.blue = htoi(strokeTmp);
     duk_pop(ctx);
     duk_get_prop_string(ctx, -1, "fillStyle");
     if(duk_is_string(ctx, -1))
@@ -219,14 +239,16 @@ static duk_ret_t updrate_param(duk_context *ctx)
     	printf("pointer\n");
     }
     const char *fillStyle = duk_to_string(ctx, -1);
-    std::string fillTmp = fillStyle;
-    context ->fillColor.red = htoi(const_cast<char *>(fillTmp.substr(1, 2).c_str()));
-    context ->fillColor.green = htoi(const_cast<char *>(fillTmp.substr(3, 2).c_str()));
-    context ->fillColor.blue = htoi(const_cast<char *>(fillTmp.substr(5, 2).c_str()));
+    char fillTmp[2] = {0};
+    xsStrCpyN(fillTmp, fillStyle + 1, 2);
+    context ->fillColor.red = htoi(fillTmp);
+    xsStrCpyN(fillTmp, fillStyle + 3, 2);
+    context ->fillColor.green = htoi(fillTmp);
+    xsStrCpyN(fillTmp, fillStyle + 5, 2);
+    context ->fillColor.blue = htoi(fillTmp);
     duk_pop(ctx);
 //    duk_get_prop_string(ctx, -1, "font");
 //    const char *font = duk_to_string(ctx, -1);
-//    std::string fontTmp = font;
 //    parseFontString(fontTmp, context ->font);
 
     return 1;
