@@ -105,14 +105,7 @@ int xsJSApplication::processEvent(xsEvent *e)
 			break;
 
 		case XS_EVT_KEY_HOLD:
-			if (e->sys->data.key.keyCode == XS_PAD_KEY_LEFT_ARROW)
-			{
-#ifdef MTK_GENA
-				xsReturnWatchme();
-#endif
-			}
 			break;
-
 
 		default:
 			return xsCoreApplication::processEvent(e);

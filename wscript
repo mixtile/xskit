@@ -37,7 +37,7 @@ def options(opt):
 
 	# load tools
 	opt.load('compiler_c')
-	opt.load('compiler_cxx')
+        opt.load('compiler_cxx')
 	if PLATFORM == 'darwin':
 		opt.load('xcode', tooldir=waftools.location)
 	elif PLATFORM == 'win32':

@@ -6,6 +6,10 @@ build
 *.xcodeproj
 .cproject
 .project
+xskit.config
+xskit.creator
+xskit.files
+xskit.includes
 .settings
 *.vcproj
 *.vcxproj
