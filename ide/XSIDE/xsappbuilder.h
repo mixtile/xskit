@@ -17,7 +17,8 @@ public:
 
 protected:
     bool compileObject(const QFileInfo &source);
-    bool compileScript(const QFileInfo &source);
+    bool compileScript(const QFileInfo &source, const QString &prefix);
+    bool compileBinary(const QFileInfo &source);
     void compileObjectProperty(const QString &qName, const QXmlAttributes &atts, xsObject *object);
     void createPropertyObject(const QString &proName, const QString &proData, xsObject *proObject);
     void transformValue(const QJsonObject &subObj, xsValue *property, const QString &data, const QString &name);

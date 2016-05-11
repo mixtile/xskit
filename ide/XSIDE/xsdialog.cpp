@@ -163,7 +163,7 @@ void XSDialog::createProjectFiles(const QString &projectName, const QString &pro
         {
             QTextStream modelStream(&appModel);
             QTextStream fileStream(&appFile);
-            QString text = modelStream.readAll().arg(projectName).arg(projectName);
+            QString text = modelStream.readAll().arg(projectName).arg(projectName).arg(projectName);
             fileStream<<text;
             appModel.close();;
             appFile.close();
@@ -176,7 +176,7 @@ void XSDialog::createProjectFiles(const QString &projectName, const QString &pro
         {
             QTextStream modelStream(&mainModel);
             QTextStream fileStream(&mainFile);
-            QString text = modelStream.readAll().arg(projectName).arg(projectName);
+            QString text = modelStream.readAll();
             fileStream<<text;
             mainModel.close();;
             mainFile.close();

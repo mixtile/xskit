@@ -840,12 +840,12 @@ void invokeJavascript(const char *scriptURL, int type)
     }
     duk_pop(g_ctx);  /* ignore result */
 
-    duk_get_prop_string(g_ctx, -1, "init");
-    if (duk_pcall(g_ctx, 0) != 0)
-    {
-        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
-    }
-	duk_pop(g_ctx);  /* ignore result */
+//    duk_get_prop_string(g_ctx, -1, "init");
+//    if (duk_pcall(g_ctx, 0) != 0)
+//    {
+//        printf("Error1: %s\n", duk_safe_to_string(g_ctx, -1));
+//    }
+//	duk_pop(g_ctx);  /* ignore result */
 	return;
 end:
 	printf("Fail to invoke javascript file.\n");

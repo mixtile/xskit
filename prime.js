@@ -592,3 +592,5 @@ for(i=1;i<40;i++)
 	ctx.stroke();
 }
 }
+
+init();

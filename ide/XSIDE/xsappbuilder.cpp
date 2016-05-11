@@ -58,17 +58,39 @@ bool XSAppBuilder::packProject()
 
     for(int i = 0; i < infoList.size(); i++)
     {
-        if(infoList.at(i).suffix() == "xml" || infoList.at(i).suffix() == "json")
+        if(infoList.at(i).isDir())
+        {
+            QDir jsDir = QDir(infoList.at(i).absoluteFilePath());
+            QFileInfoList jsInforList = jsDir.entryInfoList();
+
+            for(int i = 0; i < jsInforList.size(); i++)
+            {
+                if(jsInforList.at(i).suffix() == "js")
+                {
+                    QString prefix = jsDir.dirName() + "/";
+                    ret = compileScript(jsInforList.at(i), prefix);
+                    break;
+                }
+            }
+
+            continue;
+        }
+
+        if(infoList.at(i).suffix() == "xpk")
+        {
+            continue;
+        }
+        else if(infoList.at(i).suffix() == "xml" || infoList.at(i).suffix() == "json")
         {
             ret = compileObject(infoList.at(i));
         }
         else if(infoList.at(i).suffix() == "js")
         {
-            ret = compileScript(infoList.at(i));
+            ret = compileScript(infoList.at(i), "");
         }
         else
         {
-            continue;
+            ret = compileBinary(infoList.at(i));
         }
 
         if(ret == false)
@@ -130,7 +152,7 @@ bool XSAppBuilder::compileObject(const QFileInfo &source)
     return false;
 }
 
-bool XSAppBuilder::compileScript(const QFileInfo &source)
+bool XSAppBuilder::compileScript(const QFileInfo &source, const QString &prefix)
 {
     int ret = XS_FALSE;
     QFile js(source.filePath());
@@ -139,13 +161,39 @@ bool XSAppBuilder::compileScript(const QFileInfo &source)
         return false;
     }
     QByteArray data = js.readAll();
-//    QString name = "scripts/" + source.fileName();
+//    QString name = prefix + source.fileName();
 
     xsValue val;
     val.type = XS_VALUE_STRING;
     val.data.s = (char *)xsCalloc(data.size() + 1);
     strncpy(val.data.s, data.data(), data.size() + 1);
-    qDebug()<<data.size()+1;
+    qDebug()<<source.fileName()<<data.size()+1;
+    ret = bon->setProperty(source.fileName().toStdString().c_str(), &val);
+
+    if(ret == XS_TRUE)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool XSAppBuilder::compileBinary(const QFileInfo &source)
+{
+    int ret = XS_FALSE;
+    QFile binary(source.filePath());
+    if(!binary.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+    QByteArray data = binary.readAll();
+
+    xsValue val;
+    val.type = XS_VALUE_BINARY;
+    val.data.ptr = (void *)xsCalloc(data.size() + sizeof(size_t));
+    *((size_t *)val.data.ptr) = data.size();
+    memcpy((char *)val.data.ptr + sizeof(size_t), data.data(), data.size());
+    qDebug()<<source.fileName()<<data.size()+sizeof(size_t);
     ret = bon->setProperty(source.fileName().toStdString().c_str(), &val);
 
     if(ret == XS_TRUE)

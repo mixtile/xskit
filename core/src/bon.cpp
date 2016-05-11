@@ -205,6 +205,22 @@ int xsBonPack(xsStream &stream, xsValue *value)
 			stream.write(value->data.s, xsStrLen(value->data.s) + 1);
 		}
 	}
+	else if(value->type == XS_VALUE_BINARY)
+	{
+		size_t size = *((size_t *)value->data.ptr);
+		if(size < 65536)
+		{
+			stream.write(XS_BON_BINARY | XS_BON_BINARY16);
+			WriteInt16(stream, (xsU16)size);
+		}
+		else
+		{
+			stream.write(XS_BON_BINARY | XS_BON_BINARY32);
+			WriteInt32(stream, (xsU32)size);
+		}
+
+		stream.write((char *)value->data.ptr + sizeof(size_t), size);
+	}
 	else if (value->type == XS_VALUE_BOOL)
 	{
 		if (value->data.n)

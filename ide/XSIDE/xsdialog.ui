@@ -39,7 +39,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>File Name:</string>
+    <string>Project Name:</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">
@@ -62,7 +62,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Model</string>
+    <string>Models</string>
    </property>
   </widget>
   <widget class="QListView" name="listView">
