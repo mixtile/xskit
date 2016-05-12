@@ -138,12 +138,12 @@
      <x>0</x>
      <y>0</y>
      <width>1033</width>
-     <height>28</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_project">
     <property name="title">
-     <string>项目</string>
+     <string>Project</string>
     </property>
     <addaction name="action_new_project"/>
     <addaction name="action_open_project"/>
@@ -151,7 +151,7 @@
    </widget>
    <widget class="QMenu" name="menu_file">
     <property name="title">
-     <string>文件</string>
+     <string>File</string>
     </property>
     <addaction name="action_new"/>
     <addaction name="action_save"/>
@@ -159,7 +159,7 @@
    </widget>
    <widget class="QMenu" name="menu_edit">
     <property name="title">
-     <string>编辑</string>
+     <string>Edit</string>
     </property>
     <widget class="QMenu" name="menu_find">
      <property name="title">
@@ -183,7 +183,7 @@
    </widget>
    <widget class="QMenu" name="menu_help">
     <property name="title">
-     <string>帮助</string>
+     <string>Help</string>
     </property>
     <addaction name="action_XSEditor"/>
    </widget>
@@ -203,17 +203,17 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_new_project">
    <property name="text">
-    <string>新建项目</string>
+    <string>New Project</string>
    </property>
   </action>
   <action name="action_open_project">
    <property name="text">
-    <string>打开已有项目</string>
+    <string>Open Project</string>
    </property>
   </action>
   <action name="action_delete_project">
    <property name="text">
-    <string>移除项目</string>
+    <string>Remove Project</string>
    </property>
   </action>
   <action name="action_new">
@@ -221,7 +221,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>新建</string>
+    <string>New File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -232,7 +232,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>保存</string>
+    <string>Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -243,7 +243,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>另存为</string>
+    <string>Save As...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
@@ -254,7 +254,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>撤销</string>
+    <string>Undo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -265,7 +265,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>重做</string>
+    <string>Redo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
@@ -276,7 +276,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>剪切</string>
+    <string>Cut</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -287,7 +287,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>复制</string>
+    <string>Copy</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -298,7 +298,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>粘贴</string>
+    <string>Paste</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -363,7 +363,7 @@
   </action>
   <action name="action_XSEditor">
    <property name="text">
-    <string>关于XSEditor</string>
+    <string>About XSEditor</string>
    </property>
   </action>
  </widget>

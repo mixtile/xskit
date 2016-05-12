@@ -41,7 +41,7 @@ XSMainWindow::XSMainWindow(QWidget *parent) :
     projectMenu = new QMenu(this);
     act_new_project = new QAction(tr("New Project"), this);
     act_open_project = new QAction(tr("Open Project"), this);
-    QAction *myproject = new QAction(tr("My Project"), this);
+    QAction *myproject = new QAction(tr("Recent Project"), this);
     myproject->setEnabled(false);
     projectMenu->addAction(act_new_project);
     projectMenu->addAction(act_open_project);
@@ -106,12 +106,13 @@ void XSMainWindow::setButtonImage()
     ui->btn_package->setIconSize(QSize(50, 50));
     ui->btn_package->setFixedSize(QSize(50, 50));
 
-    QPixmap *px_open_project = new QPixmap(100, 30);
-    px_open_project->load(":xs_icon/images/open.png");
-    QIcon *icon_open = new QIcon(*px_open_project);
-    ui->btn_open_project->setIcon(*icon_open);
-    ui->btn_open_project->setIconSize(QSize(100, 30));
+//    QPixmap *px_open_project = new QPixmap(100, 30);
+//    px_open_project->load(":xs_icon/images/open.png");
+//    QIcon *icon_open = new QIcon(*px_open_project);
+//    ui->btn_open_project->setIcon(*icon_open);
+//    ui->btn_open_project->setIconSize(QSize(100, 30));
     ui->btn_open_project->setFixedSize(QSize(100, 30));
+    ui->btn_open_project->setText("Project");
 }
 
 void XSMainWindow::openNewFile(const QString &fileName)
@@ -167,11 +168,11 @@ void XSMainWindow::readSettings()
     {
         this->showMaximized();
     }
-    settings->beginGroup("myProjects");
+    settings->beginGroup("recentProjects");
     QStringList myProjectNames = settings->childKeys();
     for(int i = 0 ; i < myProjectNames.size(); i++)
     {
-        QString myProjectPath =settings->value(myProjectNames.at(i), QVariant(QString("My Project %1").arg(i))).toString();
+        QString myProjectPath =settings->value(myProjectNames.at(i), QVariant(QString("Recent Project %1").arg(i))).toString();
         projectNames.append(myProjectNames.at(i));
         projectPaths.append(myProjectPath);
         QAction *act = new QAction(myProjectNames.at(i), this);
@@ -189,8 +190,8 @@ void XSMainWindow::writeSettings()
     settings->setValue("window/isMaximized", this->isMaximized());
     settings->setValue("window/fontSize", fontSize);
 
-    settings->remove("myProjects");
-    settings->beginGroup("myProjects");
+    settings->remove("recentProjects");
+    settings->beginGroup("recentProjects");
     for(int i = 0; i < projectNames.size(); i++)
     {
         settings->setValue(projectNames.at(i), projectPaths.at(i));
