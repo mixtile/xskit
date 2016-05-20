@@ -79,8 +79,6 @@ const QString  XSDialog::checkProjectExistance(const QString &projectName, const
             if(removeDirWithContent(projectPath))
             {
                 dir->mkpath(projectPath);
-                dir->mkdir(tr("ui"));
-                dir->mkdir(tr("scripts"));
                 createProjectFiles(projectName, projectPath, modelStyle);
                 return projectPath;
             }
@@ -151,7 +149,7 @@ void XSDialog::createProjectFiles(const QString &projectName, const QString &pro
 {
     QFile appModel(":xs_model/models/app.xml"), mainModel(":xs_model/models/main.js");
     QString appPath = projectPath + "/app.xml";
-    QString mainPath = projectPath + "/scripts/main.js";
+    QString mainPath = projectPath + "/main.js";
     QFile appFile(appPath), mainFile(mainPath);
     appFile.open(QIODevice::WriteOnly);
     mainFile.open(QIODevice::WriteOnly);

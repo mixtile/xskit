@@ -63,13 +63,16 @@ bool XSAppBuilder::packProject()
             QDir jsDir = QDir(infoList.at(i).absoluteFilePath());
             QFileInfoList jsInforList = jsDir.entryInfoList();
 
-            for(int i = 0; i < jsInforList.size(); i++)
+            if(jsDir.dirName() == "scripts")
             {
-                if(jsInforList.at(i).suffix() == "js")
+                for(int j = 0; j < jsInforList.size(); j++)
                 {
-                    QString prefix = jsDir.dirName() + "/";
-                    ret = compileScript(jsInforList.at(i), prefix);
-                    break;
+                    if(jsInforList.at(j).suffix() == "js")
+                    {
+                        QString prefix = jsDir.dirName() + "_";
+                        ret = compileScript(jsInforList.at(j), prefix);
+                        break;
+                    }
                 }
             }
 
@@ -161,14 +164,14 @@ bool XSAppBuilder::compileScript(const QFileInfo &source, const QString &prefix)
         return false;
     }
     QByteArray data = js.readAll();
-//    QString name = prefix + source.fileName();
+    QString name = prefix + source.fileName();
 
     xsValue val;
     val.type = XS_VALUE_STRING;
     val.data.s = (char *)xsCalloc(data.size() + 1);
     strncpy(val.data.s, data.data(), data.size() + 1);
-    qDebug()<<source.fileName()<<data.size()+1;
-    ret = bon->setProperty(source.fileName().toStdString().c_str(), &val);
+    qDebug()<<name<<data.size()+1;
+    ret = bon->setProperty(name.toStdString().c_str(), &val);
 
     if(ret == XS_TRUE)
     {

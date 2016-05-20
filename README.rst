@@ -1,4 +1,4 @@
-Xskit
+XSKit
 ======================================
 
 Introduction
@@ -17,7 +17,7 @@ Required:
 Pack Steps:
 
 - First, open **XSIDE** project with qtcreator(means open "ide/XSIDE/XSEditor.pro" width qtcreator) and run it(please copy novile directory to shadow build directory if using shadow build).
-- Then, create a new project in XSIDE and write your own code in **scripts/main.js** of the new project.  
+- Then, create a new project in XSIDE and write your own code in **main.js** of the new project.  
 - Last, click the pack button and **app.xpk** will be created in your project. 
 
 Build

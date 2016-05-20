@@ -4,6 +4,7 @@
         <file>images/package.jpeg</file>
         <file>images/stop.jpeg</file>
         <file>images/open.png</file>
+        <file>images/icon.jpg</file>
     </qresource>
     <qresource prefix="/xs_model">
         <file>models/app.xml</file>
